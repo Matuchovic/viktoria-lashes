@@ -1,0 +1,228 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  phone         String?
+  role          Role      @default(CUSTOMER)
+  loyaltyPoints Int       @default(0)
+  bookings      Booking[]
+  accounts      Account[]
+  sessions      Session[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model Service {
+  id            String        @id @default(cuid())
+  name          String
+  nameCs        String
+  description   String        @db.Text
+  descriptionCs String        @db.Text
+  category      ServiceCat
+  priceKc       Int
+  durationMin   Int
+  depositPct    Int           @default(30)
+  isActive      Boolean       @default(true)
+  sortOrder     Int           @default(0)
+  bookings      Booking[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@map("services")
+}
+
+model Artist {
+  id          String    @id @default(cuid())
+  name        String
+  titleCs     String
+  bioCs       String    @db.Text
+  avatarUrl   String?
+  yearsExp    Int
+  clientCount Int
+  certCount   Int
+  specialties String[]
+  isActive    Boolean   @default(true)
+  userId      String?   @unique
+  bookings    Booking[]
+  schedule    Schedule[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("artists")
+}
+
+model Schedule {
+  id        String   @id @default(cuid())
+  artistId  String
+  artist    Artist   @relation(fields: [artistId], references: [id])
+  dayOfWeek Int      // 0=Sun, 1=Mon ... 6=Sat
+  startTime String   // "09:00"
+  endTime   String   // "20:00"
+  isWorking Boolean  @default(true)
+
+  @@unique([artistId, dayOfWeek])
+  @@map("schedules")
+}
+
+model Booking {
+  id              String        @id @default(cuid())
+  bookingRef      String        @unique @default(cuid())
+  serviceId       String
+  service         Service       @relation(fields: [serviceId], references: [id])
+  artistId        String
+  artist          Artist        @relation(fields: [artistId], references: [id])
+  userId          String?
+  user            User?         @relation(fields: [userId], references: [id])
+  customerName    String
+  customerEmail   String
+  customerPhone   String
+  date            DateTime      @db.Date
+  time            String        // "10:00"
+  status          BookingStatus @default(PENDING)
+  notes           String?       @db.Text
+  totalKc         Int
+  depositKc       Int
+  depositPaid     Boolean       @default(false)
+  stripeSessionId String?
+  reminderSent    Boolean       @default(false)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([artistId, date])
+  @@index([customerEmail])
+  @@index([status])
+  @@map("bookings")
+}
+
+model GalleryItem {
+  id        String   @id @default(cuid())
+  src       String
+  alt       String
+  altCs     String
+  category  String
+  labelCs   String
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@map("gallery_items")
+}
+
+model Testimonial {
+  id         String   @id @default(cuid())
+  authorName String
+  initials   String
+  textCs     String   @db.Text
+  rating     Int      @default(5)
+  source     String
+  date       String
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  @@map("testimonials")
+}
+
+model DiscountCode {
+  id         String   @id @default(cuid())
+  code       String   @unique
+  pctOff     Int
+  validFrom  DateTime
+  validTo    DateTime
+  usageLimit Int?
+  usedCount  Int      @default(0)
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  @@map("discount_codes")
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  message   String   @db.Text
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("contact_messages")
+}
+
+enum Role {
+  CUSTOMER
+  ARTIST
+  ADMIN
+}
+
+enum ServiceCat {
+  CLASSIC
+  VOLUME
+  MEGA_VOLUME
+  WET_LOOK
+  HYBRID
+  INFILL
+  LIFTING
+  REMOVAL
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
