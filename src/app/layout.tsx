@@ -4,6 +4,7 @@ import { Cormorant_Garamond, Outfit } from 'next/font/google'
 import './globals.css'
 import { Providers } from '@/components/layout/Providers'
 import { Toaster } from '@/components/ui/Toaster'
+import { ViktoriaChatbot } from '@/components/ui/ViktoriaChatbot'
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin', 'latin-ext'],
@@ -22,18 +23,18 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Viktoria Lashes — Luxusní Řasové Studio Praha',
-    template: '%s | Viktoria Lashes',
+    default: 'Viktória Lashes — Luxusní Řasové Studio Praha',
+    template: '%s | Viktória Lashes',
   },
   description: 'Prémiové prodlužování řas v srdci Prahy. Klasické, objemové, mega volume, wet look a hybridní techniky. Rezervujte online — výsledky, které promění váš pohled.',
-  keywords: ['prodlužování řas Praha', 'řasové studio', 'mega volume', 'lash lifting', 'Viktoria Lashes', 'luxury beauty'],
-  authors: [{ name: 'Viktoria Lashes Official' }],
-  creator: 'Viktoria Lashes',
+  keywords: ['prodlužování řas Praha', 'řasové studio', 'mega volume', 'lash lifting', 'Viktória Lashes', 'luxury beauty'],
+  authors: [{ name: 'Viktória Lashes Official' }],
+  creator: 'Viktória Lashes',
   openGraph: {
-    title: 'Viktoria Lashes — Luxusní Řasové Studio Praha',
+    title: 'Viktória Lashes — Luxusní Řasové Studio Praha',
     description: 'Prémiové prodlužování řas. Rezervujte online.',
     url: 'https://viktoralashes.cz',
-    siteName: 'Viktoria Lashes',
+    siteName: 'Viktória Lashes',
     locale: 'cs_CZ',
     type: 'website',
   },
@@ -58,6 +59,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           {children}
           <Toaster />
+          <ViktoriaChatbot />
         </Providers>
       </body>
     </html>
