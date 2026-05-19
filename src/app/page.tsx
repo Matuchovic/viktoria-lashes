@@ -8,11 +8,11 @@ import { ServicesSection } from '@/components/sections/ServicesSection'
 import { TestimonialsSection } from '@/components/sections/TestimonialsSection'
 import { ArtistsSection } from '@/components/sections/ArtistsSection'
 import { ContactSection } from '@/components/sections/ContactSection'
+import { HomePageClient } from '@/components/layout/HomePageClient'
 import { prisma } from '@/lib/prisma'
 
 export default async function HomePage() {
-  // Fetch real data from DB, fall back to static if DB not ready
-  let services: any[] = []
+  let services = []
   try {
     services = await prisma.service.findMany({
       where: { isActive: true },
@@ -20,19 +20,5 @@ export default async function HomePage() {
     })
   } catch {}
 
-  return (
-    <>
-      <CustomCursor />
-      <Navbar />
-      <main className="page-enter">
-        <HeroSection />
-        <StatsBanner />
-        <ServicesSection services={services.length ? services : undefined} />
-        <TestimonialsSection />
-        <ArtistsSection />
-        <ContactSection />
-      </main>
-      <Footer />
-    </>
-  )
+  return <HomePageClient services={services} />
 }

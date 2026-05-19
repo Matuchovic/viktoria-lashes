@@ -2,6 +2,7 @@
 // src/app/dashboard/page.tsx
 import { useEffect, useState } from 'react'
 import { useSession, signOut } from 'next-auth/react'
+import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
@@ -30,9 +31,13 @@ export default function DashboardPage() {
   const router = useRouter()
   const [bookings, setBookings] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [showLoader, setShowLoader] = useState(true)
 
   useEffect(() => {
     if (status === 'unauthenticated') router.push('/login')
+    // Show luxury loading screen for 2.5s
+    const t = setTimeout(() => setShowLoader(false), 2500)
+    return () => clearTimeout(t)
   }, [status, router])
 
   useEffect(() => {
@@ -49,14 +54,15 @@ export default function DashboardPage() {
 
   if (status === 'loading' || loading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-text-dim font-light tracking-[4px] uppercase text-sm">Načítám...</div>
-      </div>
+      <>
+        <LoadingScreen show={true} />
+      </>
     )
   }
 
   return (
     <>
+      <LoadingScreen show={showLoader} />
       <CustomCursor />
       <Navbar />
       <main className="min-h-screen bg-black pt-28 pb-20 px-8 md:px-16 page-enter">

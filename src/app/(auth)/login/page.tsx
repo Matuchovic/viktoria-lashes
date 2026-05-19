@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useToast } from '@/components/ui/Toaster'
 import { CustomCursor } from '@/components/ui/CustomCursor'
+import { LoadingScreen } from '@/components/ui/LoadingScreen'
 
 interface Particle { id:number; x:number; y:number; size:number; color:string; delay:number; dur:number }
 
@@ -14,6 +15,7 @@ export default function LoginPage() {
   const { toast } = useToast()
   const [form, setForm] = useState({ email:'', password:'' })
   const [loading, setLoading] = useState(false)
+  const [showLoader, setShowLoader] = useState(false)
   const [particles, setParticles] = useState<Particle[]>([])
 
   useEffect(() => {
@@ -29,13 +31,19 @@ export default function LoginPage() {
     e.preventDefault(); setLoading(true)
     try {
       const result = await signIn('credentials', { email:form.email, password:form.password, redirect:false })
-      if (result?.error) toast('Nesprávný e-mail nebo heslo.','error')
-      else { toast('Vítejte zpět! ✨','success'); router.push('/dashboard') }
-    } finally { setLoading(false) }
+      if (result?.error) {
+        toast('Nesprávný e-mail nebo heslo.','error')
+        setLoading(false)
+      } else {
+        setShowLoader(true)
+        setTimeout(() => router.push('/dashboard'), 3000)
+      }
+    } catch { setLoading(false) }
   }
 
   return (
     <>
+      <LoadingScreen show={showLoader} />
       <CustomCursor />
       <div className="min-h-screen relative flex items-center justify-center px-8 overflow-hidden"
         style={{background:'radial-gradient(ellipse 80% 80% at 50% 50%,rgba(196,105,138,0.12) 0%,transparent 70%),#080608'}}>
