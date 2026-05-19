@@ -106,7 +106,7 @@ export function HeroSection() {
         >
           {/* Label */}
           <motion.div variants={ITEM_VARIANTS} className="section-label">
-            Praha · Studio luxusní kosmetiky
+            Mladá Boleslav &amp; okolí · Přijedu k Vám domů
           </motion.div>
 
           {/* Title */}
@@ -115,8 +115,8 @@ export function HeroSection() {
             className="font-serif font-light leading-none"
             style={{ fontSize: 'clamp(64px, 11vw, 130px)', letterSpacing: '-2px' }}
           >
-            Dokonalost<br />
-            <em className="text-pink-soft not-italic">každým pohledem</em>
+            Viktoria<br />
+            <em className="text-pink-soft not-italic">Lashes</em>
           </motion.h1>
 
           {/* Sub */}
@@ -125,8 +125,8 @@ export function HeroSection() {
             className="text-text-muted font-light leading-relaxed max-w-lg"
             style={{ fontSize: 16, letterSpacing: 0.5 }}
           >
-            Prémiové prodlužování řas na míru. Kde věda setkává umění —
-            výsledky, které promění váš pohled v nezapomenutelný zážitek.
+            Prémiové prodlužování řas přímo u Vás doma. Nemusíte nikam chodit —
+            přijedu za Vámi a vytvoříme společně dokonalý výsledek z pohodlí domova.
           </motion.p>
 
           {/* CTA */}
@@ -145,9 +145,9 @@ export function HeroSection() {
             className="flex items-center gap-8 pt-4"
           >
             {[
-              { num: '1200+', label: 'klientek' },
-              { num: '8 let',  label: 'zkušeností' },
-              { num: '98%',    label: 'doporučení' },
+              { num: '🏠', label: 'Přijedu k vám' },
+              { num: '✦',  label: 'Mladá Boleslav' },
+              { num: '💕', label: 'Z pohodlí domova' },
             ].map(b => (
               <div key={b.label} className="flex items-center gap-3">
                 <div className="w-px h-8 bg-glass-border" />
