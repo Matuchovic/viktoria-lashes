@@ -59,6 +59,7 @@ export function Navbar() {
 
         {/* Desktop CTA */}
         <div className="hidden lg:flex items-center gap-4">
+          <Link href="/vernostni-program" className="nav-link">Lash Body ✦</Link>
           {session ? (
             <div className="flex items-center gap-4">
               {(session.user as any)?.role === 'ADMIN' && (
@@ -73,7 +74,6 @@ export function Navbar() {
                   textDecoration:'none',
                 }}>✦ Admin</Link>
               )}
-              <Link href="/vernostni-program" className="nav-link">Lash Body ✦</Link>
               <Link href="/dashboard" className="nav-link">Moje rezervace</Link>
               <button onClick={() => signOut()} className="btn-ghost py-3 px-6 text-[10px]">
                 Odhlásit
