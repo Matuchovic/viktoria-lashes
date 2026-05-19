@@ -112,13 +112,10 @@ async function main() {
     },
   ]
 
-  for (const svc of services) {
-    await prisma.service.upsert({
-      where: { name: svc.name },
-      update: svc,
-      create: svc,
-    })
-  }
+  await prisma.service.createMany({
+    data: services,
+    skipDuplicates: true,
+  })
 
   // Artists
   const artists = [
@@ -151,13 +148,10 @@ async function main() {
     },
   ]
 
-  for (const artist of artists) {
-    await prisma.artist.upsert({
-      where: { name: artist.name },
-      update: artist,
-      create: artist,
-    })
-  }
+  await prisma.artist.createMany({
+    data: artists,
+    skipDuplicates: true,
+  })
 
   // Testimonials
   const testimonials = [
