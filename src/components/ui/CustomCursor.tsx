@@ -68,7 +68,7 @@ export function CustomCursor() {
     <>
       {/* Trail particles */}
       {trails.map(t => (
-        <div key={t.id} className="fixed pointer-events-none z-[9996]"
+        <div key={t.id} className="fixed pointer-events-none z-[99996]"
           style={{ left: t.x, top: t.y, transform: 'translate(-50%,-50%)',
             width: t.size, height: t.size, borderRadius: '50%',
             background: t.color, boxShadow: `0 0 ${t.size*3}px ${t.color}`,
@@ -78,7 +78,7 @@ export function CustomCursor() {
       ))}
 
       {/* VL cursor */}
-      <div ref={cursorRef} className="fixed pointer-events-none z-[9999]"
+      <div ref={cursorRef} className="fixed pointer-events-none z-[99999]"
         style={{ transform: 'translate(-50%,-50%)', transition: 'width 0.3s, height 0.3s' }}>
         {/* Glow behind */}
         <div style={{
@@ -123,7 +123,7 @@ export function CustomCursor() {
       </div>
 
       {/* Trailing ring */}
-      <div ref={ringRef} className="fixed pointer-events-none z-[9998] rounded-full"
+      <div ref={ringRef} className="fixed pointer-events-none z-[99998] rounded-full"
         style={{
           width: hover ? 52 : 38, height: hover ? 52 : 38,
           border: `1px solid ${hover ? 'rgba(212,170,112,0.5)' : 'rgba(255,107,168,0.4)'}`,
