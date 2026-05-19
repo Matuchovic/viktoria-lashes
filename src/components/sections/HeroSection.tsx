@@ -265,7 +265,7 @@ export function HeroSection() {
             <h1 className="font-serif font-light leading-none" style={{fontSize:'clamp(64px,11vw,130px)',letterSpacing:'-2px'}}>
               {/* VIKTORIA — letter by letter */}
               <div className="overflow-hidden">
-                {'Viktoria'.split('').map((ch,i)=>(
+                {'Viktória'.split('').map((ch,i)=>(
                   <motion.span key={i}
                     initial={{y:'100%',opacity:0}}
                     animate={{y:0,opacity:1}}

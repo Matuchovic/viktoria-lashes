@@ -5,10 +5,10 @@ import { motion, useInView } from 'framer-motion'
 
 const TESTIMONIALS = [
   { id:'1', authorName:'Karolína Nováková',   initials:'KN', textCs:'Absolutně neuvěřitelná zkušenost! Viktoria je opravdová profesionálka — výsledek předčil moje největší očekávání. Řasy vypadají tak přirozeně, že každý myslí, že jsem se s nimi narodila.', rating:5, source:'Google',    date:'před 3 dny' },
-  { id:'2', authorName:'Michaela Procházková',initials:'MP', textCs:'Studio je naprosto nádherné a celá atmosféra je luxusní. Viktoria je zlatíčko — pečlivě vysvětlila každý krok a výsledek je naprosto dokonalý. Mega volume byly snem!',                     rating:5, source:'Instagram', date:'před týdnem' },
+  { id:'2', authorName:'Michaela Procházková',initials:'MP', textCs:'Studio je naprosto nádherné a celá atmosféra je luxusní. Viktória je zlatíčko — pečlivě vysvětlila každý krok a výsledek je naprosto dokonalý. Mega volume byly snem!',                     rating:5, source:'Instagram', date:'před týdnem' },
   { id:'3', authorName:'Tereza Horáková',     initials:'TH', textCs:'Přišla jsem pro objemové řasy a odešla s pocitem absolutní luxusnosti. Wet look efekt je prostě fantastický — dostávám komplimenty každý den. Nejvíce doporučované studio v Praze!',          rating:5, source:'Recenze',   date:'před 2 týdny' },
   { id:'4', authorName:'Lucie Kopecká',       initials:'LK', textCs:'Online rezervace je tak snadná a pohodlná. Na místě pak čistota a profesionalita na nejvyšší úrovni. Moje řasy vydrží déle než kdekoli jinde. Vracím se každé tři týdny!',                    rating:5, source:'Facebook',  date:'před měsícem' },
-  { id:'5', authorName:'Simona Blahová',      initials:'SB', textCs:'Lash lifting byl fantastická volba — moje vlastní řasy nikdy nevypadaly tak krásně! Přirozené, trvají 6 týdnů a ráno se prostě probudím krásná. Viktoria je génius!',                        rating:5, source:'Google',    date:'před měsícem' },
+  { id:'5', authorName:'Simona Blahová',      initials:'SB', textCs:'Lash lifting byl fantastická volba — moje vlastní řasy nikdy nevypadaly tak krásně! Přirozené, trvají 6 týdnů a ráno se prostě probudím krásná. Viktória je génius!',                        rating:5, source:'Google',    date:'před měsícem' },
 ]
 
 function TestimonialCard({ t }: { t: typeof TESTIMONIALS[0] }) {

@@ -9,7 +9,7 @@ export function Footer() {
           {/* Brand */}
           <div className="lg:col-span-2">
             <div className="font-serif text-2xl font-light tracking-[6px] uppercase mb-5">
-              Viktoria <span className="text-pink-neon">Lashes</span>
+              Viktória <span className="text-pink-neon">Lashes</span>
             </div>
             <p className="text-text-muted text-sm font-light leading-relaxed max-w-xs mb-8">
               Luxusní studio pro prodlužování řas v srdci Prahy. Kde krása setkává umění —
@@ -64,7 +64,7 @@ export function Footer() {
         <div className="glow-line mb-8" />
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-text-dim text-xs font-light tracking-wider">
-          <span>© {new Date().getFullYear()} Viktoria Lashes Official. Všechna práva vyhrazena.</span>
+          <span>© {new Date().getFullYear()} Viktória Lashes Official. Všechna práva vyhrazena.</span>
           <span>Pařížská 18, Praha 1 · info@viktoralashes.cz · +420 777 888 999</span>
         </div>
       </div>

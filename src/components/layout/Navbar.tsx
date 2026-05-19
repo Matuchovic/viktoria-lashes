@@ -45,7 +45,7 @@ export function Navbar() {
       >
         {/* Logo */}
         <Link href="/" className="font-serif font-light text-xl tracking-[6px] uppercase text-text-primary hover:text-text-primary transition-colors">
-          Viktoria <span className="text-pink-neon">Lashes</span>
+          Viktória <span className="text-pink-neon">Lashes</span>
         </Link>
 
         {/* Desktop links */}
@@ -111,7 +111,7 @@ export function Navbar() {
             className="fixed inset-0 z-40 bg-black/98 backdrop-blur-2xl flex flex-col items-center justify-center gap-8 lg:hidden"
           >
             <div className="font-serif text-4xl font-light tracking-[6px] uppercase mb-8">
-              Viktoria <span className="text-pink-neon">Lashes</span>
+              Viktória <span className="text-pink-neon">Lashes</span>
             </div>
             {links.map((l, i) => (
               <motion.div
