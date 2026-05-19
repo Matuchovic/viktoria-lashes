@@ -12,7 +12,7 @@ import { prisma } from '@/lib/prisma'
 
 export default async function HomePage() {
   // Fetch real data from DB, fall back to static if DB not ready
-  let services = []
+  let services: any[] = []
   try {
     services = await prisma.service.findMany({
       where: { isActive: true },
