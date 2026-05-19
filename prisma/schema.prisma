@@ -20,6 +20,8 @@ model User {
   phone         String?
   role          Role      @default(CUSTOMER)
   loyaltyPoints Int       @default(0)
+  birthDate     DateTime?
+  pointsHistory LashPointsHistory[]
   bookings      Booking[]
   accounts      Account[]
   sessions      Session[]
@@ -27,6 +29,17 @@ model User {
   updatedAt     DateTime  @updatedAt
 
   @@map("users")
+}
+
+model LashPointsHistory {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  points    Int
+  reason    String
+  createdAt DateTime @default(now())
+
+  @@map("lash_points_history")
 }
 
 model Account {
