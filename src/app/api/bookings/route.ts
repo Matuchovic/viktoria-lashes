@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
     }
 
     const session = await getServerSession(authOptions)
-    const depositKc = Math.round(service.priceKc * (service.depositPct / 100))
+    const depositKc = Math.round(service.priceKc * ((service as any).depositPct ?? 30) / 100)
 
     const booking = await prisma.booking.create({
       data: {
