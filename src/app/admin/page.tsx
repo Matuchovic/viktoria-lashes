@@ -16,21 +16,18 @@ const STATUS_CFG: Record<string, { label:string; color:string; bg:string; border
 }
 
 const TABS = [
-  { id:'overview',  label:'Přehled',    icon:'◈' },
-  { id:'bookings',  label:'Rezervace',  icon:'📅' },
-  { id:'customers', label:'Klientky',   icon:'💕' },
-  { id:'services',  label:'Služby',     icon:'✦' },
+  { id:'overview',  label:'Přehled',   icon:'◈' },
+  { id:'bookings',  label:'Rezervace', icon:'📅' },
+  { id:'customers', label:'Klientky',  icon:'💕' },
+  { id:'services',  label:'Služby',    icon:'✦' },
 ]
 
-function GCard({ children, style, glow }: any) {
+const MONTHS = ['ledna','února','března','dubna','května','června','července','srpna','září','října','listopadu','prosince']
+const MONTHS_SHORT = ['led','úno','bře','dub','kvě','čer','čvc','srp','zář','říj','lis','pro']
+
+function GCard({ children, style }: any) {
   return (
-    <div style={{
-      background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,107,168,0.12)',
-      borderRadius:16, position:'relative', overflow:'hidden',
-      boxShadow: glow ? `0 0 40px ${glow}` : 'none',
-      backdropFilter:'blur(10px)',
-      ...style,
-    }}>
+    <div style={{ background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,107,168,0.12)', borderRadius:16, position:'relative', overflow:'hidden', backdropFilter:'blur(10px)', ...style }}>
       <div style={{ position:'absolute', top:0, left:0, right:0, height:1, background:'linear-gradient(90deg,transparent,rgba(255,107,168,0.4),rgba(212,170,112,0.2),transparent)' }}/>
       {children}
     </div>
@@ -41,9 +38,7 @@ function StatCard({ label, value, sub, color, icon, delay }: any) {
   return (
     <motion.div initial={{ opacity:0, y:20, scale:0.96 }} animate={{ opacity:1, y:0, scale:1 }}
       transition={{ delay, duration:0.5, ease:[0.16,1,0.3,1] }}
-      style={{ background:'rgba(255,255,255,0.04)', border:`1px solid ${color}25`, borderRadius:16,
-        padding:'24px 20px', position:'relative', overflow:'hidden',
-        boxShadow:`0 0 30px ${color}12, inset 0 1px 0 rgba(255,255,255,0.05)` }}>
+      style={{ background:'rgba(255,255,255,0.04)', border:`1px solid ${color}25`, borderRadius:16, padding:'24px 20px', position:'relative', overflow:'hidden', boxShadow:`0 0 30px ${color}12` }}>
       <div style={{ position:'absolute', top:0, left:0, right:0, height:1, background:`linear-gradient(90deg,transparent,${color}60,transparent)` }}/>
       <div style={{ position:'absolute', top:14, right:16, fontSize:26, opacity:0.12 }}>{icon}</div>
       <div style={{ fontFamily:'Georgia,serif', fontSize:11, letterSpacing:3, color:'rgba(245,238,242,0.3)', textTransform:'uppercase', marginBottom:10 }}>{label}</div>
@@ -53,14 +48,115 @@ function StatCard({ label, value, sub, color, icon, delay }: any) {
   )
 }
 
+// Booking detail modal
+function BookingModal({ booking, onClose, onStatusChange }: { booking:any; onClose:()=>void; onStatusChange:(id:string,status:string)=>void }) {
+  const cfg = STATUS_CFG[booking.status] ?? STATUS_CFG.PENDING
+  const date = new Date(booking.date)
+
+  return (
+    <motion.div
+      initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
+      style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.85)', zIndex:10000, display:'flex', alignItems:'center', justifyContent:'center', padding:24, backdropFilter:'blur(8px)' }}
+      onClick={e => e.target === e.currentTarget && onClose()}
+    >
+      <motion.div
+        initial={{ opacity:0, scale:0.9, y:30 }} animate={{ opacity:1, scale:1, y:0 }} exit={{ opacity:0, scale:0.95, y:10 }}
+        transition={{ duration:0.35, ease:[0.16,1,0.3,1] }}
+        style={{ background:'#0d0508', border:'1px solid rgba(255,107,168,0.35)', borderRadius:20, width:'100%', maxWidth:560, position:'relative', overflow:'hidden', boxShadow:'0 0 60px rgba(255,107,168,0.2), 0 20px 60px rgba(0,0,0,0.8)' }}
+      >
+        {/* Top accent */}
+        <div style={{ position:'absolute', top:0, left:0, right:0, height:2, background:'linear-gradient(90deg,transparent,#FF6BA8,#D4AA70,transparent)' }}/>
+
+        {/* Header */}
+        <div style={{ padding:'24px 28px 20px', borderBottom:'1px solid rgba(255,255,255,0.06)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+          <div>
+            <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:4, color:'#FF6BA8', textTransform:'uppercase', marginBottom:6, textShadow:'0 0 10px rgba(255,107,168,0.6)' }}>✦ Detail rezervace</div>
+            <div style={{ fontFamily:'Georgia,serif', fontSize:20, fontWeight:300, color:'rgba(245,238,242,0.9)' }}>
+              {booking.customerName}
+            </div>
+          </div>
+          <button onClick={onClose} style={{ background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:8, width:36, height:36, color:'rgba(245,238,242,0.4)', fontSize:18, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>×</button>
+        </div>
+
+        <div style={{ padding:'24px 28px' }}>
+          {/* Service + date highlight */}
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:20 }}>
+            <div style={{ background:`${cfg.color}10`, border:`1px solid ${cfg.color}30`, borderRadius:14, padding:'16px 18px' }}>
+              <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:3, color:'rgba(245,238,242,0.3)', textTransform:'uppercase', marginBottom:6 }}>Služba</div>
+              <div style={{ fontFamily:'Georgia,serif', fontSize:14, color:'rgba(245,238,242,0.85)' }}>{booking.service?.nameCs ?? 'Neznámá'}</div>
+              <div style={{ fontFamily:'Georgia,serif', fontSize:24, color:'#FF6BA8', marginTop:8, textShadow:'0 0 15px rgba(255,107,168,0.4)' }}>{formatPrice(booking.totalKc)}</div>
+            </div>
+            <div style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:14, padding:'16px 18px' }}>
+              <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:3, color:'rgba(245,238,242,0.3)', textTransform:'uppercase', marginBottom:6 }}>Termín</div>
+              <div style={{ fontFamily:'Georgia,serif', fontSize:28, color:'rgba(245,238,242,0.85)', lineHeight:1 }}>{date.getDate()}.</div>
+              <div style={{ fontFamily:'Georgia,serif', fontSize:13, color:'rgba(245,238,242,0.5)', marginTop:2 }}>{MONTHS[date.getMonth()]} {date.getFullYear()}</div>
+              <div style={{ fontFamily:'Georgia,serif', fontSize:18, color:'#D4AA70', marginTop:4 }}>{booking.time}</div>
+            </div>
+          </div>
+
+          {/* Details grid */}
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:20 }}>
+            {[
+              { label:'Č. rezervace', value:`#${booking.bookingRef?.slice(-8).toUpperCase()}` },
+              { label:'Stylistka', value:booking.artist?.name ?? 'Viktória Ladiková' },
+              { label:'E-mail', value:booking.customerEmail },
+              { label:'Telefon', value:booking.customerPhone },
+              { label:'Záloha', value:formatPrice(booking.depositKc ?? 0) },
+              { label:'Vytvořeno', value:new Date(booking.createdAt ?? Date.now()).toLocaleDateString('cs-CZ') },
+            ].map(item => (
+              <div key={item.label} style={{ background:'rgba(255,255,255,0.03)', borderRadius:10, padding:'12px 14px', border:'1px solid rgba(255,255,255,0.05)' }}>
+                <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:2, color:'rgba(245,238,242,0.25)', textTransform:'uppercase', marginBottom:4 }}>{item.label}</div>
+                <div style={{ fontFamily:'Georgia,serif', fontSize:13, color:'rgba(245,238,242,0.75)' }}>{item.value}</div>
+              </div>
+            ))}
+          </div>
+
+          {booking.notes && (
+            <div style={{ background:'rgba(255,255,255,0.03)', borderRadius:10, padding:'12px 14px', border:'1px solid rgba(255,255,255,0.05)', marginBottom:20 }}>
+              <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:2, color:'rgba(245,238,242,0.25)', textTransform:'uppercase', marginBottom:4 }}>Poznámka</div>
+              <div style={{ fontFamily:'Georgia,serif', fontSize:13, color:'rgba(245,238,242,0.7)' }}>{booking.notes}</div>
+            </div>
+          )}
+
+          {/* Current status */}
+          <div style={{ marginBottom:16 }}>
+            <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:3, color:'rgba(245,238,242,0.25)', textTransform:'uppercase', marginBottom:8 }}>Aktuální status</div>
+            <span style={{ padding:'6px 14px', borderRadius:20, fontSize:11, fontFamily:'Georgia,serif', background:cfg.bg, color:cfg.color, border:`1px solid ${cfg.border}`, letterSpacing:1 }}>
+              {cfg.label}
+            </span>
+          </div>
+
+          {/* Action buttons */}
+          <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:3, color:'rgba(245,238,242,0.25)', textTransform:'uppercase', marginBottom:10 }}>Změnit status</div>
+          <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
+            {Object.entries(STATUS_CFG).map(([key, s]) => (
+              <button key={key}
+                onClick={() => { onStatusChange(booking.id, key); onClose() }}
+                style={{
+                  padding:'8px 16px', borderRadius:20, border:`1px solid ${s.border}`,
+                  background: booking.status===key ? s.bg : 'transparent',
+                  color: s.color, fontFamily:'Georgia,serif', fontSize:11, letterSpacing:1,
+                  fontWeight: booking.status===key ? 600 : 300,
+                  boxShadow: booking.status===key ? `0 0 12px ${s.color}40` : 'none',
+                  transition:'all 0.2s',
+                }}>
+                {booking.status===key && '✓ '}{s.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  )
+}
+
 export default function AdminDashboard() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const [tab, setTab] = useState('overview')
   const [bookings, setBookings] = useState<any[]>([])
-  const [customers, setCustomers] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [editingBooking, setEditingBooking] = useState<string|null>(null)
+  const [selectedBooking, setSelectedBooking] = useState<any>(null)
   const [filterStatus, setFilterStatus] = useState('ALL')
   const [search, setSearch] = useState('')
 
@@ -71,13 +167,10 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (status !== 'authenticated') return
-    Promise.all([
-      fetch('/api/bookings').then(r => r.json()),
-      fetch('/api/admin/stats').then(r => r.json()).catch(() => ({})),
-    ]).then(([bData]) => {
-      setBookings(Array.isArray(bData) ? bData : [])
-      setLoading(false)
-    }).catch(() => setLoading(false))
+    fetch('/api/bookings')
+      .then(r => r.json())
+      .then(data => { setBookings(Array.isArray(data) ? data : []); setLoading(false) })
+      .catch(() => setLoading(false))
   }, [status])
 
   const updateStatus = async (id: string, newStatus: string) => {
@@ -85,7 +178,6 @@ export default function AdminDashboard() {
       await fetch(`/api/bookings/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ status:newStatus }) })
       setBookings(b => b.map(x => x.id===id ? {...x, status:newStatus} : x))
     } catch {}
-    setEditingBooking(null)
   }
 
   if (status === 'loading' || loading) {
@@ -99,7 +191,6 @@ export default function AdminDashboard() {
     )
   }
 
-  // Stats
   const today = new Date(); today.setHours(0,0,0,0)
   const thisMonth = new Date(today.getFullYear(), today.getMonth(), 1)
   const lastMonth = new Date(today.getFullYear(), today.getMonth()-1, 1)
@@ -111,8 +202,9 @@ export default function AdminDashboard() {
   const revenueThisMonth = thisMonthB.filter(b=>b.status!=='CANCELLED').reduce((s,b)=>s+(b.totalKc||0),0)
   const revenueLastMonth = lastMonthB.filter(b=>b.status!=='CANCELLED').reduce((s,b)=>s+(b.totalKc||0),0)
   const uniqueEmails = [...new Set(bookings.map(b=>b.customerEmail))]
-  const confirmed = bookings.filter(b=>b.status==='CONFIRMED').length
   const pending = bookings.filter(b=>b.status==='PENDING').length
+  const confirmed = bookings.filter(b=>b.status==='CONFIRMED').length
+  const revenueGrowth = revenueLastMonth > 0 ? Math.round(((revenueThisMonth-revenueLastMonth)/revenueLastMonth)*100) : 0
 
   const filteredBookings = bookings.filter(b => {
     const matchStatus = filterStatus==='ALL' || b.status===filterStatus
@@ -120,15 +212,61 @@ export default function AdminDashboard() {
     return matchStatus && matchSearch
   })
 
-  const revenueGrowth = revenueLastMonth > 0 ? Math.round(((revenueThisMonth-revenueLastMonth)/revenueLastMonth)*100) : 0
+  const ROW_STYLE = { borderBottom:'1px solid rgba(255,255,255,0.03)', transition:'background 0.15s' }
+
+  const BookingRow = ({ b, i }: { b:any; i:number }) => {
+    const cfg = STATUS_CFG[b.status] ?? STATUS_CFG.PENDING
+    const isPast = new Date(b.date) < today
+    return (
+      <motion.tr key={b.id} initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:i*0.03 }}
+        style={{ ...ROW_STYLE, opacity:isPast?0.7:1 }}
+        onMouseEnter={e=>(e.currentTarget.style.background='rgba(255,107,168,0.04)')}
+        onMouseLeave={e=>(e.currentTarget.style.background='transparent')}>
+        <td style={{ padding:'14px 18px' }}>
+          <div style={{ fontFamily:'Georgia,serif', fontSize:13, color:'rgba(245,238,242,0.85)', marginBottom:2 }}>{b.customerName}</div>
+          <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:2, color:'rgba(245,238,242,0.25)', textTransform:'uppercase' }}>#{b.bookingRef?.slice(-6).toUpperCase()}</div>
+        </td>
+        <td style={{ padding:'14px 18px' }}>
+          <div style={{ fontFamily:'Georgia,serif', fontSize:11, color:'rgba(245,238,242,0.5)' }}>{b.customerEmail}</div>
+          <div style={{ fontFamily:'Georgia,serif', fontSize:11, color:'rgba(245,238,242,0.35)' }}>{b.customerPhone}</div>
+        </td>
+        <td style={{ padding:'14px 18px', fontFamily:'Georgia,serif', fontSize:12, color:'rgba(245,238,242,0.6)' }}>{b.service?.nameCs}</td>
+        <td style={{ padding:'14px 18px' }}>
+          <div style={{ fontFamily:'Georgia,serif', fontSize:12, color:'rgba(245,238,242,0.7)' }}>
+            {new Date(b.date).toLocaleDateString('cs-CZ',{day:'numeric',month:'short'})}
+          </div>
+          <div style={{ fontFamily:'Georgia,serif', fontSize:11, color:'rgba(245,238,242,0.35)' }}>{b.time}</div>
+        </td>
+        <td style={{ padding:'14px 18px' }}>
+          <span style={{ padding:'4px 10px', borderRadius:20, fontSize:10, fontFamily:'Georgia,serif', background:cfg.bg, color:cfg.color, border:`1px solid ${cfg.border}`, letterSpacing:1, whiteSpace:'nowrap' }}>
+            {cfg.label}
+          </span>
+        </td>
+        <td style={{ padding:'14px 18px', fontFamily:'Georgia,serif', fontSize:16, color:'#FF6BA8' }}>{formatPrice(b.totalKc)}</td>
+        <td style={{ padding:'14px 18px' }}>
+          <button onClick={() => setSelectedBooking(b)}
+            style={{ background:'rgba(255,107,168,0.1)', border:'1px solid rgba(255,107,168,0.35)', borderRadius:8, padding:'6px 14px', color:'#FF6BA8', fontFamily:'Georgia,serif', fontSize:10, letterSpacing:1, whiteSpace:'nowrap', transition:'all 0.2s' }}
+            onMouseEnter={e=>{ (e.target as HTMLButtonElement).style.background='rgba(255,107,168,0.2)' }}
+            onMouseLeave={e=>{ (e.target as HTMLButtonElement).style.background='rgba(255,107,168,0.1)' }}>
+            Detail →
+          </button>
+        </td>
+      </motion.tr>
+    )
+  }
 
   return (
     <>
       <CustomCursor />
+      <AnimatePresence>
+        {selectedBooking && (
+          <BookingModal booking={selectedBooking} onClose={() => setSelectedBooking(null)} onStatusChange={updateStatus}/>
+        )}
+      </AnimatePresence>
+
       <div style={{ minHeight:'100vh', background:'#080608', display:'flex' }}>
         {/* Sidebar */}
-        <div style={{ width:220, flexShrink:0, borderRight:'1px solid rgba(255,107,168,0.1)', display:'flex', flexDirection:'column', position:'sticky', top:0, height:'100vh', background:'rgba(255,255,255,0.02)', backdropFilter:'blur(10px)' }}>
-          {/* Logo */}
+        <div style={{ width:220, flexShrink:0, borderRight:'1px solid rgba(255,107,168,0.1)', display:'flex', flexDirection:'column', position:'sticky', top:0, height:'100vh', background:'rgba(255,255,255,0.02)' }}>
           <div style={{ padding:'28px 24px 20px', borderBottom:'1px solid rgba(255,107,168,0.1)' }}>
             <Link href="/" style={{ textDecoration:'none' }}>
               <div style={{ fontFamily:'Georgia,serif', fontSize:13, letterSpacing:4, textTransform:'uppercase', fontWeight:300 }}>
@@ -137,76 +275,56 @@ export default function AdminDashboard() {
               <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:3, color:'rgba(255,107,168,0.5)', textTransform:'uppercase', marginTop:4 }}>Admin Panel</div>
             </Link>
           </div>
-
-          {/* Nav */}
           <nav style={{ flex:1, padding:'16px 12px', display:'flex', flexDirection:'column', gap:4 }}>
             {TABS.map(t => (
               <button key={t.id} onClick={() => setTab(t.id)}
-                style={{
-                  display:'flex', alignItems:'center', gap:10, padding:'10px 14px',
-                  borderRadius:10, border:'none', cursor:'pointer', textAlign:'left',
-                  background: tab===t.id ? 'rgba(255,107,168,0.12)' : 'transparent',
-                  borderLeft: tab===t.id ? '2px solid #FF6BA8' : '2px solid transparent',
-                  fontFamily:'Georgia,serif', fontSize:12, letterSpacing:1,
-                  color: tab===t.id ? '#FF6BA8' : 'rgba(245,238,242,0.4)',
-                  transition:'all 0.2s',
-                }}>
+                style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 14px', borderRadius:10, border:'none', background:tab===t.id?'rgba(255,107,168,0.12)':'transparent', borderLeft:tab===t.id?'2px solid #FF6BA8':'2px solid transparent', fontFamily:'Georgia,serif', fontSize:12, letterSpacing:1, color:tab===t.id?'#FF6BA8':'rgba(245,238,242,0.4)', transition:'all 0.2s' }}>
                 <span style={{ fontSize:14 }}>{t.icon}</span>
                 {t.label}
-                {t.id==='bookings' && pending > 0 && (
+                {t.id==='bookings' && pending>0 && (
                   <span style={{ marginLeft:'auto', background:'#FF6BA8', color:'white', borderRadius:20, padding:'1px 7px', fontSize:9 }}>{pending}</span>
                 )}
               </button>
             ))}
           </nav>
-
-          {/* User + logout */}
           <div style={{ padding:'16px 20px', borderTop:'1px solid rgba(255,107,168,0.1)' }}>
             <div style={{ fontFamily:'Georgia,serif', fontSize:11, color:'rgba(245,238,242,0.5)', marginBottom:4 }}>{session?.user?.name}</div>
             <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:2, color:'#FF6BA8', textTransform:'uppercase', marginBottom:12 }}>Admin</div>
             <button onClick={() => signOut({ callbackUrl:'/' })}
-              style={{ background:'none', border:'1px solid rgba(255,255,255,0.08)', borderRadius:8, padding:'7px 14px', color:'rgba(245,238,242,0.35)', fontFamily:'Georgia,serif', fontSize:10, cursor:'pointer', width:'100%', letterSpacing:1 }}>
+              style={{ background:'none', border:'1px solid rgba(255,255,255,0.08)', borderRadius:8, padding:'7px 14px', color:'rgba(245,238,242,0.35)', fontFamily:'Georgia,serif', fontSize:10, width:'100%', letterSpacing:1 }}>
               Odhlásit
             </button>
           </div>
         </div>
 
-        {/* Main content */}
-        <div style={{ flex:1, overflowY:'auto', padding:'32px 32px 60px' }}>
-          {/* Background */}
+        {/* Main */}
+        <div style={{ flex:1, overflowY:'auto', padding:'32px 32px 60px', position:'relative' }}>
           <div style={{ position:'fixed', inset:0, pointerEvents:'none', background:'radial-gradient(ellipse 50% 40% at 60% 20%,rgba(196,105,138,0.07) 0%,transparent 70%)' }}/>
 
           <AnimatePresence mode="wait">
-
-            {/* ═══ OVERVIEW ═══ */}
-            {tab === 'overview' && (
-              <motion.div key="ov" initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0 }}>
+            {/* OVERVIEW */}
+            {tab==='overview' && (
+              <motion.div key="ov" initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} exit={{opacity:0}}>
                 <div style={{ marginBottom:28 }}>
-                  <div style={{ fontFamily:'Georgia,serif', fontSize:10, letterSpacing:5, color:'#FF6BA8', textTransform:'uppercase', marginBottom:8, textShadow:'0 0 12px rgba(255,107,168,0.5)' }}>✦ Dashboard</div>
+                  <div style={{ fontFamily:'Georgia,serif', fontSize:10, letterSpacing:5, color:'#FF6BA8', textTransform:'uppercase', marginBottom:8 }}>✦ Dashboard</div>
                   <h1 style={{ fontFamily:'Georgia,serif', fontWeight:300, fontSize:36, margin:0 }}>Přehled studia</h1>
                 </div>
-
-                {/* Stats grid */}
                 <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12, marginBottom:24 }}>
-                  <StatCard label="Tržby tento měsíc" value={formatPrice(revenueThisMonth)} sub={revenueGrowth>=0?`+${revenueGrowth}% vs minulý`:`${revenueGrowth}% vs minulý`} color="#FF6BA8" icon="💰" delay={0.05}/>
+                  <StatCard label="Tržby tento měsíc" value={formatPrice(revenueThisMonth)} sub={`${revenueGrowth>=0?'+':''}${revenueGrowth}% vs minulý`} color="#FF6BA8" icon="💰" delay={0.05}/>
                   <StatCard label="Nadcházející" value={upcoming.length} sub="rezervací" color="#D4AA70" icon="📅" delay={0.1}/>
-                  <StatCard label="Klientek celkem" value={uniqueEmails.length} sub="unikátních emailů" color="#E8A4BE" icon="💕" delay={0.15}/>
-                  <StatCard label="Čeká na potvrzení" value={pending} sub="nových rezervací" color="#f87171" icon="⏳" delay={0.2}/>
+                  <StatCard label="Klientek" value={uniqueEmails.length} color="#E8A4BE" icon="💕" delay={0.15}/>
+                  <StatCard label="Čeká na potvrzení" value={pending} color="#f87171" icon="⏳" delay={0.2}/>
                 </div>
-
-                {/* Second row */}
                 <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:12, marginBottom:24 }}>
                   <StatCard label="Potvrzeno" value={confirmed} color="#4ade80" icon="✓" delay={0.25}/>
                   <StatCard label="Tržby min. měsíc" value={formatPrice(revenueLastMonth)} color="#D4AA70" icon="◈" delay={0.3}/>
                   <StatCard label="Celkem rezervací" value={bookings.length} color="#FF6BA8" icon="✦" delay={0.35}/>
                 </div>
-
-                {/* Upcoming bookings table */}
-                <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.4 }}>
+                <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.4}}>
                   <GCard>
                     <div style={{ padding:'18px 24px', borderBottom:'1px solid rgba(255,255,255,0.05)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
                       <h2 style={{ fontFamily:'Georgia,serif', fontWeight:300, fontSize:18, margin:0 }}>Nadcházející rezervace</h2>
-                      <button onClick={() => setTab('bookings')} style={{ background:'none', border:'1px solid rgba(255,107,168,0.3)', padding:'6px 14px', borderRadius:8, color:'#FF6BA8', fontFamily:'Georgia,serif', fontSize:10, letterSpacing:2, cursor:'pointer', textTransform:'uppercase' }}>
+                      <button onClick={()=>setTab('bookings')} style={{ background:'none', border:'1px solid rgba(255,107,168,0.3)', padding:'6px 14px', borderRadius:8, color:'#FF6BA8', fontFamily:'Georgia,serif', fontSize:10, letterSpacing:2, textTransform:'uppercase' }}>
                         Zobrazit vše →
                       </button>
                     </div>
@@ -214,8 +332,8 @@ export default function AdminDashboard() {
                       <table style={{ width:'100%', borderCollapse:'collapse' }}>
                         <thead>
                           <tr style={{ borderBottom:'1px solid rgba(255,255,255,0.05)' }}>
-                            {['Klientka','Služba','Datum','Čas','Status','Cena'].map(h=>(
-                              <th key={h} style={{ padding:'12px 20px', textAlign:'left', fontFamily:'Georgia,serif', fontSize:9, letterSpacing:3, color:'rgba(245,238,242,0.25)', textTransform:'uppercase', fontWeight:300 }}>{h}</th>
+                            {['Klientka','Služba','Datum','Čas','Status','Cena',''].map(h=>(
+                              <th key={h} style={{ padding:'12px 18px', textAlign:'left', fontFamily:'Georgia,serif', fontSize:9, letterSpacing:3, color:'rgba(245,238,242,0.25)', textTransform:'uppercase', fontWeight:300 }}>{h}</th>
                             ))}
                           </tr>
                         </thead>
@@ -223,32 +341,31 @@ export default function AdminDashboard() {
                           {upcoming.slice(0,8).map((b,i) => {
                             const cfg = STATUS_CFG[b.status] ?? STATUS_CFG.PENDING
                             return (
-                              <motion.tr key={b.id} initial={{ opacity:0, x:-10 }} animate={{ opacity:1, x:0 }}
-                                transition={{ delay:0.5+i*0.04 }}
-                                style={{ borderBottom:'1px solid rgba(255,255,255,0.03)', cursor:'pointer', transition:'background 0.2s' }}
+                              <motion.tr key={b.id} initial={{opacity:0,x:-10}} animate={{opacity:1,x:0}} transition={{delay:0.5+i*0.04}}
+                                style={ROW_STYLE}
                                 onMouseEnter={e=>(e.currentTarget.style.background='rgba(255,107,168,0.03)')}
                                 onMouseLeave={e=>(e.currentTarget.style.background='transparent')}>
-                                <td style={{ padding:'14px 20px' }}>
+                                <td style={{ padding:'14px 18px' }}>
                                   <div style={{ fontFamily:'Georgia,serif', fontSize:13, color:'rgba(245,238,242,0.85)' }}>{b.customerName}</div>
                                   <div style={{ fontFamily:'Georgia,serif', fontSize:11, color:'rgba(245,238,242,0.3)' }}>{b.customerEmail}</div>
                                 </td>
-                                <td style={{ padding:'14px 20px', fontFamily:'Georgia,serif', fontSize:12, color:'rgba(245,238,242,0.6)' }}>{b.service?.nameCs}</td>
-                                <td style={{ padding:'14px 20px', fontFamily:'Georgia,serif', fontSize:12, color:'rgba(245,238,242,0.6)' }}>
-                                  {new Date(b.date).toLocaleDateString('cs-CZ',{day:'numeric',month:'short'})}
+                                <td style={{ padding:'14px 18px', fontFamily:'Georgia,serif', fontSize:12, color:'rgba(245,238,242,0.6)' }}>{b.service?.nameCs}</td>
+                                <td style={{ padding:'14px 18px', fontFamily:'Georgia,serif', fontSize:12, color:'rgba(245,238,242,0.6)' }}>{new Date(b.date).toLocaleDateString('cs-CZ',{day:'numeric',month:'short'})}</td>
+                                <td style={{ padding:'14px 18px', fontFamily:'Georgia,serif', fontSize:12, color:'rgba(245,238,242,0.6)' }}>{b.time}</td>
+                                <td style={{ padding:'14px 18px' }}>
+                                  <span style={{ padding:'3px 10px', borderRadius:20, fontSize:10, fontFamily:'Georgia,serif', background:cfg.bg, color:cfg.color, border:`1px solid ${cfg.border}`, letterSpacing:1 }}>{cfg.label}</span>
                                 </td>
-                                <td style={{ padding:'14px 20px', fontFamily:'Georgia,serif', fontSize:12, color:'rgba(245,238,242,0.6)' }}>{b.time}</td>
-                                <td style={{ padding:'14px 20px' }}>
-                                  <span style={{ padding:'3px 10px', borderRadius:20, fontSize:10, fontFamily:'Georgia,serif', background:cfg.bg, color:cfg.color, border:`1px solid ${cfg.border}`, letterSpacing:1 }}>
-                                    {cfg.label}
-                                  </span>
+                                <td style={{ padding:'14px 18px', fontFamily:'Georgia,serif', fontSize:16, color:'#FF6BA8' }}>{formatPrice(b.totalKc)}</td>
+                                <td style={{ padding:'14px 18px' }}>
+                                  <button onClick={()=>setSelectedBooking(b)}
+                                    style={{ background:'rgba(255,107,168,0.1)', border:'1px solid rgba(255,107,168,0.3)', borderRadius:8, padding:'5px 12px', color:'#FF6BA8', fontFamily:'Georgia,serif', fontSize:10, letterSpacing:1 }}>
+                                    Detail →
+                                  </button>
                                 </td>
-                                <td style={{ padding:'14px 20px', fontFamily:'Georgia,serif', fontSize:16, color:'#FF6BA8', textShadow:'0 0 10px rgba(255,107,168,0.4)' }}>{formatPrice(b.totalKc)}</td>
                               </motion.tr>
                             )
                           })}
-                          {upcoming.length === 0 && (
-                            <tr><td colSpan={6} style={{ padding:'48px', textAlign:'center', fontFamily:'Georgia,serif', fontSize:13, color:'rgba(245,238,242,0.2)' }}>Žádné nadcházející rezervace</td></tr>
-                          )}
+                          {upcoming.length===0 && <tr><td colSpan={7} style={{ padding:'48px', textAlign:'center', fontFamily:'Georgia,serif', fontSize:13, color:'rgba(245,238,242,0.2)' }}>Žádné nadcházející rezervace</td></tr>}
                         </tbody>
                       </table>
                     </div>
@@ -257,20 +374,19 @@ export default function AdminDashboard() {
               </motion.div>
             )}
 
-            {/* ═══ BOOKINGS ═══ */}
-            {tab === 'bookings' && (
-              <motion.div key="bk" initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0 }}>
+            {/* BOOKINGS */}
+            {tab==='bookings' && (
+              <motion.div key="bk" initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} exit={{opacity:0}}>
                 <div style={{ marginBottom:24, display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:12 }}>
                   <div>
                     <div style={{ fontFamily:'Georgia,serif', fontSize:10, letterSpacing:5, color:'#FF6BA8', textTransform:'uppercase', marginBottom:6 }}>✦ Správa</div>
                     <h1 style={{ fontFamily:'Georgia,serif', fontWeight:300, fontSize:32, margin:0 }}>Všechny rezervace</h1>
                   </div>
-                  {/* Filters */}
                   <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-                    <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Hledat..."
-                      style={{ background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,107,168,0.2)', borderRadius:10, padding:'8px 14px', color:'rgba(245,238,242,0.8)', fontFamily:'Georgia,serif', fontSize:12, outline:'none', width:180 }}/>
+                    <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Hledat klientku..."
+                      style={{ background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,107,168,0.2)', borderRadius:10, padding:'8px 14px', color:'rgba(245,238,242,0.8)', fontFamily:'Georgia,serif', fontSize:12, outline:'none', width:200 }}/>
                     <select value={filterStatus} onChange={e=>setFilterStatus(e.target.value)}
-                      style={{ background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,107,168,0.2)', borderRadius:10, padding:'8px 14px', color:'rgba(245,238,242,0.8)', fontFamily:'Georgia,serif', fontSize:12, outline:'none', cursor:'pointer' }}>
+                      style={{ background:'#0d0508', border:'1px solid rgba(255,107,168,0.2)', borderRadius:10, padding:'8px 14px', color:'rgba(245,238,242,0.8)', fontFamily:'Georgia,serif', fontSize:12, outline:'none' }}>
                       <option value="ALL">Vše ({bookings.length})</option>
                       {Object.entries(STATUS_CFG).map(([k,v])=>(
                         <option key={k} value={k}>{v.label} ({bookings.filter(b=>b.status===k).length})</option>
@@ -278,7 +394,6 @@ export default function AdminDashboard() {
                     </select>
                   </div>
                 </div>
-
                 <GCard>
                   <div style={{ overflowX:'auto' }}>
                     <table style={{ width:'100%', borderCollapse:'collapse' }}>
@@ -290,60 +405,8 @@ export default function AdminDashboard() {
                         </tr>
                       </thead>
                       <tbody>
-                        {filteredBookings.map((b,i) => {
-                          const cfg = STATUS_CFG[b.status] ?? STATUS_CFG.PENDING
-                          const isPast = new Date(b.date) < today
-                          return (
-                            <motion.tr key={b.id} initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:i*0.03 }}
-                              style={{ borderBottom:'1px solid rgba(255,255,255,0.03)', opacity:isPast?0.65:1, transition:'background 0.2s' }}
-                              onMouseEnter={e=>(e.currentTarget.style.background='rgba(255,107,168,0.02)')}
-                              onMouseLeave={e=>(e.currentTarget.style.background='transparent')}>
-                              <td style={{ padding:'14px 18px' }}>
-                                <div style={{ fontFamily:'Georgia,serif', fontSize:13, color:'rgba(245,238,242,0.85)', marginBottom:2 }}>{b.customerName}</div>
-                                <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:2, color:'rgba(245,238,242,0.25)', textTransform:'uppercase' }}>#{b.bookingRef?.slice(-6).toUpperCase()}</div>
-                              </td>
-                              <td style={{ padding:'14px 18px' }}>
-                                <div style={{ fontFamily:'Georgia,serif', fontSize:11, color:'rgba(245,238,242,0.5)' }}>{b.customerEmail}</div>
-                                <div style={{ fontFamily:'Georgia,serif', fontSize:11, color:'rgba(245,238,242,0.4)' }}>{b.customerPhone}</div>
-                              </td>
-                              <td style={{ padding:'14px 18px', fontFamily:'Georgia,serif', fontSize:12, color:'rgba(245,238,242,0.6)' }}>{b.service?.nameCs}</td>
-                              <td style={{ padding:'14px 18px' }}>
-                                <div style={{ fontFamily:'Georgia,serif', fontSize:12, color:'rgba(245,238,242,0.7)' }}>
-                                  {new Date(b.date).toLocaleDateString('cs-CZ',{day:'numeric',month:'short',year:'numeric'})}
-                                </div>
-                                <div style={{ fontFamily:'Georgia,serif', fontSize:11, color:'rgba(245,238,242,0.4)' }}>{b.time}</div>
-                              </td>
-                              <td style={{ padding:'14px 18px' }}>
-                                {editingBooking === b.id ? (
-                                  <select autoFocus defaultValue={b.status}
-                                    onChange={e=>updateStatus(b.id, e.target.value)}
-                                    onBlur={()=>setEditingBooking(null)}
-                                    style={{ background:'#0d0508', border:`1px solid ${cfg.color}`, borderRadius:8, padding:'4px 8px', color:cfg.color, fontFamily:'Georgia,serif', fontSize:11, cursor:'pointer', outline:'none' }}>
-                                    {Object.entries(STATUS_CFG).map(([k,v])=>(
-                                      <option key={k} value={k}>{v.label}</option>
-                                    ))}
-                                  </select>
-                                ) : (
-                                  <span onClick={()=>setEditingBooking(b.id)}
-                                    title="Klikni pro změnu"
-                                    style={{ padding:'4px 10px', borderRadius:20, fontSize:10, fontFamily:'Georgia,serif', background:cfg.bg, color:cfg.color, border:`1px solid ${cfg.border}`, cursor:'pointer', letterSpacing:1, transition:'all 0.2s', display:'inline-block' }}>
-                                    {cfg.label}
-                                  </span>
-                                )}
-                              </td>
-                              <td style={{ padding:'14px 18px', fontFamily:'Georgia,serif', fontSize:16, color:'#FF6BA8' }}>{formatPrice(b.totalKc)}</td>
-                              <td style={{ padding:'14px 18px' }}>
-                                <button onClick={()=>setEditingBooking(b.id)}
-                                  style={{ background:'rgba(255,107,168,0.1)', border:'1px solid rgba(255,107,168,0.3)', borderRadius:8, padding:'5px 12px', color:'#FF6BA8', fontFamily:'Georgia,serif', fontSize:10, cursor:'pointer', letterSpacing:1 }}>
-                                  Editovat
-                                </button>
-                              </td>
-                            </motion.tr>
-                          )
-                        })}
-                        {filteredBookings.length === 0 && (
-                          <tr><td colSpan={7} style={{ padding:'48px', textAlign:'center', fontFamily:'Georgia,serif', fontSize:13, color:'rgba(245,238,242,0.2)' }}>Žádné výsledky</td></tr>
-                        )}
+                        {filteredBookings.map((b,i) => <BookingRow key={b.id} b={b} i={i}/>)}
+                        {filteredBookings.length===0 && <tr><td colSpan={7} style={{ padding:'48px', textAlign:'center', fontFamily:'Georgia,serif', fontSize:13, color:'rgba(245,238,242,0.2)' }}>Žádné výsledky</td></tr>}
                       </tbody>
                     </table>
                   </div>
@@ -351,93 +414,89 @@ export default function AdminDashboard() {
               </motion.div>
             )}
 
-            {/* ═══ CUSTOMERS ═══ */}
-            {tab === 'customers' && (
-              <motion.div key="cu" initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0 }}>
+            {/* CUSTOMERS */}
+            {tab==='customers' && (
+              <motion.div key="cu" initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} exit={{opacity:0}}>
                 <div style={{ marginBottom:24 }}>
                   <div style={{ fontFamily:'Georgia,serif', fontSize:10, letterSpacing:5, color:'#FF6BA8', textTransform:'uppercase', marginBottom:6 }}>✦ CRM</div>
                   <h1 style={{ fontFamily:'Georgia,serif', fontWeight:300, fontSize:32, margin:0 }}>Databáze klientek</h1>
                 </div>
-
-                {/* Customer cards */}
                 <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))', gap:12 }}>
-                  {uniqueEmails.map((email, i) => {
-                    const cBookings = bookings.filter(b=>b.customerEmail===email)
-                    const total = cBookings.reduce((s,b)=>s+(b.totalKc||0),0)
-                    const last = cBookings.sort((a,b)=>new Date(b.date).getTime()-new Date(a.date).getTime())[0]
+                  {uniqueEmails.map((email,i) => {
+                    const cb = bookings.filter(b=>b.customerEmail===email)
+                    const total = cb.reduce((s,b)=>s+(b.totalKc||0),0)
+                    const last = cb.sort((a,b)=>new Date(b.date).getTime()-new Date(a.date).getTime())[0]
                     return (
-                      <motion.div key={email} initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ delay:i*0.05 }}
+                      <motion.div key={email as string} initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:i*0.05}}
                         style={{ background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,107,168,0.12)', borderRadius:14, padding:'20px', position:'relative', overflow:'hidden' }}>
                         <div style={{ position:'absolute', top:0, left:0, right:0, height:1, background:'linear-gradient(90deg,transparent,rgba(255,107,168,0.3),transparent)' }}/>
-                        {/* Avatar */}
                         <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:14 }}>
                           <div style={{ width:44, height:44, borderRadius:'50%', background:'linear-gradient(135deg,#C4698A,#FF6BA8)', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'Georgia,serif', fontSize:18, color:'white', flexShrink:0 }}>
                             {last?.customerName?.[0]?.toUpperCase() ?? '?'}
                           </div>
                           <div>
                             <div style={{ fontFamily:'Georgia,serif', fontSize:14, color:'rgba(245,238,242,0.85)' }}>{last?.customerName ?? 'Neznámá'}</div>
-                            <div style={{ fontFamily:'Georgia,serif', fontSize:11, color:'rgba(245,238,242,0.35)' }}>{email}</div>
+                            <div style={{ fontFamily:'Georgia,serif', fontSize:11, color:'rgba(245,238,242,0.35)' }}>{email as string}</div>
                           </div>
                         </div>
-                        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
+                        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginBottom:10 }}>
                           <div style={{ background:'rgba(255,255,255,0.03)', borderRadius:10, padding:'10px 12px' }}>
                             <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:2, color:'rgba(245,238,242,0.25)', textTransform:'uppercase', marginBottom:4 }}>Návštěvy</div>
-                            <div style={{ fontFamily:'Georgia,serif', fontSize:22, color:'#FF6BA8' }}>{cBookings.length}</div>
+                            <div style={{ fontFamily:'Georgia,serif', fontSize:22, color:'#FF6BA8' }}>{cb.length}</div>
                           </div>
                           <div style={{ background:'rgba(255,255,255,0.03)', borderRadius:10, padding:'10px 12px' }}>
                             <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:2, color:'rgba(245,238,242,0.25)', textTransform:'uppercase', marginBottom:4 }}>Celkem</div>
                             <div style={{ fontFamily:'Georgia,serif', fontSize:18, color:'#D4AA70' }}>{formatPrice(total)}</div>
                           </div>
                         </div>
-                        {last && (
-                          <div style={{ marginTop:10, fontFamily:'Georgia,serif', fontSize:11, color:'rgba(245,238,242,0.3)' }}>
-                            Poslední: {new Date(last.date).toLocaleDateString('cs-CZ',{day:'numeric',month:'long'})}
-                          </div>
-                        )}
+                        {last && <div style={{ fontFamily:'Georgia,serif', fontSize:11, color:'rgba(245,238,242,0.3)' }}>Poslední: {new Date(last.date).toLocaleDateString('cs-CZ',{day:'numeric',month:'long'})}</div>}
+                        <button onClick={()=>setSelectedBooking(last)}
+                          style={{ marginTop:12, width:'100%', background:'rgba(255,107,168,0.08)', border:'1px solid rgba(255,107,168,0.25)', borderRadius:8, padding:'7px', color:'#FF6BA8', fontFamily:'Georgia,serif', fontSize:10, letterSpacing:1 }}>
+                          Poslední rezervace →
+                        </button>
                       </motion.div>
                     )
                   })}
-                  {uniqueEmails.length === 0 && (
-                    <div style={{ gridColumn:'1/-1', textAlign:'center', padding:'60px', fontFamily:'Georgia,serif', fontSize:14, color:'rgba(245,238,242,0.2)' }}>Žádné klientky</div>
-                  )}
                 </div>
               </motion.div>
             )}
 
-            {/* ═══ SERVICES ═══ */}
-            {tab === 'services' && (
-              <motion.div key="sv" initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0 }}>
+            {/* SERVICES */}
+            {tab==='services' && (
+              <motion.div key="sv" initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} exit={{opacity:0}}>
                 <div style={{ marginBottom:24 }}>
                   <div style={{ fontFamily:'Georgia,serif', fontSize:10, letterSpacing:5, color:'#FF6BA8', textTransform:'uppercase', marginBottom:6 }}>✦ Ceník</div>
                   <h1 style={{ fontFamily:'Georgia,serif', fontWeight:300, fontSize:32, margin:0 }}>Správa služeb</h1>
                 </div>
                 <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))', gap:12 }}>
                   {[
-                    { name:'Klasické řasy (50D–60D)', price:499, duration:45, bookings:bookings.filter(b=>b.service?.nameCs?.includes('Klasické')).length },
-                    { name:'Objemové řasy (80D)', price:599, duration:60, bookings:bookings.filter(b=>b.service?.nameCs?.includes('Objemové')).length },
-                    { name:'Mega Volume (100D)', price:799, duration:60, bookings:bookings.filter(b=>b.service?.nameCs?.includes('Mega')).length },
-                    { name:'Wet Look (60D)', price:999, duration:60, bookings:bookings.filter(b=>b.service?.nameCs?.includes('Wet')).length },
-                    { name:'Doplnění řas', price:199, duration:20, bookings:bookings.filter(b=>b.service?.nameCs?.includes('Doplnění')).length },
-                    { name:'Odstranění řas', price:99, duration:25, bookings:bookings.filter(b=>b.service?.nameCs?.includes('Odstranění')).length },
-                  ].map((s,i) => (
-                    <motion.div key={s.name} initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ delay:i*0.06 }}
-                      style={{ background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,107,168,0.12)', borderRadius:14, padding:'24px', position:'relative', overflow:'hidden' }}>
-                      <div style={{ position:'absolute', top:0, left:0, right:0, height:1, background:'linear-gradient(90deg,transparent,rgba(255,107,168,0.4),transparent)' }}/>
-                      <div style={{ fontFamily:'Georgia,serif', fontSize:15, color:'rgba(245,238,242,0.85)', marginBottom:6 }}>{s.name}</div>
-                      <div style={{ fontFamily:'Georgia,serif', fontSize:32, color:'#FF6BA8', textShadow:'0 0 15px rgba(255,107,168,0.4)', marginBottom:4 }}>{formatPrice(s.price)}</div>
-                      <div style={{ display:'flex', gap:16, fontFamily:'Georgia,serif', fontSize:11, color:'rgba(245,238,242,0.35)', marginBottom:12 }}>
-                        <span>⏱ {s.duration} min</span>
-                        <span>📊 {s.bookings}× objednáno</span>
-                      </div>
-                      <div style={{ background:'rgba(255,107,168,0.06)', borderRadius:8, padding:'8px 14px', fontFamily:'Georgia,serif', fontSize:11, color:'rgba(245,238,242,0.4)' }}>
-                        Záloha: {formatPrice(Math.round(s.price*0.3))}
-                      </div>
-                    </motion.div>
-                  ))}
+                    {name:'Klasické řasy (50D–60D)',price:499,duration:45,key:'Klasické'},
+                    {name:'Objemové řasy (80D)',price:599,duration:60,key:'Objemové'},
+                    {name:'Mega Volume (100D)',price:799,duration:60,key:'Mega'},
+                    {name:'Wet Look (60D)',price:999,duration:60,key:'Wet'},
+                    {name:'Doplnění řas',price:199,duration:20,key:'Doplnění'},
+                    {name:'Odstranění řas',price:99,duration:25,key:'Odstranění'},
+                  ].map((s,i) => {
+                    const count = bookings.filter(b=>b.service?.nameCs?.includes(s.key)).length
+                    return (
+                      <motion.div key={s.name} initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:i*0.06}}
+                        style={{ background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,107,168,0.12)', borderRadius:14, padding:'24px', position:'relative', overflow:'hidden' }}>
+                        <div style={{ position:'absolute', top:0, left:0, right:0, height:1, background:'linear-gradient(90deg,transparent,rgba(255,107,168,0.4),transparent)' }}/>
+                        <div style={{ fontFamily:'Georgia,serif', fontSize:15, color:'rgba(245,238,242,0.85)', marginBottom:6 }}>{s.name}</div>
+                        <div style={{ fontFamily:'Georgia,serif', fontSize:32, color:'#FF6BA8', textShadow:'0 0 15px rgba(255,107,168,0.4)', marginBottom:4 }}>{formatPrice(s.price)}</div>
+                        <div style={{ display:'flex', gap:16, fontFamily:'Georgia,serif', fontSize:11, color:'rgba(245,238,242,0.35)', marginBottom:12 }}>
+                          <span>⏱ {s.duration} min</span>
+                          <span>📊 {count}× objednáno</span>
+                        </div>
+                        <div style={{ background:'rgba(255,107,168,0.06)', borderRadius:8, padding:'8px 14px', fontFamily:'Georgia,serif', fontSize:11, color:'rgba(245,238,242,0.4)' }}>
+                          Záloha: {formatPrice(Math.round(s.price*0.3))}
+                        </div>
+                      </motion.div>
+                    )
+                  })}
                 </div>
               </motion.div>
             )}
-
           </AnimatePresence>
         </div>
       </div>

@@ -25,6 +25,7 @@
     @apply border-glass-border;
     scrollbar-width: thin;
     scrollbar-color: rgba(255,107,168,0.3) transparent;
+    cursor: none !important;
   }
 
   *::-webkit-scrollbar { width: 4px; }
