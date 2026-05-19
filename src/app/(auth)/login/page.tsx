@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useToast } from '@/components/ui/Toaster'
 import { CustomCursor } from '@/components/ui/CustomCursor'
-import { LoadingScreen } from '@/components/ui/LoadingScreen'
+import { LoginSuccessScreen } from '@/components/ui/LoginSuccessScreen'
 
 interface Particle { id:number; x:number; y:number; size:number; color:string; delay:number; dur:number }
 
@@ -43,7 +43,7 @@ export default function LoginPage() {
 
   return (
     <>
-      <LoadingScreen show={showLoader} />
+      <LoginSuccessScreen show={showLoader} />
       <CustomCursor />
       <div className="min-h-screen relative flex items-center justify-center px-8 overflow-hidden"
         style={{background:'radial-gradient(ellipse 80% 80% at 50% 50%,rgba(196,105,138,0.12) 0%,transparent 70%),#080608'}}>
