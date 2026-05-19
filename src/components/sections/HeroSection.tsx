@@ -183,7 +183,7 @@ export function HeroSection() {
             <Link href="#sluzby" className="btn-ghost">Naše služby</Link>
           </motion.div>
 
-          <motion.div variants={ITEM_VARIANTS} className="flex items-center gap-8 pt-4">
+          <motion.div variants={ITEM_VARIANTS} className="flex items-center gap-8 pt-2">
             {[{icon:'🏠',label:'Přijedu k vám'},{icon:'✦',label:'Mladá Boleslav'},{icon:'💕',label:'Z pohodlí domova'}].map(b=>(
               <div key={b.label} className="flex items-center gap-3">
                 <div className="w-px h-8 bg-glass-border"/>
@@ -193,6 +193,54 @@ export function HeroSection() {
                 </div>
               </div>
             ))}
+          </motion.div>
+
+          {/* Lash Body teaser */}
+          <motion.div variants={ITEM_VARIANTS}>
+            <Link href="/vernostni-program" style={{textDecoration:'none',display:'inline-block'}}>
+              <motion.div
+                whileHover={{scale:1.02, boxShadow:'0 0 50px rgba(212,170,112,0.3), 0 0 80px rgba(255,107,168,0.15)'}}
+                whileTap={{scale:0.98}}
+                style={{
+                  display:'inline-flex', alignItems:'center', gap:16,
+                  background:'linear-gradient(135deg,rgba(212,170,112,0.08),rgba(255,107,168,0.06))',
+                  border:'1px solid rgba(212,170,112,0.3)',
+                  borderRadius:16, padding:'14px 22px',
+                  position:'relative', overflow:'hidden',
+                  boxShadow:'0 0 30px rgba(212,170,112,0.1)',
+                  cursor:'none',
+                }}
+              >
+                <motion.div
+                  animate={{x:['-100%','200%']}}
+                  transition={{duration:2.5, repeat:Infinity, ease:'easeInOut', repeatDelay:1}}
+                  style={{position:'absolute',top:0,left:0,height:1,
+                    background:'linear-gradient(90deg,transparent,#D4AA70,#FF6BA8,transparent)',
+                    width:'60%'}}
+                />
+                <motion.div
+                  animate={{rotate:[0,10,-10,0], scale:[1,1.15,1]}}
+                  transition={{duration:2, repeat:Infinity, repeatDelay:2}}
+                  style={{fontSize:22, flexShrink:0}}>
+                  👑
+                </motion.div>
+                <div>
+                  <div style={{fontFamily:'Georgia,serif', fontSize:9, letterSpacing:4, textTransform:'uppercase',
+                    color:'#D4AA70', marginBottom:4, textShadow:'0 0 10px rgba(212,170,112,0.5)'}}>
+                    ✦ Věrnostní program
+                  </div>
+                  <div style={{fontFamily:'Georgia,serif', fontSize:14, fontWeight:300, color:'rgba(245,238,242,0.85)', lineHeight:1.3}}>
+                    Sbírejte <span style={{color:'#D4AA70', textShadow:'0 0 12px rgba(212,170,112,0.5)'}}>Lash Body</span> a získejte exkluzivní odměny
+                  </div>
+                </div>
+                <motion.div
+                  animate={{x:[0,5,0]}}
+                  transition={{duration:1.5, repeat:Infinity, ease:'easeInOut'}}
+                  style={{fontFamily:'Georgia,serif', fontSize:16, color:'rgba(212,170,112,0.7)', flexShrink:0}}>
+                  →
+                </motion.div>
+              </motion.div>
+            </Link>
           </motion.div>
         </motion.div>
       </motion.div>
