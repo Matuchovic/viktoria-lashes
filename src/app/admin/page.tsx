@@ -56,7 +56,7 @@ function BookingModal({ booking, onClose, onStatusChange }: { booking:any; onClo
   return (
     <motion.div
       initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
-      style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.85)', zIndex:10000, display:'flex', alignItems:'center', justifyContent:'center', padding:24, backdropFilter:'blur(8px)' }}
+      style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.85)', zIndex:10000, display:'flex', alignItems:'center', justifyContent:'center', padding:24, backdropFilter:'blur(8px)', cursor:'none' }}
       onClick={e => e.target === e.currentTarget && onClose()}
     >
       <motion.div
