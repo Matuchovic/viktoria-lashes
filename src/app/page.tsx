@@ -12,7 +12,7 @@ import { HomePageClient } from '@/components/layout/HomePageClient'
 import { prisma } from '@/lib/prisma'
 
 export default async function HomePage() {
-  let services = []
+  let services: any[] = []
   try {
     services = await prisma.service.findMany({
       where: { isActive: true },
