@@ -10,6 +10,7 @@ import { ServicesSection } from '@/components/sections/ServicesSection'
 import { TestimonialsSection } from '@/components/sections/TestimonialsSection'
 import { ArtistsSection } from '@/components/sections/ArtistsSection'
 import { ContactSection } from '@/components/sections/ContactSection'
+import { ViktoriaChatbot } from '@/components/ui/ViktoriaChatbot'
 
 export function HomePageClient({ services }: { services: any[] }) {
   const [showLoader, setShowLoader] = useState(true)
@@ -33,6 +34,7 @@ export function HomePageClient({ services }: { services: any[] }) {
         <ContactSection />
       </main>
       <Footer />
+      <ViktoriaChatbot />
     </>
   )
 }
