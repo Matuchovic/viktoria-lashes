@@ -11,20 +11,16 @@ import { formatPrice, generateTimeSlots, BOOKING_STATUS_LABELS } from '@/lib/uti
 import { cn } from '@/lib/utils'
 
 const SERVICES = [
-  { id:'s1', nameCs:'Klasické řasy',   priceKc:1490, durationMin:105, category:'CLASSIC'     },
-  { id:'s2', nameCs:'Objemové řasy',   priceKc:1890, durationMin:135, category:'VOLUME'      },
-  { id:'s3', nameCs:'Mega Volume',     priceKc:2490, durationMin:165, category:'MEGA_VOLUME' },
-  { id:'s4', nameCs:'Wet Look',        priceKc:2190, durationMin:135, category:'WET_LOOK'    },
-  { id:'s5', nameCs:'Hybridní řasy',   priceKc:1690, durationMin:125, category:'HYBRID'      },
-  { id:'s6', nameCs:'Doplnění řas',    priceKc:890,  durationMin:75,  category:'INFILL'      },
-  { id:'s7', nameCs:'Lash Lifting',    priceKc:990,  durationMin:70,  category:'LIFTING'     },
-  { id:'s8', nameCs:'Odstranění řas',  priceKc:390,  durationMin:25,  category:'REMOVAL'     },
+  { id:'s1', nameCs:'Klasické řasy (50D–60D)',  priceKc:499,  durationMin:45,  category:'CLASSIC'     },
+  { id:'s2', nameCs:'Objemové řasy (80D)',       priceKc:599,  durationMin:60,  category:'VOLUME'      },
+  { id:'s3', nameCs:'Mega Volume (100D)',        priceKc:799,  durationMin:60,  category:'MEGA_VOLUME' },
+  { id:'s4', nameCs:'Wet Look (60D)',            priceKc:999,  durationMin:60,  category:'WET_LOOK'    },
+  { id:'s5', nameCs:'Doplnění řas',             priceKc:199,  durationMin:20,  category:'INFILL'      },
+  { id:'s6', nameCs:'Odstranění řas',           priceKc:99,   durationMin:25,  category:'REMOVAL'     },
 ]
 
 const ARTISTS = [
-  { id:'a1', name:'Viktoria Semenova',  titleCs:'Master Stylistka',        initial:'V' },
-  { id:'a2', name:'Aneta Dvořáčková',   titleCs:'Senior Lash Stylistka',   initial:'A' },
-  { id:'a3', name:'Kristýna Malá',      titleCs:'Lash & Brow Specialistka',initial:'K' },
+  { id:'a1', name:'Viktória Ladiková', titleCs:'Zakladatelka · Mladá Boleslav & okolí', initial:'V' },
 ]
 
 const STEPS = ['Služba', 'Stylistka', 'Termín', 'Kontakt', 'Shrnutí']
