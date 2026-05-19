@@ -1,165 +1,146 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 
-interface Burst { id: number; x: number; y: number }
+interface Trail { id: number; x: number; y: number; size: number; color: string; opacity: number }
 
 export function CustomCursor() {
-  const svgRef  = useRef<SVGSVGElement>(null)
-  const ringRef = useRef<HTMLDivElement>(null)
+  const cursorRef = useRef<HTMLDivElement>(null)
+  const ringRef   = useRef<HTMLDivElement>(null)
   const cx = useRef(0); const cy = useRef(0)
   const rx = useRef(0); const ry = useRef(0)
-  const [bursts, setBursts] = useState<Burst[]>([])
-  const [hover, setHover]   = useState(false)
+  const [trails, setTrails]   = useState<Trail[]>([])
+  const [hover, setHover]     = useState(false)
+  const trailId = useRef(0)
+  const lastPos = useRef({ x:0, y:0 })
 
   useEffect(() => {
     const move = (e: MouseEvent) => {
       cx.current = e.clientX; cy.current = e.clientY
-      if (svgRef.current) { svgRef.current.style.left = e.clientX+'px'; svgRef.current.style.top = e.clientY+'px' }
-    }
-    const click = (e: MouseEvent) => {
-      const id = Date.now()
-      setBursts(b => [...b, { id, x:e.clientX, y:e.clientY }])
-      setTimeout(() => setBursts(b => b.filter(x => x.id !== id)), 1400)
+      if (cursorRef.current) {
+        cursorRef.current.style.left = e.clientX + 'px'
+        cursorRef.current.style.top  = e.clientY + 'px'
+      }
+      // Generate trail particles on movement
+      const dx = e.clientX - lastPos.current.x
+      const dy = e.clientY - lastPos.current.y
+      const dist = Math.sqrt(dx*dx + dy*dy)
+      if (dist > 8) {
+        lastPos.current = { x: e.clientX, y: e.clientY }
+        const colors = ['#FF6BA8','#E8A4BE','#ffffff','#FF6BA8','#D4AA70']
+        const color = colors[Math.floor(Math.random() * colors.length)]
+        const id = trailId.current++
+        setTrails(t => [...t.slice(-18), {
+          id, x: e.clientX + (Math.random()-0.5)*12,
+          y: e.clientY + (Math.random()-0.5)*12,
+          size: 2 + Math.random() * 3,
+          color, opacity: 0.8 + Math.random() * 0.2,
+        }])
+        setTimeout(() => setTrails(t => t.filter(x => x.id !== id)), 600)
+      }
     }
     const on  = () => setHover(true)
     const off = () => setHover(false)
     let raf: number
     const tick = () => {
-      rx.current += (cx.current - rx.current) * 0.1
-      ry.current += (cy.current - ry.current) * 0.1
-      if (ringRef.current) { ringRef.current.style.left = rx.current+'px'; ringRef.current.style.top = ry.current+'px' }
+      rx.current += (cx.current - rx.current) * 0.12
+      ry.current += (cy.current - ry.current) * 0.12
+      if (ringRef.current) {
+        ringRef.current.style.left = rx.current + 'px'
+        ringRef.current.style.top  = ry.current + 'px'
+      }
       raf = requestAnimationFrame(tick)
     }
     tick()
     const obs = new MutationObserver(() => {
-      document.querySelectorAll('a,button,[data-cursor]').forEach(el => { el.addEventListener('mouseenter',on); el.addEventListener('mouseleave',off) })
+      document.querySelectorAll('a,button,[data-cursor]').forEach(el => {
+        el.addEventListener('mouseenter', on); el.addEventListener('mouseleave', off)
+      })
     })
     obs.observe(document.body, { childList:true, subtree:true })
-    document.querySelectorAll('a,button,[data-cursor]').forEach(el => { el.addEventListener('mouseenter',on); el.addEventListener('mouseleave',off) })
+    document.querySelectorAll('a,button,[data-cursor]').forEach(el => {
+      el.addEventListener('mouseenter', on); el.addEventListener('mouseleave', off)
+    })
     window.addEventListener('mousemove', move)
-    window.addEventListener('click', click)
-    return () => { window.removeEventListener('mousemove',move); window.removeEventListener('click',click); cancelAnimationFrame(raf); obs.disconnect() }
+    return () => { window.removeEventListener('mousemove', move); cancelAnimationFrame(raf); obs.disconnect() }
   }, [])
-
-  const pink = '#FF6BA8'; const gold = '#D4AA70'
-  const c = hover ? gold : pink
 
   return (
     <>
-      {/* Eye cursor SVG */}
-      <svg ref={svgRef} className="fixed pointer-events-none z-[9999]"
-        style={{ transform:'translate(-50%,-50%)', width:44, height:32, overflow:'visible' }}
-        viewBox="-22 -16 44 32">
-        <defs>
-          <radialGradient id="c-iris" cx="45%" cy="40%" r="50%">
-            <stop offset="0%" stopColor={hover?'#4a1a2e':'#2d0a1e'}/>
-            <stop offset="100%" stopColor="#080608"/>
-          </radialGradient>
-          <filter id="c-glow"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          <filter id="c-glow2"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-        </defs>
+      {/* Trail particles */}
+      {trails.map(t => (
+        <div key={t.id} className="fixed pointer-events-none z-[9996]"
+          style={{ left: t.x, top: t.y, transform: 'translate(-50%,-50%)',
+            width: t.size, height: t.size, borderRadius: '50%',
+            background: t.color, boxShadow: `0 0 ${t.size*3}px ${t.color}`,
+            animation: 'trail-fade 0.6s ease-out forwards',
+          }}
+        />
+      ))}
 
-        {/* Eye shape */}
-        <path d="M -18 0 Q 0 -10 18 0 Q 0 10 -18 0 Z" fill="#0a0208" stroke={c} strokeWidth="0.8" filter="url(#c-glow)" style={{transition:'stroke 0.3s'}}/>
+      {/* VL cursor */}
+      <div ref={cursorRef} className="fixed pointer-events-none z-[9999]"
+        style={{ transform: 'translate(-50%,-50%)', transition: 'width 0.3s, height 0.3s' }}>
+        {/* Glow behind */}
+        <div style={{
+          position:'absolute', inset:-8, borderRadius:'50%',
+          background: hover ? 'radial-gradient(circle,rgba(212,170,112,0.3) 0%,transparent 70%)' : 'radial-gradient(circle,rgba(255,107,168,0.25) 0%,transparent 70%)',
+          transition: 'background 0.3s',
+        }}/>
+        {/* VL text */}
+        <div style={{
+          position:'relative',
+          fontFamily:'Georgia,serif',
+          fontSize: hover ? 13 : 11,
+          fontWeight: 300,
+          letterSpacing: 2,
+          color: hover ? '#D4AA70' : '#FF6BA8',
+          textShadow: hover
+            ? '0 0 12px #D4AA70, 0 0 24px rgba(212,170,112,0.6)'
+            : '0 0 10px #FF6BA8, 0 0 20px rgba(255,107,168,0.5)',
+          userSelect:'none',
+          transition: 'all 0.3s',
+          lineHeight: 1,
+          padding: '3px 4px',
+          whiteSpace: 'nowrap',
+        }}>
+          VL
+          {/* Tiny lash above VL */}
+          <svg style={{ position:'absolute', top:-10, left:'50%', transform:'translateX(-50%)', overflow:'visible' }}
+            width="20" height="12" viewBox="0 0 20 12">
+            {[{x:4,y:10,ex:2,ey:0},{x:7,y:10,ex:6,ey:0},{x:10,y:10,ex:10,ey:-1},{x:13,y:10,ex:14,ey:0},{x:16,y:10,ex:18,ey:1}].map((l,i)=>(
+              <line key={i} x1={l.x} y1={l.y} x2={l.ex} y2={l.ey}
+                stroke={hover?'#D4AA70':'#FF6BA8'} strokeWidth={hover?1.2:1}
+                strokeLinecap="round"
+                style={{
+                  filter:`drop-shadow(0 0 3px ${hover?'#D4AA70':'#FF6BA8'})`,
+                  transition:'stroke 0.3s',
+                  animation:`lash-tip ${0.8+i*0.15}s ease-in-out infinite alternate`,
+                }}
+              />
+            ))}
+          </svg>
+        </div>
+      </div>
 
-        {/* Iris */}
-        <circle cx="0" cy="0" r="6.5" fill="url(#c-iris)" filter="url(#c-glow)"/>
-        <circle cx="0" cy="0" r="6.5" fill="none" stroke={c} strokeWidth="0.5" opacity="0.6"/>
-
-        {/* Pupil */}
-        <circle cx="0" cy="0" r="3" fill="#000"/>
-        <circle cx="-1.5" cy="-1.5" r="1" fill="white" opacity="0.25"/>
-
-        {/* Upper lashes */}
-        {[
-          {x:-12,y:-2,ex:-14,ey:-9,cx1:-13,cy1:-5,cx2:-14,cy2:-7},
-          {x:-7, y:-6,ex:-8, ey:-13,cx1:-7.5,cy1:-9,cx2:-8,cy2:-11},
-          {x:0,  y:-8,ex:0, ey:-15,cx1:0,cy1:-11,cx2:0,cy2:-13},
-          {x:7,  y:-6,ex:8, ey:-13,cx1:7.5,cy1:-9,cx2:8,cy2:-11},
-          {x:12, y:-2,ex:14,ey:-9, cx1:13,cy1:-5,cx2:14,cy2:-7},
-          {x:-4, y:-7,ex:-4,ey:-14,cx1:-4,cy1:-10,cx2:-4,cy2:-12},
-          {x:4,  y:-7,ex:4, ey:-14,cx1:4,cy1:-10,cx2:4,cy2:-12},
-        ].map((l,i)=>(
-          <path key={i} d={`M ${l.x} ${l.y} C ${l.cx1} ${l.cy1} ${l.cx2} ${l.cy2} ${l.ex} ${l.ey}`}
-            stroke={i%2===0?c:(hover?'#E8C98A':'#E8A4BE')}
-            strokeWidth={hover?1.4:1.1} strokeLinecap="round" fill="none"
-            filter="url(#c-glow)"
-            style={{
-              strokeDasharray:20, strokeDashoffset:0,
-              animation:`lash-wave ${1.5+i*0.2}s ease-in-out infinite alternate`,
-              animationDelay:`${i*0.1}s`,
-            }}
-          />
-        ))}
-
-        {/* Iris sparkle */}
-        <circle cx="-2" cy="-2" r="0.6" fill={c} style={{animation:'sparkle 1.8s ease-in-out infinite'}} filter="url(#c-glow2)"/>
-      </svg>
-
-      {/* Trailing glow ring */}
+      {/* Trailing ring */}
       <div ref={ringRef} className="fixed pointer-events-none z-[9998] rounded-full"
         style={{
-          width:hover?56:42, height:hover?56:42,
-          border:`1px solid ${hover?'rgba(212,170,112,0.4)':'rgba(255,107,168,0.3)'}`,
-          transform:'translate(-50%,-50%)',
-          boxShadow:`0 0 12px ${hover?'rgba(212,170,112,0.2)':'rgba(255,107,168,0.15)'}`,
-          transition:'width 0.3s,height 0.3s,border-color 0.3s',
+          width: hover ? 52 : 38, height: hover ? 52 : 38,
+          border: `1px solid ${hover ? 'rgba(212,170,112,0.5)' : 'rgba(255,107,168,0.4)'}`,
+          transform: 'translate(-50%,-50%)',
+          boxShadow: hover ? '0 0 15px rgba(212,170,112,0.2)' : '0 0 10px rgba(255,107,168,0.15)',
+          transition: 'width 0.3s,height 0.3s,border-color 0.3s',
         }}
       />
 
-      {/* Click bursts */}
-      {bursts.map(b=>(
-        <div key={b.id} className="fixed pointer-events-none z-[9997]"
-          style={{ left:b.x, top:b.y, transform:'translate(-50%,-50%)' }}>
-          <svg width="100" height="100" viewBox="-50 -50 100 100" className="absolute inset-0">
-            {Array.from({length:12},(_,i)=>{
-              const deg=(i/12)*360; const rad=deg*Math.PI/180
-              const ex=Math.cos(rad)*38; const ey=Math.sin(rad)*38
-              return <line key={i} x1={0} y1={0} x2={ex} y2={ey}
-                stroke={i%3===0?gold:pink} strokeWidth={1.2} strokeLinecap="round"
-                style={{strokeDasharray:38,strokeDashoffset:38,animation:`burst-line 0.7s ease-out forwards`,animationDelay:`${i*0.02}s`,filter:`drop-shadow(0 0 3px ${i%3===0?gold:pink})`}}
-              />
-            })}
-            {/* Eye sparkle rings */}
-            <circle cx="0" cy="0" r="0" fill="none" stroke={pink} strokeWidth="1"
-              style={{animation:'burst-ring 0.8s ease-out forwards'}}/>
-            <circle cx="0" cy="0" r="0" fill="none" stroke={gold} strokeWidth="0.7"
-              style={{animation:'burst-ring2 1s ease-out forwards',animationDelay:'0.1s'}}/>
-          </svg>
-          <div className="absolute font-serif font-light tracking-[4px] uppercase whitespace-nowrap"
-            style={{fontSize:10,color:pink,textShadow:`0 0 20px ${pink}`,top:'-36px',left:'50%',transform:'translateX(-50%)',animation:'burst-text 1.4s ease-out forwards'}}>
-            Viktória Lashes
-          </div>
-        </div>
-      ))}
-
       <style>{`
-        @keyframes lash-wave {
-          from { stroke-dashoffset: 2; }
-          to   { stroke-dashoffset: -2; }
+        @keyframes trail-fade {
+          0%   { opacity: var(--o, 0.9); transform: translate(-50%,-50%) scale(1); }
+          100% { opacity: 0; transform: translate(-50%,-50%) scale(0.1) translateY(-12px); }
         }
-        @keyframes sparkle {
-          0%,100% { opacity:0.3; transform:scale(0.8); }
-          50%      { opacity:1;   transform:scale(1.4); }
-        }
-        @keyframes burst-line {
-          0%   { stroke-dashoffset:38; opacity:1; }
-          80%  { stroke-dashoffset:0;  opacity:0.8; }
-          100% { stroke-dashoffset:-10; opacity:0; }
-        }
-        @keyframes burst-ring {
-          0%   { r:0;  opacity:1; }
-          100% { r:35; opacity:0; }
-        }
-        @keyframes burst-ring2 {
-          0%   { r:0;  opacity:0.7; }
-          100% { r:48; opacity:0; }
-        }
-        @keyframes burst-text {
-          0%   { opacity:0; transform:translateX(-50%) translateY(4px) scale(0.85); }
-          25%  { opacity:1; transform:translateX(-50%) translateY(-10px) scale(1); }
-          75%  { opacity:1; transform:translateX(-50%) translateY(-20px) scale(1); }
-          100% { opacity:0; transform:translateX(-50%) translateY(-34px) scale(0.92); }
+        @keyframes lash-tip {
+          from { transform: translateY(0px); }
+          to   { transform: translateY(-1.5px); }
         }
       `}</style>
     </>
