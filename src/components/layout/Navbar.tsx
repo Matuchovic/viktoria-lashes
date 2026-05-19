@@ -62,7 +62,16 @@ export function Navbar() {
           {session ? (
             <div className="flex items-center gap-4">
               {(session.user as any)?.role === 'ADMIN' && (
-                <Link href="/admin" className="nav-link">Admin</Link>
+                <Link href="/admin" style={{
+                  fontFamily:'Georgia,serif', fontSize:10, letterSpacing:3,
+                  textTransform:'uppercase', color:'#D4AA70',
+                  textShadow:'0 0 12px rgba(212,170,112,0.6)',
+                  border:'1px solid rgba(212,170,112,0.4)',
+                  padding:'6px 14px', borderRadius:8,
+                  background:'rgba(212,170,112,0.08)',
+                  transition:'all 0.2s',
+                  textDecoration:'none',
+                }}>✦ Admin</Link>
               )}
               <Link href="/dashboard" className="nav-link">Moje rezervace</Link>
               <button onClick={() => signOut()} className="btn-ghost py-3 px-6 text-[10px]">
