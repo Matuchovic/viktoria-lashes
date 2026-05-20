@@ -265,8 +265,8 @@ export default function AdminDashboard() {
       </AnimatePresence>
 
       <div style={{ minHeight:'100vh', background:'#080608', display:'flex' }}>
-        {/* Sidebar */}
-        <div style={{ width:220, flexShrink:0, borderRight:'1px solid rgba(255,107,168,0.1)', display:'flex', flexDirection:'column', position:'sticky', top:0, height:'100vh', background:'rgba(255,255,255,0.02)' }}>
+        {/* Sidebar — hidden on mobile, visible on desktop */}
+        <div style={{ width:220, flexShrink:0, borderRight:'1px solid rgba(255,107,168,0.1)', display:'flex', flexDirection:'column', position:'sticky', top:0, height:'100vh', background:'rgba(255,255,255,0.02)' }} className="hidden md:flex">
           <div style={{ padding:'28px 24px 20px', borderBottom:'1px solid rgba(255,107,168,0.1)' }}>
             <Link href="/" style={{ textDecoration:'none' }}>
               <div style={{ fontFamily:'Georgia,serif', fontSize:13, letterSpacing:4, textTransform:'uppercase', fontWeight:300 }}>
@@ -298,7 +298,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Main */}
-        <div style={{ flex:1, overflowY:'auto', padding:'32px 32px 60px', position:'relative' }}>
+        <div style={{ flex:1, overflowY:'auto', padding:'20px 16px 60px', position:'relative' }} className="md:p-8">
           <div style={{ position:'fixed', inset:0, pointerEvents:'none', background:'radial-gradient(ellipse 50% 40% at 60% 20%,rgba(196,105,138,0.07) 0%,transparent 70%)' }}/>
 
           <AnimatePresence mode="wait">
