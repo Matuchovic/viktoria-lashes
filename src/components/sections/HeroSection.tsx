@@ -28,16 +28,25 @@ export function HeroSection() {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-5 md:px-16 pt-24 md:pt-28 pb-16 md:pb-20">
       {/* Background */}
       <div className="absolute inset-0" style={{
-        background:'radial-gradient(ellipse 80% 60% at 55% 45%,rgba(196,105,138,0.16) 0%,transparent 60%),radial-gradient(ellipse 50% 70% at 15% 75%,rgba(255,107,168,0.07) 0%,transparent 50%),#080608'
+        background:'radial-gradient(ellipse 70% 55% at 70% 45%,rgba(196,105,138,0.14) 0%,transparent 60%),radial-gradient(ellipse 40% 50% at 30% 70%,rgba(255,107,168,0.05) 0%,transparent 50%),#080608'
       }}/>
       <div className="absolute inset-0 hero-grid-bg"/>
 
-      {/* Orbit rings — hidden on mobile */}
+      {/* Orbit rings — centered on right side, no overflow */}
       <div className="hidden md:block">
-        {[{s:500,r:-120,o:0.25,d:'20s'},{s:750,r:-270,o:0.15,d:'30s',rev:true},{s:300,r:60,o:0.4,d:'14s'}].map((r,i)=>(
+        {[
+          {s:420, cx:'72%', o:0.22, d:'22s'},
+          {s:620, cx:'72%', o:0.12, d:'32s', rev:true},
+          {s:260, cx:'72%', o:0.35, d:'15s'},
+        ].map((r,i)=>(
           <div key={i} className="absolute rounded-full border border-pink-glow pointer-events-none"
-            style={{width:r.s,height:r.s,right:r.r,top:'50%',marginTop:-r.s/2,opacity:r.o,
-              animation:`orbit ${r.d} linear infinite${r.rev?' reverse':''}`}}/>
+            style={{
+              width:r.s, height:r.s,
+              left:r.cx, top:'50%',
+              transform:`translate(-50%,-50%)`,
+              opacity:r.o,
+              animation:`orbit ${r.d} linear infinite${r.rev?' reverse':''}`,
+            }}/>
         ))}
       </div>
 
@@ -106,19 +115,87 @@ export function HeroSection() {
               </div>
               <div className="overflow-hidden relative">
                 <motion.span initial={{y:'100%',opacity:0}} animate={{y:0,opacity:1}}
-                  transition={{delay:1.0,duration:0.9,ease:[0.16,1,0.3,1]}} style={{display:'block'}}>
-                  <span className="not-italic" style={{
-                    background:'linear-gradient(90deg,#E8A4BE 0%,#FF6BA8 25%,#D4AA70 50%,#FF6BA8 75%,#E8A4BE 100%)',
-                    backgroundSize:'300% auto',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',
-                    backgroundClip:'text',animation:'shimmer 3s linear infinite',
-                    filter:'drop-shadow(0 0 25px rgba(255,107,168,0.7))',display:'inline-block',
-                  }}>Lashes</span>
+                  transition={{delay:1.0,duration:0.9,ease:[0.16,1,0.3,1]}} style={{display:'block',position:'relative'}}>
+
+                  {/* Pearl glow behind text */}
+                  <motion.div
+                    initial={{opacity:0,scale:0.8}}
+                    animate={{opacity:[0,0.6,0.3,0.6],scale:[0.8,1.1,1,1.1]}}
+                    transition={{delay:1.2,duration:3,repeat:Infinity,ease:'easeInOut'}}
+                    style={{position:'absolute',inset:'-20px -40px',
+                      background:'radial-gradient(ellipse 80% 60% at 40% 60%,rgba(255,107,168,0.25) 0%,rgba(212,170,112,0.1) 50%,transparent 70%)',
+                      filter:'blur(18px)',pointerEvents:'none',zIndex:0}}
+                  />
+
+                  {/* Main Lashes text — letter by letter with stagger */}
+                  <span style={{position:'relative',zIndex:1,display:'inline-flex',letterSpacing:'-1px'}}>
+                    {'Lashes'.split('').map((ch,i)=>(
+                      <motion.span key={i}
+                        initial={{y:60,opacity:0,rotateX:90}}
+                        animate={{y:0,opacity:1,rotateX:0}}
+                        transition={{delay:1.1+i*0.08,duration:0.7,ease:[0.16,1,0.3,1]}}
+                        style={{
+                          display:'inline-block',
+                          fontStyle:'italic',
+                          background:`linear-gradient(160deg,
+                            #FFE4EF ${i*8}%,
+                            #FF6BA8 ${20+i*8}%,
+                            #E8A4BE ${40+i*6}%,
+                            #D4AA70 ${60+i*4}%,
+                            #FF6BA8 80%,
+                            #FFD0E8 100%)`,
+                          backgroundSize:'300% auto',
+                          WebkitBackgroundClip:'text',
+                          WebkitTextFillColor:'transparent',
+                          backgroundClip:'text',
+                          animation:`shimmer ${2.8+i*0.15}s linear infinite`,
+                          animationDelay:`${i*0.1}s`,
+                          filter:'drop-shadow(0 0 20px rgba(255,107,168,0.6)) drop-shadow(0 2px 8px rgba(196,105,138,0.4))',
+                          textShadow:'none',
+                        }}
+                      >{ch}</motion.span>
+                    ))}
+                  </span>
+
+                  {/* Floating sparkles around Lashes */}
+                  {mounted && ['✦','◈','✸','❋','✦'].map((s,i)=>(
+                    <motion.span key={i}
+                      initial={{opacity:0,scale:0}}
+                      animate={{
+                        opacity:[0,0.9,0.5,0.9,0],
+                        scale:[0,1,0.8,1,0],
+                        y:[0,-12,-8,-14,0],
+                        x:[0,i%2===0?8:-8,0,i%2===0?-6:6,0],
+                      }}
+                      transition={{delay:1.8+i*0.25,duration:2.5,repeat:Infinity,repeatDelay:1+i*0.3,ease:'easeInOut'}}
+                      style={{
+                        position:'absolute',
+                        top: i<3 ? `-${12+i*6}px` : `${i*4}px`,
+                        left:`${10+i*14}%`,
+                        fontSize: i%2===0 ? 10 : 8,
+                        color: i%3===0 ? '#D4AA70' : i%3===1 ? '#FF6BA8' : '#E8A4BE',
+                        filter:`drop-shadow(0 0 4px ${i%3===0?'#D4AA70':'#FF6BA8'})`,
+                        pointerEvents:'none',
+                        zIndex:2,
+                      }}
+                    >{s}</motion.span>
+                  ))}
                 </motion.span>
+
+                {/* Underline — gold shimmer */}
                 <motion.div initial={{scaleX:0,opacity:0}} animate={{scaleX:1,opacity:1}}
-                  transition={{delay:1.6,duration:1,ease:[0.16,1,0.3,1]}}
-                  style={{position:'absolute',bottom:4,left:0,right:'40%',height:2,
-                    background:'linear-gradient(90deg,rgba(255,107,168,0.8),rgba(212,170,112,0.6),transparent)',
-                    transformOrigin:'left',boxShadow:'0 0 10px rgba(255,107,168,0.5)'}}/>
+                  transition={{delay:1.8,duration:1.2,ease:[0.16,1,0.3,1]}}
+                  style={{position:'absolute',bottom:4,left:0,right:'35%',height:2.5,
+                    background:'linear-gradient(90deg,rgba(255,107,168,0.9),rgba(212,170,112,0.8),rgba(232,164,190,0.6),transparent)',
+                    transformOrigin:'left',borderRadius:2,
+                    boxShadow:'0 0 12px rgba(255,107,168,0.6),0 0 24px rgba(212,170,112,0.3)'}}/>
+
+                {/* Second soft underline */}
+                <motion.div initial={{scaleX:0,opacity:0}} animate={{scaleX:1,opacity:1}}
+                  transition={{delay:2.0,duration:1.4,ease:[0.16,1,0.3,1]}}
+                  style={{position:'absolute',bottom:0,left:0,right:'55%',height:1,
+                    background:'linear-gradient(90deg,rgba(212,170,112,0.4),transparent)',
+                    transformOrigin:'left'}}/>
               </div>
             </h1>
           </motion.div>
