@@ -4,18 +4,12 @@ import Link from 'next/link'
 import { motion, useScroll, useTransform } from 'framer-motion'
 
 const HEARTS = [
-  {left:'62%',size:28,delay:0,   dur:7,  drift:-30,opacity:0.9},
-  {left:'71%',size:18,delay:1.2, dur:9,  drift:20, opacity:0.7},
-  {left:'80%',size:34,delay:0.5, dur:8,  drift:-20,opacity:0.85},
-  {left:'88%',size:16,delay:2.1, dur:10, drift:15, opacity:0.65},
-  {left:'67%',size:22,delay:3.0, dur:7.5,drift:25, opacity:0.75},
-  {left:'75%',size:30,delay:1.8, dur:8.5,drift:-15,opacity:0.9},
-  {left:'91%',size:20,delay:0.9, dur:9.5,drift:-25,opacity:0.7},
-  {left:'58%',size:14,delay:2.5, dur:6.5,drift:18, opacity:0.6},
-  {left:'84%',size:26,delay:4.0, dur:8,  drift:-10,opacity:0.8},
-  {left:'77%',size:36,delay:1.5, dur:7,  drift:-28,opacity:0.95},
-  {left:'93%',size:18,delay:5.0, dur:9,  drift:10, opacity:0.65},
-  {left:'69%',size:12,delay:3.5, dur:11, drift:22, opacity:0.55},
+  {left:'63%',size:24,delay:0,   dur:8},
+  {left:'74%',size:16,delay:2.5, dur:10},
+  {left:'83%',size:30,delay:1.2, dur:9},
+  {left:'91%',size:14,delay:4.0, dur:11},
+  {left:'68%',size:20,delay:3.5, dur:8.5},
+  {left:'79%',size:26,delay:6.0, dur:9.5},
 ]
 
 const SPARKLES = [
@@ -60,32 +54,19 @@ export function HeroSection() {
       {mounted && (
         <div className="absolute inset-0 pointer-events-none overflow-hidden hidden md:block">
           {HEARTS.map((h, i) => (
-            <motion.div
+            <div
               key={i}
-              initial={{ y: '110vh', x: 0, opacity: 0, scale: 0.6 }}
-              animate={{
-                y: ['110vh', '-20vh'],
-                x: [0, h.drift, h.drift * 0.5, h.drift * 1.2, 0],
-                opacity: [0, h.opacity, h.opacity, h.opacity * 0.7, 0],
-                scale: [0.6, 1, 1.05, 0.95, 0.8],
-              }}
-              transition={{
-                duration: h.dur,
-                delay: h.delay,
-                repeat: Infinity,
-                repeatDelay: 1.5 + i * 0.4,
-                ease: 'easeInOut',
-                times: [0, 0.15, 0.7, 0.9, 1],
-              }}
               style={{
                 position: 'absolute',
                 left: h.left,
-                bottom: 0,
+                bottom: '-5%',
                 fontSize: h.size,
                 lineHeight: 1,
-                filter: `drop-shadow(0 0 ${h.size * 0.5}px #FF6BA8) drop-shadow(0 0 ${h.size}px rgba(255,107,168,0.3))`,
+                filter: `drop-shadow(0 0 ${h.size * 0.4}px #FF6BA8)`,
+                animation: `floatHeart ${h.dur}s ease-in-out ${h.delay}s infinite`,
+                willChange: 'transform',
               }}
-            >💕</motion.div>
+            >💕</div>
           ))}
         </div>
       )}
