@@ -24,7 +24,7 @@ export default function LoginPage() {
     } finally { setLoading(false) }
   }
 
-  if (success) return <LoginSuccessScreen />
+  if (success) return <LoginSuccessScreen show={true} />
 
   return (
     <>
