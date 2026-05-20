@@ -52,32 +52,48 @@ export function HeroSection() {
 
       {/* Lash art — hidden on mobile for performance */}
       {mounted && (
-        <div className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none" style={{width:380,height:450,opacity:0.7}}>
-          <svg width="380" height="450" viewBox="0 0 380 450">
-            <defs>
-              <radialGradient id="root-glow" cx="50%" cy="80%" r="40%">
-                <stop offset="0%" stopColor="#FF6BA8" stopOpacity="0.3"/>
-                <stop offset="100%" stopColor="transparent"/>
-              </radialGradient>
-            </defs>
-            <ellipse cx="200" cy="360" rx="70" ry="18" fill="url(#root-glow)"/>
-            {Array.from({length:18},(_,i)=>{
-              const angle = -40 + i*4.5
-              const rad = angle*Math.PI/180
-              const len = 55+i*4
-              const x0=200, y0=360
-              const ex = x0+Math.sin(rad)*20
-              const ey = y0-len
-              const col = i%3===0?'#D4AA70':i%3===1?'#FF6BA8':'#E8A4BE'
-              return <motion.path key={i} d={`M ${x0} ${y0} Q ${x0+15} ${y0-len*0.5} ${ex} ${ey}`}
-                stroke={col} strokeWidth={0.8} strokeLinecap="round" fill="none"
-                style={{filter:`drop-shadow(0 0 3px ${col})`}}
-                initial={{pathLength:0,opacity:0}}
-                animate={{pathLength:[0,1,1,0],opacity:[0,0.65,0.45,0]}}
-                transition={{duration:2.5+i*0.12,delay:i*0.1,repeat:Infinity,repeatDelay:1+Math.random(),ease:'easeInOut'}}
-              />
-            })}
-          </svg>
+        {/* Floating hearts — balloon style, bottom to top */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden hidden md:block">
+          {mounted && [
+            {left:'62%', size:28, delay:0,    dur:7,   drift:-30, opacity:0.9, glow:'#FF6BA8'},
+            {left:'71%', size:18, delay:1.2,  dur:9,   drift:20,  opacity:0.7, glow:'#E8A4BE'},
+            {left:'80%', size:34, delay:0.5,  dur:8,   drift:-20, opacity:0.85,glow:'#FF6BA8'},
+            {left:'88%', size:16, delay:2.1,  dur:10,  drift:15,  opacity:0.65,glow:'#C4698A'},
+            {left:'67%', size:22, delay:3.0,  dur:7.5, drift:25,  opacity:0.75,glow:'#E8A4BE'},
+            {left:'75%', size:30, delay:1.8,  dur:8.5, drift:-15, opacity:0.9, glow:'#FF6BA8'},
+            {left:'91%', size:20, delay:0.9,  dur:9.5, drift:-25, opacity:0.7, glow:'#D4AA70'},
+            {left:'58%', size:14, delay:2.5,  dur:6.5, drift:18,  opacity:0.6, glow:'#E8A4BE'},
+            {left:'84%', size:26, delay:4.0,  dur:8,   drift:-10, opacity:0.8, glow:'#FF6BA8'},
+            {left:'69%', size:12, delay:3.5,  dur:11,  drift:22,  opacity:0.55,glow:'#C4698A'},
+            {left:'77%', size:36, delay:1.5,  dur:7,   drift:-28, opacity:0.95,glow:'#FF6BA8'},
+            {left:'93%', size:18, delay:5.0,  dur:9,   drift:10,  opacity:0.65,glow:'#E8A4BE'},
+          ].map((h,i)=>(
+            <motion.div key={i}
+              initial={{y:'110vh', x:0, opacity:0, scale:0.6}}
+              animate={{
+                y:[`110vh`,`-20vh`],
+                x:[0, h.drift, h.drift*0.5, h.drift*1.2, 0],
+                opacity:[0, h.opacity, h.opacity, h.opacity*0.7, 0],
+                scale:[0.6, 1, 1.05, 0.95, 0.8],
+              }}
+              transition={{
+                duration: h.dur,
+                delay: h.delay,
+                repeat: Infinity,
+                repeatDelay: 1.5 + i * 0.4,
+                ease: 'easeInOut',
+                times:[0,0.15,0.7,0.9,1],
+              }}
+              style={{
+                position:'absolute',
+                left: h.left,
+                bottom: 0,
+                fontSize: h.size,
+                lineHeight: 1,
+                filter: `drop-shadow(0 0 ${h.size*0.5}px ${h.glow}) drop-shadow(0 0 ${h.size}px ${h.glow}40)`,
+              }}
+            >💕</motion.div>
+          ))}
         </div>
       )}
 
