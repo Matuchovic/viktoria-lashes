@@ -31,10 +31,15 @@ export function Footer() {
           <div>
             <h4 className="font-sans font-light tracking-[3px] uppercase text-pink-neon mb-5" style={{fontSize:'11px'}}>Info</h4>
             <ul className="space-y-3">
-              {[{label:'Kontakt',href:'/#kontakt'},{label:'Rezervace',href:'/rezervace'},{label:'O mně',href:'/#stylistky'},{label:'Přihlášení',href:'/login'}].map(l=>(
+              {[{label:'Kontakt',href:'/#kontakt'},{label:'Rezervace',href:'/rezervace'},{label:'O mně',href:'/#stylistky'},{label:'Přihlášení',href:'/login'},{label:'Lash Body ✦',href:'/vernostni-program'}].map(l=>(
                 <li key={l.label}><Link href={l.href} className="text-text-muted text-sm font-light hover:text-pink-soft transition-colors cursor-none">{l.label}</Link></li>
               ))}
             </ul>
+            <div className="mt-6 space-y-2">
+              <h4 className="font-sans font-light tracking-[3px] uppercase text-text-dim mb-3" style={{fontSize:'10px'}}>Právní</h4>
+              <div><Link href="/obchodni-podminky" className="text-text-dim text-xs font-light hover:text-pink-soft transition-colors">Obchodní podmínky</Link></div>
+              <div><Link href="/gdpr" className="text-text-dim text-xs font-light hover:text-pink-soft transition-colors">Ochrana osobních údajů (GDPR)</Link></div>
+            </div>
           </div>
         </div>
 
