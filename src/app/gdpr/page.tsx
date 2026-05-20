@@ -1,149 +1,228 @@
-import React from 'react'
+'use client'
+import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { motion } from 'framer-motion'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
-
-export const metadata = {
-  title: 'GDPR | Viktória Lashes',
-  description: 'Zasady ochrany osobnich udaju GDPR - Viktoria Lashes, Hosabut s.r.o.',
-}
+import { CustomCursor } from '@/components/ui/CustomCursor'
 
 const COMPANY = 'Hosabut s.r.o.'
 const ICO = '23338342'
-const SIDLO = 'Decinska 552/1, Strizkov (Praha 8), 180 00 Praha'
-const BRAND = 'Viktoria Lashes'
+const SIDLO = 'Děčínská 552/1, Střížkov (Praha 8), 180 00 Praha'
+const BRAND = 'Viktória Lashes'
 const WEB = 'www.viktoria-lashes.cz'
 const EMAIL = 'vitkorialadikova23@gmail.com'
 const TEL = '+420 720 307 007'
 const DATE = '20. 5. 2026'
 
-function H2({ children }: { children: string }) {
-  return React.createElement('h2', {
-    style: { fontFamily: 'Georgia,serif', fontSize: 20, fontWeight: 300, color: '#C4698A', marginBottom: 12, marginTop: 32, paddingBottom: 8, borderBottom: '1px solid rgba(196,105,138,0.2)' }
-  }, children)
-}
+function BrandGraph() {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+  if (!mounted) return null
 
-function P({ children }: { children: React.ReactNode }) {
-  return React.createElement('p', {
-    style: { color: 'rgba(245,238,242,0.55)', fontSize: 14, fontWeight: 300, lineHeight: 1.8, marginBottom: 10, fontFamily: 'Georgia,serif', textAlign: 'justify' as const }
-  }, children)
-}
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+      style={{ marginBottom: 48, padding: '32px 28px', borderRadius: 20, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,107,168,0.12)', position: 'relative', overflow: 'hidden' }}
+    >
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,#FF6BA8,#D4AA70,transparent)' }} />
 
-function Li({ children }: { children: React.ReactNode }) {
-  return React.createElement('li', {
-    style: { display: 'flex', gap: 10, marginBottom: 6 }
-  },
-    React.createElement('span', { style: { color: '#C4698A', flexShrink: 0 } }, '\u2726'),
-    React.createElement('span', { style: { color: 'rgba(245,238,242,0.55)', fontSize: 14, fontWeight: 300, lineHeight: 1.7, fontFamily: 'Georgia,serif' } }, children)
+      <div style={{ fontFamily: 'Georgia,serif', fontSize: 9, letterSpacing: 5, textTransform: 'uppercase' as const, color: 'rgba(212,170,112,0.6)', marginBottom: 24, textAlign: 'center' as const }}>
+        ✦ Struktura brand identity
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, flexWrap: 'wrap' as const }}>
+
+        {/* Hosabut box */}
+        <motion.div
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3, duration: 0.7 }}
+          style={{ textAlign: 'center' as const }}
+        >
+          <div style={{ padding: '18px 24px', borderRadius: 14, background: 'rgba(212,170,112,0.08)', border: '1px solid rgba(212,170,112,0.35)', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,#D4AA70,transparent)' }} />
+            <div style={{ fontFamily: 'Georgia,serif', fontSize: 8, letterSpacing: 3, textTransform: 'uppercase' as const, color: '#D4AA70', marginBottom: 8 }}>Právní subjekt</div>
+            <div style={{ fontFamily: 'Georgia,serif', fontSize: 18, fontWeight: 300, color: 'rgba(245,238,242,0.9)', marginBottom: 4 }}>Hosabut s.r.o.</div>
+            <div style={{ fontFamily: 'Georgia,serif', fontSize: 10, color: 'rgba(245,238,242,0.3)', marginBottom: 2 }}>IČO: {ICO}</div>
+            <div style={{ fontFamily: 'Georgia,serif', fontSize: 10, color: 'rgba(245,238,242,0.25)' }}>Praha 8</div>
+            <div style={{ marginTop: 10, display: 'flex', justifyContent: 'center', gap: 6 }}>
+              {['Smlouvy', 'Fakturace', 'GDPR'].map(t => (
+                <span key={t} style={{ fontFamily: 'Georgia,serif', fontSize: 8, padding: '2px 8px', borderRadius: 20, background: 'rgba(212,170,112,0.12)', color: 'rgba(212,170,112,0.7)', border: '1px solid rgba(212,170,112,0.2)' }}>{t}</span>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Arrow + License */}
+        <motion.div
+          initial={{ opacity: 0, scaleX: 0 }}
+          animate={{ opacity: 1, scaleX: 1 }}
+          transition={{ delay: 0.6, duration: 0.6 }}
+          style={{ display: 'flex', flexDirection: 'column' as const, alignItems: 'center', padding: '0 16px', minWidth: 120 }}
+        >
+          <div style={{ fontFamily: 'Georgia,serif', fontSize: 8, letterSpacing: 2, textTransform: 'uppercase' as const, color: 'rgba(255,107,168,0.6)', marginBottom: 6, textAlign: 'center' as const }}>Licencuje</div>
+          <div style={{ position: 'relative', width: '100%', height: 20, display: 'flex', alignItems: 'center' }}>
+            <div style={{ position: 'absolute', left: 0, right: 0, height: 1.5, background: 'linear-gradient(90deg,#D4AA70,#FF6BA8)' }} />
+            <motion.div
+              animate={{ x: ['0%', '80%', '0%'] }}
+              transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+              style={{ position: 'absolute', width: 6, height: 6, borderRadius: '50%', background: '#FF6BA8', boxShadow: '0 0 8px #FF6BA8' }}
+            />
+            <div style={{ position: 'absolute', right: -4, width: 0, height: 0, borderLeft: '8px solid #FF6BA8', borderTop: '4px solid transparent', borderBottom: '4px solid transparent' }} />
+          </div>
+          <div style={{ fontFamily: 'Georgia,serif', fontSize: 8, letterSpacing: 1, color: 'rgba(255,107,168,0.5)', marginTop: 6, textAlign: 'center' as const }}>brand & obchodní<br/>zastoupení</div>
+        </motion.div>
+
+        {/* Viktoria box */}
+        <motion.div
+          initial={{ opacity: 0, x: 30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.4, duration: 0.7 }}
+          style={{ textAlign: 'center' as const }}
+        >
+          <div style={{ padding: '18px 24px', borderRadius: 14, background: 'rgba(255,107,168,0.08)', border: '1px solid rgba(255,107,168,0.35)', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,#FF6BA8,transparent)' }} />
+            <div style={{ fontFamily: 'Georgia,serif', fontSize: 8, letterSpacing: 3, textTransform: 'uppercase' as const, color: '#FF6BA8', marginBottom: 8 }}>Obchodní značka</div>
+            <div style={{ fontFamily: 'Georgia,serif', fontSize: 18, fontWeight: 300, color: 'rgba(245,238,242,0.9)', marginBottom: 4, textShadow: '0 0 20px rgba(255,107,168,0.3)' }}>Viktória Lashes</div>
+            <div style={{ fontFamily: 'Georgia,serif', fontSize: 10, color: 'rgba(245,238,242,0.3)', marginBottom: 2 }}>Luxury Beauty Studio</div>
+            <div style={{ fontFamily: 'Georgia,serif', fontSize: 10, color: 'rgba(245,238,242,0.25)' }}>Mladá Boleslav & okolí</div>
+            <div style={{ marginTop: 10, display: 'flex', justifyContent: 'center', gap: 6 }}>
+              {['Klientky', 'Rezervace', 'Lash Body'].map(t => (
+                <span key={t} style={{ fontFamily: 'Georgia,serif', fontSize: 8, padding: '2px 8px', borderRadius: 20, background: 'rgba(255,107,168,0.12)', color: 'rgba(255,107,168,0.7)', border: '1px solid rgba(255,107,168,0.2)' }}>{t}</span>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Bottom row — web */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.9, duration: 0.5 }}
+        style={{ marginTop: 20, textAlign: 'center' as const }}
+      >
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 20px', borderRadius: 20, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+          <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#4ade80', boxShadow: '0 0 8px #4ade80' }} />
+          <span style={{ fontFamily: 'Georgia,serif', fontSize: 11, color: 'rgba(245,238,242,0.5)' }}>{WEB}</span>
+          <span style={{ fontFamily: 'Georgia,serif', fontSize: 9, color: 'rgba(245,238,242,0.25)' }}>— platforma</span>
+        </div>
+      </motion.div>
+    </motion.div>
   )
 }
 
-function Ul({ children }: { children: React.ReactNode }) {
-  return React.createElement('ul', { style: { listStyle: 'none', padding: 0, marginBottom: 12 } }, children)
+function H2({ t }: { t: string }) {
+  return (
+    <motion.h2
+      initial={{ opacity: 0, x: -10 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5 }}
+      style={{ fontFamily: 'Georgia,serif', fontSize: 20, fontWeight: 300, color: '#C4698A', marginBottom: 12, marginTop: 32, paddingBottom: 8, borderBottom: '1px solid rgba(196,105,138,0.2)' }}
+    >{t}</motion.h2>
+  )
+}
+function P({ c }: { c: string }) {
+  return <p style={{ color: 'rgba(245,238,242,0.55)', fontSize: 14, fontWeight: 300, lineHeight: 1.8, marginBottom: 10, fontFamily: 'Georgia,serif', textAlign: 'justify' as const }}>{c}</p>
+}
+function Li({ c }: { c: string }) {
+  return (
+    <li style={{ display: 'flex', gap: 10, marginBottom: 6 }}>
+      <span style={{ color: '#C4698A', flexShrink: 0 }}>✦</span>
+      <span style={{ color: 'rgba(245,238,242,0.55)', fontSize: 14, fontWeight: 300, lineHeight: 1.7, fontFamily: 'Georgia,serif' }}>{c}</span>
+    </li>
+  )
 }
 
 export default function GdprPage() {
-  return React.createElement(React.Fragment, null,
-    React.createElement(Navbar, null),
-    React.createElement('main', {
-      style: { minHeight: '100vh', background: '#080608', paddingTop: 112, paddingBottom: 96 }
-    },
-      React.createElement('div', { style: { maxWidth: 760, margin: '0 auto', padding: '0 24px' } },
+  return (
+    <>
+      <CustomCursor />
+      <Navbar />
+      <main style={{ minHeight: '100vh', background: '#080608', paddingTop: 112, paddingBottom: 96 }}>
+        <div style={{ maxWidth: 760, margin: '0 auto', padding: '0 24px' }}>
 
-        React.createElement('div', { style: { marginBottom: 48 } },
-          React.createElement('div', { style: { fontFamily: 'Georgia,serif', fontSize: 10, letterSpacing: 5, textTransform: 'uppercase' as const, color: '#C4698A', marginBottom: 12 } }, '\u2726 Pravni dokumenty'),
-          React.createElement('h1', { style: { fontFamily: 'Georgia,serif', fontSize: 40, fontWeight: 300, marginBottom: 8 } }, 'Zasady ochrany osobnich udaju'),
-          React.createElement('p', { style: { fontFamily: 'Georgia,serif', fontSize: 13, fontStyle: 'italic', color: 'rgba(245,238,242,0.35)', marginBottom: 16 } }, 'v souladu s narizenim (EU) 2016/679 (GDPR)'),
-          React.createElement('div', { style: { fontFamily: 'Georgia,serif', fontSize: 11, color: 'rgba(245,238,242,0.25)', letterSpacing: 1 } },
-            'Spravce: ' + COMPANY + ' | ICO: ' + ICO + ' | Platnost od: ' + DATE
-          ),
-          React.createElement('div', { style: { height: 1, marginTop: 20, background: 'linear-gradient(90deg,rgba(196,105,138,0.5),rgba(212,170,112,0.3),transparent)' } })
-        ),
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} style={{ marginBottom: 40 }}>
+            <div style={{ fontFamily: 'Georgia,serif', fontSize: 10, letterSpacing: 5, textTransform: 'uppercase' as const, color: '#C4698A', marginBottom: 12 }}>✦ Právní dokumenty</div>
+            <h1 style={{ fontFamily: 'Georgia,serif', fontSize: 'clamp(28px,5vw,44px)', fontWeight: 300, marginBottom: 8 }}>Zásady ochrany osobních údajů</h1>
+            <p style={{ fontFamily: 'Georgia,serif', fontSize: 13, fontStyle: 'italic', color: 'rgba(245,238,242,0.35)', marginBottom: 12 }}>v souladu s nařízením (EU) 2016/679 (GDPR)</p>
+            <div style={{ fontFamily: 'Georgia,serif', fontSize: 11, color: 'rgba(245,238,242,0.2)', letterSpacing: 1 }}>Správce: {COMPANY} | IČO: {ICO} | Platnost od: {DATE}</div>
+            <div style={{ height: 1, marginTop: 20, background: 'linear-gradient(90deg,rgba(196,105,138,0.5),rgba(212,170,112,0.3),transparent)' }} />
+          </motion.div>
 
-        React.createElement('div', { style: { marginBottom: 32, padding: 20, borderRadius: 16, background: 'rgba(212,170,112,0.06)', border: '1px solid rgba(212,170,112,0.18)' } },
-          React.createElement('div', { style: { fontFamily: 'Georgia,serif', fontSize: 9, letterSpacing: 4, textTransform: 'uppercase' as const, color: '#D4AA70', marginBottom: 12 } }, 'Spravce osobnich udaju'),
-          React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 } },
-            ...([
-              ['Firma', COMPANY], ['ICO', ICO],
-              ['Znacka', BRAND], ['Web', WEB],
-              ['Email', EMAIL], ['Tel', TEL],
-            ].map(([l, v]) => React.createElement('div', { key: l, style: { fontFamily: 'Georgia,serif', fontSize: 13, color: 'rgba(245,238,242,0.6)' } },
-              React.createElement('span', { style: { color: 'rgba(245,238,242,0.3)' } }, l + ': '), v
-            )))
-          )
-        ),
+          <BrandGraph />
 
-        React.createElement(H2, null, '1. Zpracovavane osobni udaje'),
-        React.createElement(P, null, 'Zpracovavame tyto kategorie osobnich udaju:'),
-        React.createElement(Ul, null,
-          React.createElement(Li, null, 'Identifikacni udaje: jmeno, prijmeni, email, telefon, adresa mista sluzby.'),
-          React.createElement(Li, null, 'Smluvni data: rezervace, platby, venostni body, korespondence.'),
-          React.createElement(Li, null, 'Zdravotni informace (se souhlasem): alergie, kontraindikace.'),
-          React.createElement(Li, null, 'Technicka data: IP adresa, cookies, zaznamy pristupu na web.')
-        ),
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+            style={{ marginBottom: 32, padding: 20, borderRadius: 16, background: 'rgba(212,170,112,0.06)', border: '1px solid rgba(212,170,112,0.18)' }}>
+            <div style={{ fontFamily: 'Georgia,serif', fontSize: 9, letterSpacing: 4, textTransform: 'uppercase' as const, color: '#D4AA70', marginBottom: 12 }}>Totožnost správce osobních údajů</div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              {[['Firma', COMPANY],['IČO', ICO],['Sídlo', SIDLO],['Značka', BRAND],['Email', EMAIL],['Tel', TEL]].map(([l,v]) => (
+                <div key={l} style={{ fontFamily: 'Georgia,serif', fontSize: 13, color: 'rgba(245,238,242,0.6)' }}>
+                  <span style={{ color: 'rgba(245,238,242,0.3)' }}>{l}: </span>{v}
+                </div>
+              ))}
+            </div>
+          </motion.div>
 
-        React.createElement(H2, null, '2. Ucely a pravni zaklady zpracovani'),
-        React.createElement(P, null, 'Plneni smlouvy (cl. 6 odst. 1 pism. b) GDPR): sprava rezervaci, komunikace, fakturace, reklamace.'),
-        React.createElement(P, null, 'Plneni pravni povinnosti (cl. 6 odst. 1 pism. c) GDPR): ucetni evidence, archivace dle zakona.'),
-        React.createElement(P, null, 'Opravneny zajem (cl. 6 odst. 1 pism. f) GDPR): ochrana pravnich naroku, anonymizovana analytika.'),
-        React.createElement(P, null, 'Souhlas (cl. 6 odst. 1 pism. a) GDPR): newsletter, vernostni program Lash Body, zdravotni informace, fotografie na soc. sitich. Souhlas lze kdykoliv odvolat.'),
+          <H2 t="1. Zpracovávané osobní údaje" />
+          <P c="Zpracováváme: jméno, email, telefon, adresa místa služby; data rezervací a plateb; věrnostní body; zdravotní informace (se souhlasem); technická data (IP, cookies)." />
 
-        React.createElement(H2, null, '3. Prijemci osobnich udaju'),
-        React.createElement(Ul, null,
-          React.createElement(Li, null, 'Vercel Inc. a Supabase Inc. - cloudove uloziste dat na serverech v EU.'),
-          React.createElement(Li, null, 'Ucetni a danovi poradci vazani mlcenlivosti.'),
-          React.createElement(Li, null, 'Organy verejne moci na zaklade zakonnych povinnosti.'),
-          React.createElement(Li, null, 'Poskytovately platebnich sluzeb (v nezbytnem rozsahu).')
-        ),
+          <H2 t="2. Účely a právní základy zpracování" />
+          <P c="Plnění smlouvy (čl. 6 b): správa rezervací, fakturace, reklamace. Právní povinnost (čl. 6 c): účetnictví, archivace. Oprávněný zájem (čl. 6 f): ochrana nároků, analytika. Souhlas (čl. 6 a): newsletter, Lash Body, fotografie. Souhlas lze kdykoliv odvolat." />
 
-        React.createElement(H2, null, '4. Predavani do tretich zemi'),
-        React.createElement(P, null, 'Cloudove sluzby (Vercel, Supabase) mohou zpracovavat data mimo EHP. Predavani probiha na zaklade standardnich smluvnich dolozek schvalenych Evropskou komisi dle cl. 46 odst. 2 GDPR.'),
+          <H2 t="3. Příjemci a předávání do třetích zemí" />
+          <ul style={{ listStyle: 'none', padding: 0, marginBottom: 12 }}>
+            <Li c="Vercel Inc. a Supabase Inc. — cloudové úložiště (servery v EU, standardní smluvní doložky EU)." />
+            <Li c="Účetní a daňoví poradci vázaní mlčenlivostí." />
+            <Li c="Orgány veřejné moci na základě zákona." />
+            <Li c="Poskytovatelé platebních služeb v nezbytném rozsahu." />
+          </ul>
 
-        React.createElement(H2, null, '5. Doba uchovavani'),
-        React.createElement(Ul, null,
-          React.createElement(Li, null, 'Smluvni dokumentace (rezervace, faktury): 10 let.'),
-          React.createElement(Li, null, 'Zdravotni informace: do odvolani souhlasu, max. 2 roky.'),
-          React.createElement(Li, null, 'Vernostni program: po dobu ucasti + 1 rok.'),
-          React.createElement(Li, null, 'Marketingova komunikace: do odvolani souhlasu.'),
-          React.createElement(Li, null, 'Technicka data: max. 13 mesicu.'),
-          React.createElement(Li, null, 'Reklamace: 3 roky od vyrizeni.')
-        ),
+          <H2 t="4. Doba uchovávání" />
+          <ul style={{ listStyle: 'none', padding: 0, marginBottom: 12 }}>
+            <Li c="Smluvní dokumentace: 10 let (zákon o účetnictví)." />
+            <Li c="Zdravotní informace: do odvolání souhlasu, max. 2 roky." />
+            <Li c="Věrnostní program: po dobu účasti + 1 rok." />
+            <Li c="Marketing: do odvolání souhlasu." />
+            <Li c="Technická data: max. 13 měsíců. Reklamace: 3 roky." />
+          </ul>
 
-        React.createElement(H2, null, '6. Vase prava'),
-        React.createElement(Ul, null,
-          React.createElement(Li, null, 'Pravo na pristup (cl. 15 GDPR): ziskat informace o zpracovani Vasich udaju.'),
-          React.createElement(Li, null, 'Pravo na opravu (cl. 16 GDPR): oprava nepresnych udaju.'),
-          React.createElement(Li, null, 'Pravo na vymaz / "byt zapomenut" (cl. 17 GDPR): vymaz pri splneni podminek.'),
-          React.createElement(Li, null, 'Pravo na omezeni zpracovani (cl. 18 GDPR): omezeni pri zpochybneni presnosti.'),
-          React.createElement(Li, null, 'Pravo na prenositelnost (cl. 20 GDPR): udaje ve strojove citelnem formatu.'),
-          React.createElement(Li, null, 'Pravo vznest namitku (cl. 21 GDPR): proti zpracovani na zaklade opravneneho zajmu.'),
-          React.createElement(Li, null, 'Pravo odvolat souhlas: kdykoliv emailem, bez negativnich nasledku.'),
-          React.createElement(Li, null, 'Pravo podat stiznost u UOOU: Pplk. Sochora 27, 170 00 Praha 7 | www.uoou.cz')
-        ),
-        React.createElement('div', { style: { padding: 16, borderRadius: 12, background: 'rgba(255,107,168,0.06)', border: '1px solid rgba(255,107,168,0.18)', marginBottom: 24 } },
-          React.createElement(P, null, 'Zadosti o vykон prav zasílejte na: ' + EMAIL + '. Spravce odpovi do 30 dni.')
-        ),
+          <H2 t="5. Vaše práva" />
+          <ul style={{ listStyle: 'none', padding: 0, marginBottom: 12 }}>
+            <Li c="Přístup (čl. 15): informace o zpracování Vašich údajů." />
+            <Li c="Oprava (čl. 16): oprava nepřesných nebo doplnění neúplných údajů." />
+            <Li c="Výmaz / být zapomenut (čl. 17): při splnění zákonných podmínek." />
+            <Li c="Omezení zpracování (čl. 18): při zpochybnění přesnosti dat." />
+            <Li c="Přenositelnost (čl. 20): data ve strojově čitelném formátu." />
+            <Li c="Námitka (čl. 21): proti zpracování na základě oprávněného zájmu." />
+            <Li c="Odvolání souhlasu: kdykoliv, bez negativních následků." />
+            <Li c="Stížnost u ÚOOÚ: Pplk. Sochora 27, 170 00 Praha 7 | www.uoou.cz" />
+          </ul>
+          <div style={{ padding: 16, borderRadius: 12, background: 'rgba(255,107,168,0.06)', border: '1px solid rgba(255,107,168,0.18)', marginBottom: 24 }}>
+            <P c={"Žádosti zasílejte na: " + EMAIL + ". Správce odpoví do 30 dnů."} />
+          </div>
 
-        React.createElement(H2, null, '7. Zabezpeceni'),
-        React.createElement(Ul, null,
-          React.createElement(Li, null, 'Sifrovany prenos (HTTPS / TLS).'),
-          React.createElement(Li, null, 'Pristup pouze pro opravnene osoby vazane mlcenlivosti.'),
-          React.createElement(Li, null, 'Pravidelne zalohy a obnova po havarii.'),
-          React.createElement(Li, null, 'Zabezpecene cloudove uloziste s dvoufaktorovym overenim.')
-        ),
+          <H2 t="6. Zabezpečení" />
+          <ul style={{ listStyle: 'none', padding: 0, marginBottom: 12 }}>
+            <Li c="Šifrovaný přenos HTTPS / TLS." />
+            <Li c="Přístup pouze pro oprávněné osoby vázané mlčenlivostí." />
+            <Li c="Pravidelné zálohy, dvoufaktorové ověření, cloudové úložiště." />
+          </ul>
 
-        React.createElement(H2, null, '8. Automatizovane rozhodovani'),
-        React.createElement(P, null, 'Spravce neprovadi automatizovane rozhodovani ve smyslu cl. 22 GDPR. Analytika vernostniho programu nepredstavuje profilovani ve smyslu GDPR.'),
+          <H2 t="7. Automatizované rozhodování a aktualizace" />
+          <P c="Správce neprovádí automatizované rozhodování dle čl. 22 GDPR. Tyto Zásady mohou být aktualizovány — aktuální verze vždy na viktoria-lashes.cz. Platnost od: 20. 5. 2026." />
 
-        React.createElement(H2, null, '9. Aktualizace'),
-        React.createElement(P, null, 'Tyto Zasady mohou byt prubeznе aktualizovany. Aktualni verze je vzdy dostupna na ' + WEB + '. Platnost od: ' + DATE + '.'),
-
-        React.createElement('div', { style: { marginTop: 48, paddingTop: 24, borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' as const, gap: 12 } },
-          React.createElement(Link, { href: '/obchodni-podminky', style: { fontFamily: 'Georgia,serif', fontSize: 13, color: '#FF6BA8' } }, 'Obchodni podminky →'),
-          React.createElement(Link, { href: '/', style: { fontFamily: 'Georgia,serif', fontSize: 13, color: 'rgba(245,238,242,0.3)' } }, '← Zpet na hlavni stranku')
-        )
-      )
-    ),
-    React.createElement(Footer, null)
+          <div style={{ marginTop: 48, paddingTop: 24, borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' as const, gap: 12 }}>
+            <Link href="/obchodni-podminky" style={{ fontFamily: 'Georgia,serif', fontSize: 13, color: '#FF6BA8', textDecoration: 'none' }}>Obchodní podmínky →</Link>
+            <Link href="/" style={{ fontFamily: 'Georgia,serif', fontSize: 13, color: 'rgba(245,238,242,0.3)', textDecoration: 'none' }}>← Zpět na hlavní stránku</Link>
+          </div>
+        </div>
+      </main>
+      <Footer />
+    </>
   )
 }
