@@ -4,170 +4,118 @@ import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 
 export const metadata = {
-  title: 'Obchodní podmínky | Viktória Lashes',
-  description: 'Všeobecné obchodní podmínky služeb Viktória Lashes, provozováno společností Hosabut s.r.o.',
+  title: 'Obchodni podminky | Viktoria Lashes',
+  description: 'Vseobecne obchodni podminky sluzeb Viktoria Lashes, provozovano spolecnosti Hosabut s.r.o.',
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="mb-10">
-      <h2 className="font-serif text-xl md:text-2xl font-light mb-4" style={{ color: '#C4698A', borderBottom: '1px solid rgba(196,105,138,0.2)', paddingBottom: 12 }}>
-        {title}
-      </h2>
-      {children}
-    </div>
-  )
-}
-function P({ children }: { children: React.ReactNode }) {
-  return <p className="text-text-muted font-light leading-relaxed text-sm mb-3" style={{ textAlign: 'justify' }}>{children}</p>
-}
-function Li({ children }: { children: React.ReactNode }) {
-  return (
-    <li className="flex gap-3 mb-2">
-      <span style={{ color: '#C4698A', flexShrink: 0, marginTop: 1 }}>✦</span>
-      <span className="text-text-muted font-light text-sm leading-relaxed">{children}</span>
-    </li>
-  )
-}
-function SubSection({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="mb-5">
-      <h3 className="font-serif text-base font-light mb-3" style={{ color: 'rgba(245,238,242,0.7)' }}>{title}</h3>
-      {children}
-    </div>
-  )
-}
-
-const BRAND = 'Viktória Lashes'
 const COMPANY = 'Hosabut s.r.o.'
 const ICO = '23338342'
-const SIDLO = 'Děčínská 552/1, Střížkov (Praha 8), 180 00 Praha'
+const SIDLO = 'Decinska 552/1, Strizkov (Praha 8), 180 00 Praha'
+const BRAND = 'Viktoria Lashes'
 const WEB = 'www.viktoria-lashes.cz'
 const EMAIL = 'vitkorialadikova23@gmail.com'
 const TEL = '+420 720 307 007'
 const DATE = '20. 5. 2026'
 
+function H2({ children }: { children: string }) {
+  return React.createElement('h2', {
+    style: { fontFamily: 'Georgia,serif', fontSize: 20, fontWeight: 300, color: '#C4698A', marginBottom: 12, marginTop: 32, paddingBottom: 8, borderBottom: '1px solid rgba(196,105,138,0.2)' }
+  }, children)
+}
+function P({ children }: { children: React.ReactNode }) {
+  return React.createElement('p', {
+    style: { color: 'rgba(245,238,242,0.55)', fontSize: 14, fontWeight: 300, lineHeight: 1.8, marginBottom: 10, fontFamily: 'Georgia,serif', textAlign: 'justify' as const }
+  }, children)
+}
+function Li({ children }: { children: React.ReactNode }) {
+  return React.createElement('li', { style: { display: 'flex', gap: 10, marginBottom: 6 } },
+    React.createElement('span', { style: { color: '#C4698A', flexShrink: 0 } }, '\u2726'),
+    React.createElement('span', { style: { color: 'rgba(245,238,242,0.55)', fontSize: 14, fontWeight: 300, lineHeight: 1.7, fontFamily: 'Georgia,serif' } }, children)
+  )
+}
+function Ul({ children }: { children: React.ReactNode }) {
+  return React.createElement('ul', { style: { listStyle: 'none', padding: 0, marginBottom: 12 } }, children)
+}
+
 export default function ObchodniPodminkyPage() {
-  return (
-    <>
-      <Navbar />
-      <main className="min-h-screen bg-black pt-28 pb-24 px-5 md:px-16">
-        <div className="max-w-3xl mx-auto">
+  return React.createElement(React.Fragment, null,
+    React.createElement(Navbar, null),
+    React.createElement('main', { style: { minHeight: '100vh', background: '#080608', paddingTop: 112, paddingBottom: 96 } },
+      React.createElement('div', { style: { maxWidth: 760, margin: '0 auto', padding: '0 24px' } },
 
-          {/* Header */}
-          <div className="mb-14">
-            <div className="font-light tracking-[5px] uppercase mb-4 text-xs" style={{ color: '#C4698A' }}>✦ Právní dokumenty</div>
-            <h1 className="font-serif text-4xl md:text-5xl font-light mb-4">Obchodní podmínky</h1>
-            <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs font-light" style={{ color: 'rgba(245,238,242,0.35)', letterSpacing: 1 }}>
-              <span>Provozovatel: {COMPANY}</span>
-              <span>IČO: {ICO}</span>
-              <span>Platnost od: {DATE}</span>
-            </div>
-            <div className="mt-6 h-px w-full" style={{ background: 'linear-gradient(90deg,rgba(196,105,138,0.5),rgba(212,170,112,0.3),transparent)' }} />
-          </div>
+        React.createElement('div', { style: { marginBottom: 48 } },
+          React.createElement('div', { style: { fontFamily: 'Georgia,serif', fontSize: 10, letterSpacing: 5, textTransform: 'uppercase' as const, color: '#C4698A', marginBottom: 12 } }, '\u2726 Pravni dokumenty'),
+          React.createElement('h1', { style: { fontFamily: 'Georgia,serif', fontSize: 40, fontWeight: 300, marginBottom: 8 } }, 'Obchodni podminky'),
+          React.createElement('div', { style: { fontFamily: 'Georgia,serif', fontSize: 11, color: 'rgba(245,238,242,0.25)', letterSpacing: 1 } }, 'Provozovatel: ' + COMPANY + ' | ICO: ' + ICO + ' | Platnost od: ' + DATE),
+          React.createElement('div', { style: { height: 1, marginTop: 20, background: 'linear-gradient(90deg,rgba(196,105,138,0.5),rgba(212,170,112,0.3),transparent)' } })
+        ),
 
-          {/* Info box */}
-          <div className="mb-10 p-5 rounded-2xl" style={{ background: 'rgba(212,170,112,0.06)', border: '1px solid rgba(212,170,112,0.18)' }}>
-            <div className="text-xs font-light tracking-widest uppercase mb-2" style={{ color: '#D4AA70' }}>Kontaktní údaje poskytovatele</div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm font-light" style={{ color: 'rgba(245,238,242,0.6)' }}>
-              <div><span style={{ color: 'rgba(245,238,242,0.3)' }}>Firma: </span>{COMPANY}</div>
-              <div><span style={{ color: 'rgba(245,238,242,0.3)' }}>IČO: </span>{ICO}</div>
-              <div><span style={{ color: 'rgba(245,238,242,0.3)' }}>Sídlo: </span>{SIDLO}</div>
-              <div><span style={{ color: 'rgba(245,238,242,0.3)' }}>Značka: </span>{BRAND}</div>
-              <div><span style={{ color: 'rgba(245,238,242,0.3)' }}>Email: </span><a href={`mailto:${EMAIL}`} style={{ color: '#FF6BA8' }}>{EMAIL}</a></div>
-              <div><span style={{ color: 'rgba(245,238,242,0.3)' }}>Tel.: </span><a href={`tel:${TEL.replace(/\s/g,'')}`} style={{ color: '#FF6BA8' }}>{TEL}</a></div>
-            </div>
-          </div>
+        React.createElement('div', { style: { marginBottom: 32, padding: 20, borderRadius: 16, background: 'rgba(212,170,112,0.06)', border: '1px solid rgba(212,170,112,0.18)' } },
+          React.createElement('div', { style: { fontFamily: 'Georgia,serif', fontSize: 9, letterSpacing: 4, textTransform: 'uppercase' as const, color: '#D4AA70', marginBottom: 12 } }, 'Kontaktni udaje poskytovatele'),
+          React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 } },
+            ...([['Firma',COMPANY],['ICO',ICO],['Znacka',BRAND],['Web',WEB],['Email',EMAIL],['Tel',TEL]]
+              .map(([l,v]) => React.createElement('div', { key: l, style: { fontFamily: 'Georgia,serif', fontSize: 13, color: 'rgba(245,238,242,0.6)' } },
+                React.createElement('span', { style: { color: 'rgba(245,238,242,0.3)' } }, l + ': '), v
+              )))
+          )
+        ),
 
-          <Section title="Článek I. — Základní ustanovení">
-            <P>1.1  Tyto všeobecné obchodní podmínky (dále jen „VOP") upravují vzájemná práva a povinnosti mezi společností {COMPANY}, se sídlem {SIDLO}, IČO: {ICO}, zapsanou v obchodním rejstříku vedeném Městským soudem v Praze (dále jen „Poskytovatel"), a zákazníkem (dále jen „Klient") při poskytování služeb pod obchodní značkou {BRAND}.</P>
-            <P>1.2  Předmětem podnikání Poskytovatele je poskytování kosmetických služeb zaměřených na prodlužování, doplňování a úpravu řas (dále jen „Služby"), a to formou výjezdů Poskytovatele na adresu Klienta nebo jiné předem dohodnuté místo.</P>
-            <P>1.3  Klientem se rozumí fyzická osoba způsobilá k právním úkonům, popřípadě osoba starší 15 let se souhlasem zákonného zástupce.</P>
-            <P>1.4  Uzavřením rezervace Klient potvrzuje, že se s VOP seznámil, porozuměl jim a bez výhrad s nimi souhlasí. Tyto VOP jsou nedílnou součástí smluvního vztahu.</P>
-            <P>1.5  Poskytovatel je oprávněn VOP jednostranně měnit; aktuální znění je vždy dostupné na {WEB}. Změna VOP se nedotýká práv vzniklých za předchozího znění.</P>
-          </Section>
+        React.createElement(H2, null, 'Clanek I. - Zakladni ustanoveni'),
+        React.createElement(P, null, '1.1  Tyto vseobecne obchodni podminky upravuji vzajemna prava a povinnosti mezi spolecnosti ' + COMPANY + ', se sidlem ' + SIDLO + ', ICO: ' + ICO + ', a zakaznikem pri poskytovani sluzeb pod znackou ' + BRAND + '.'),
+        React.createElement(P, null, '1.2  Predmetem podnikani je poskytovani kosmetickych sluzeb (prodluzovani, doplnovani a uprava ras), formou vyjezdu k Zakaznikovi.'),
+        React.createElement(P, null, '1.3  Uzavrenim rezervace Klient potvrzuje souhlas s temito VOP. Aktualni zneni vzdy na ' + WEB + '.'),
 
-          <Section title="Článek II. — Obchodní značka a duševní vlastnictví">
-            <P>2.1  Obchodní značka „{BRAND}" je výhradně registrována a provozována společností {COMPANY}. Klient není oprávněn tuto značku, logotyp, vizuální identitu ani jiné prvky duševního vlastnictví Poskytovatele jakkoliv využívat bez předchozího písemného souhlasu Poskytovatele.</P>
-            <P>2.2  Veškerý obsah webové prezentace na adrese {WEB}, včetně fotografií, textů, grafiky a zdrojového kódu, je chráněn autorským právem. Jakékoliv neoprávněné užití je zakázáno.</P>
-          </Section>
+        React.createElement(H2, null, 'Clanek II. - Obchodni znacka'),
+        React.createElement(P, null, '2.1  Znacka "' + BRAND + '" je vyhradne registrovana a provozovana spolecnosti ' + COMPANY + '. Klient neni opravnen znacku, logotyp ani vizualni identitu pouzivat bez pisemneho souhlasu.'),
+        React.createElement(P, null, '2.2  Vesker obsah webu ' + WEB + ' je chranen autorskym pravem. Neopravnene uziti je zakazano.'),
 
-          <Section title="Článek III. — Rezervace a uzavření smlouvy">
-            <P>3.1  Klient může provést rezervaci Služby prostřednictvím:</P>
-            <ul className="mb-4 ml-2"><Li>rezervačního formuláře na {WEB},</Li><Li>telefonicky na {TEL},</Li><Li>emailem na {EMAIL},</Li><Li>WhatsApp na výše uvedeném čísle.</Li></ul>
-            <P>3.2  Smlouva o poskytnutí Služby je uzavřena okamžikem potvrzení rezervace Poskytovatelem nebo uhrazením zálohy.</P>
-            <P>3.3  Poskytovatel je oprávněn rezervaci odmítnout bez udání důvodu, zejména při nedostatečné kapacitě, zdravotní kontraindikaci nebo předchozím porušení povinností Klienta.</P>
-            <P>3.4  Klient je povinen uvést pravdivé kontaktní údaje a zajistit vhodné podmínky pro výkon Služby na místě jejího provádění (osvětlení, hygiena, klidné prostředí).</P>
-          </Section>
+        React.createElement(H2, null, 'Clanek III. - Rezervace'),
+        React.createElement(P, null, '3.1  Rezervaci lze provest pres web, telefonicky (' + TEL + '), emailem (' + EMAIL + ') nebo WhatsApp.'),
+        React.createElement(P, null, '3.2  Smlouva je uzavrena potvrzenim rezervace nebo uhrazenim zalohy.'),
+        React.createElement(P, null, '3.3  Poskytovatel je opravnen rezervaci odmitnout bez udani duvodu.'),
+        React.createElement(P, null, '3.4  Klient je povinen zajistit vhodne podminky na miste (osvetleni, hygiena, klidne prostredi).'),
 
-          <Section title="Článek IV. — Ceny a platební podmínky">
-            <P>4.1  Ceny Služeb jsou uvedeny na {WEB} a jsou platné ke dni provedení rezervace.</P>
-            <P>4.2  Ceny jsou v Kč a zahrnují DPH v zákonné výši (je-li Poskytovatel plátcem DPH).</P>
-            <P>4.3  Na Služby prováděné mimo oblast do 10 km od sídla Poskytovatele v Mladé Boleslavi se uplatňuje příplatek za výjezd dle aktuálního ceníku zveřejněného na webu.</P>
-            <P>4.4  Platba probíhá v hotovosti po provedení Služby nebo bezhotovostně na bankovní účet Poskytovatele.</P>
-            <P>4.5  Poskytovatel může požadovat zálohu až 30 % z ceny Služby, splatnou do 48 hodin od potvrzení rezervace. Neuhrazením zálohy je Poskytovatel oprávněn rezervaci zrušit.</P>
-            <P>4.6  V případě prodlení s úhradou je Poskytovatel oprávněn požadovat zákonný úrok z prodlení.</P>
-          </Section>
+        React.createElement(H2, null, 'Clanek IV. - Ceny a platby'),
+        React.createElement(P, null, '4.1  Ceny sluzeb jsou uvedeny na ' + WEB + ' a plati ke dni rezervace.'),
+        React.createElement(P, null, '4.2  Na sluzby nad 10 km od sidla v Mlade Boleslavi se uplatni priplatek za vyjezd.'),
+        React.createElement(P, null, '4.3  Platba v hotovosti po sluzbe nebo bezhotovostne. Zalpha az 30 % splatna do 48 h od potvrzeni.'),
 
-          <Section title="Článek V. — Storno podmínky">
-            <ul className="mb-4 ml-2">
-              <Li><strong style={{color:'rgba(245,238,242,0.8)'}}>Zrušení více než 48 h před termínem:</strong> bez stornopoplatku, záloha vrácena v plné výši.</Li>
-              <Li><strong style={{color:'rgba(245,238,242,0.8)'}}>Zrušení 24–48 h před termínem:</strong> stornopoplatek 50 % z ceny Služby, záloha se nevrací.</Li>
-              <Li><strong style={{color:'rgba(245,238,242,0.8)'}}>Zrušení méně než 24 h nebo nedostavení se (no-show):</strong> stornopoplatek 100 % z ceny Služby.</Li>
-            </ul>
-            <P>5.2  Zrušení rezervace se provádí prokazatelnou formou (telefon, email, WhatsApp).</P>
-            <P>5.3  Poskytovatel může zrušit rezervaci při nenadálé překážce (nemoc, vyšší moc) — Klientovi je nabídnut náhradní termín nebo vrácena záloha do 7 pracovních dnů.</P>
-          </Section>
+        React.createElement(H2, null, 'Clanek V. - Storno podminky'),
+        React.createElement(Ul, null,
+          React.createElement(Li, null, 'Zruseni vice nez 48 h pred terminem: bez stornopoplatku, zalpha vracena.'),
+          React.createElement(Li, null, 'Zruseni 24-48 h pred terminem: stornopoplatek 50 %, zalpha se nevrace.'),
+          React.createElement(Li, null, 'Zruseni mene nez 24 h nebo no-show: stornopoplatek 100 % z ceny sluzby.')
+        ),
+        React.createElement(P, null, 'Zruseni se provadi prokazatelne (telefon, email, WhatsApp). Poskytovatel pri nenadale prekazce nabidne nahradni termin nebo vrati zalohu do 7 pracovnich dnu.'),
 
-          <Section title="Článek VI. — Práva a povinnosti smluvních stran">
-            <SubSection title="Povinnosti Poskytovatele:">
-              <ul className="ml-2"><Li>Provádět Služby s odbornou péčí a v souladu s hygienickými standardy.</Li><Li>Používat certifikované materiály vhodné pro typ Klienta.</Li><Li>Informovat Klienta o průběhu a péči po Službě.</Li><Li>Zachovávat mlčenlivost o osobních údajích Klienta.</Li></ul>
-            </SubSection>
-            <SubSection title="Povinnosti Klienta:">
-              <ul className="ml-2"><Li>Dostavit se včas nebo Poskytovatele o prodlení informovat.</Li><Li>Předem sdělit zdravotní stav, alergie a kontraindikace.</Li><Li>Zajistit vhodné podmínky na místě Služby.</Li><Li>Uhradit cenu dle platebních podmínek.</Li></ul>
-            </SubSection>
-          </Section>
+        React.createElement(H2, null, 'Clanek VI. - Prava a povinnosti'),
+        React.createElement(P, null, 'Poskytovatel: provadi sluzby s odbornou peci, pouziva certifikovane materialy, informuje Klienta o peci, zachovava mlcenlivost.'),
+        React.createElement(P, null, 'Klient: dostavit se vcas, sdelit zdravotni stav a alergie, zajistit podminky, uhradit cenu.'),
 
-          <Section title="Článek VII. — Reklamace a odpovědnost za vady">
-            <P>7.1  Klient je oprávněn reklamovat Službu do 7 dnů od jejího provedení, prokazatelnou formou s fotodokumentací zaslanou na {EMAIL}.</P>
-            <P>7.2  Lhůta pro vyřízení reklamace je 30 dnů. Uzná-li Poskytovatel reklamaci, nabídne nápravu, slevu nebo vrácení části ceny.</P>
-            <P>7.3  Poskytovatel neodpovídá za vady vzniklé nedodržením péče, zamlčením zdravotního stavu nebo nadměrným mechanickým namáháním výsledku Služby.</P>
-            <P>7.4  Celková odpovědnost za škodu je omezena na výši ceny příslušné Služby.</P>
-          </Section>
+        React.createElement(H2, null, 'Clanek VII. - Reklamace'),
+        React.createElement(P, null, '7.1  Reklamaci lze uplatnit do 7 dnu od provedeni sluzby emailem s fotodokumentaci.'),
+        React.createElement(P, null, '7.2  Lhuta pro vyrizeni je 30 dnu. Pri opravnene reklamaci: naprava, sleva nebo vraceni casti ceny.'),
+        React.createElement(P, null, '7.3  Poskytovatel neodpovida za vady zpusobene nedodrzenim pece, zamlcenim zdravotniho stavu nebo nadmernym namahani vysledku.'),
 
-          <Section title="Článek VIII. — Věrnostní program Lash Body">
-            <P>8.1  Podmínky věrnostního programu „Lash Body" jsou dostupné na webu Poskytovatele.</P>
-            <P>8.2  Věrnostní body nemají peněžní hodnotu a jsou nepřenosné. Poskytovatel může program kdykoli změnit nebo ukončit s předchozím oznámením.</P>
-          </Section>
+        React.createElement(H2, null, 'Clanek VIII. - Vernostni program Lash Body'),
+        React.createElement(P, null, 'Podminky programu jsou na webu. Body nemaji penezni hodnotu, jsou neprenosne. Poskytovatel muze program zmenit s predstihem.'),
 
-          <Section title="Článek IX. — Ochrana osobních údajů">
-            <P>9.1  Zpracování osobních údajů Klienta se řídí Zásadami ochrany osobních údajů (GDPR) dostupnými na adrese <Link href="/gdpr" style={{color:'#FF6BA8'}}>viktoria-lashes.cz/gdpr</Link>. Tyto Zásady jsou nedílnou součástí smluvního vztahu.</P>
-          </Section>
+        React.createElement(H2, null, 'Clanek IX. - Ochrana osobnich udaju'),
+        React.createElement(P, null, 'Zpracovani osobnich udaju se ridi Zasadami GDPR dostupnymi na viktoria-lashes.cz/gdpr.'),
 
-          <Section title="Článek X. — Rozhodné právo a řešení sporů">
-            <P>10.1  Strany se dohodly na primárním řešení sporů smírnou cestou.</P>
-            <P>10.2  Klient-spotřebitel je oprávněn podat návrh na mimosoudní řešení sporu České obchodní inspekci (ČOI), Štěpánská 567/15, 120 00 Praha 2, www.coi.cz.</P>
-            <P>10.3  Smluvní vztah se řídí právním řádem České republiky, zejm. zákonem č. 89/2012 Sb., občanský zákoník.</P>
-          </Section>
+        React.createElement(H2, null, 'Clanek X. - Reseni sporu'),
+        React.createElement(P, null, 'Strany resi spory prednostne smirnou cestou. Klient-spotrebitel muze podat navrh na mimosoudni reseni u Ceske obchodni inspekce (COI), Stepanska 567/15, Praha 2, www.coi.cz.'),
+        React.createElement(P, null, 'Smluvni vztah se ridi pravem Ceske republiky (zak. c. 89/2012 Sb., OZ).'),
 
-          <Section title="Článek XI. — Závěrečná ustanovení">
-            <P>11.1  VOP jsou platné od {DATE} a nahrazují veškerá předchozí ujednání.</P>
-            <P>11.2  Neplatnost jednoho ustanovení nemá vliv na platnost ostatních.</P>
-            <P>11.3  VOP jsou vyhotoveny v českém jazyce; v případě sporu o výklad je rozhodující české znění.</P>
-          </Section>
+        React.createElement(H2, null, 'Clanek XI. - Zaverecna ustanoveni'),
+        React.createElement(P, null, 'VOP jsou platne od ' + DATE + '. Neplatnost jednoho ustanoveni nema vliv na ostatni.'),
 
-          {/* Bottom links */}
-          <div className="mt-16 pt-8 border-t border-glass-border flex flex-wrap gap-4 justify-between items-center">
-            <Link href="/gdpr" className="text-sm font-light hover:text-pink-soft transition-colors" style={{ color: '#FF6BA8' }}>
-              Zásady ochrany osobních údajů →
-            </Link>
-            <Link href="/" className="text-sm font-light text-text-dim hover:text-text-muted transition-colors">
-              ← Zpět na hlavní stránku
-            </Link>
-          </div>
-        </div>
-      </main>
-      <Footer />
-    </>
+        React.createElement('div', { style: { marginTop: 48, paddingTop: 24, borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' as const, gap: 12 } },
+          React.createElement(Link, { href: '/gdpr', style: { fontFamily: 'Georgia,serif', fontSize: 13, color: '#FF6BA8' } }, 'Zasady GDPR →'),
+          React.createElement(Link, { href: '/', style: { fontFamily: 'Georgia,serif', fontSize: 13, color: 'rgba(245,238,242,0.3)' } }, '← Zpet na hlavni stranku')
+        )
+      )
+    ),
+    React.createElement(Footer, null)
   )
 }
