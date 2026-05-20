@@ -29,10 +29,10 @@ function Counter({ target, suffix }: { target: number; suffix: string }) {
 
 export function StatsBanner() {
   const stats = [
-    { target: 1200, suffix: '+', label: 'Spokojených klientek' },
-    { target: 4800, suffix: '+', label: 'Dokončených projektů' },
+    { target: 490,  suffix: '+', label: 'Spokojených klientek' },
+    { target: 1900, suffix: '+', label: 'Dokončených projektů' },
     { target: 98,   suffix: '%', label: 'Doporučení přátelům' },
-    { target: 8,    suffix: '',  label: 'Let zkušeností' },
+    { target: 4,    suffix: '',  label: 'Roky zkušeností' },
   ]
 
   return (

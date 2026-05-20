@@ -233,6 +233,8 @@ export function ViktoriaChatbot() {
     }),
   }
 
+  const [chatCursor, setChatCursor] = useState({x:0, y:0, visible:false})
+
   return (
     <div style={{ position:'fixed', bottom:20, right:20, zIndex:99999, display:'flex', flexDirection:'column', alignItems:'flex-end', gap:10, pointerEvents:'none' }}>
 
@@ -247,6 +249,11 @@ export function ViktoriaChatbot() {
             animate={{ opacity:1, y:0, scale:1 }}
             exit={{ opacity:0, y:12, scale:0.95 }}
             transition={{ duration:0.3, ease:[0.16,1,0.3,1] }}
+            onMouseMove={e => {
+              const r = e.currentTarget.getBoundingClientRect()
+              setChatCursor({x: e.clientX - r.left, y: e.clientY - r.top, visible: true})
+            }}
+            onMouseLeave={() => setChatCursor(c => ({...c, visible:false}))}
             style={{
               pointerEvents:'auto',
               background:'rgba(8,6,8,0.97)',
@@ -259,8 +266,14 @@ export function ViktoriaChatbot() {
               backdropFilter:'blur(20px)',
               boxShadow:'0 0 50px rgba(255,107,168,0.18), 0 16px 50px rgba(0,0,0,0.9)',
               overflow:'hidden',
+              cursor:'none',
             }}
           >
+            {/* Mini cursor inside chat */}
+            {chatCursor.visible && (
+              <div style={{ position:'absolute', left: chatCursor.x - 6, top: chatCursor.y - 6, width:12, height:12, borderRadius:'50%', background:'rgba(255,107,168,0.8)', boxShadow:'0 0 8px #FF6BA8, 0 0 16px rgba(255,107,168,0.4)', pointerEvents:'none', zIndex:99999, transform:'translate(0,0)', transition:'none', mixBlendMode:'screen' as const }}/>
+            )}
+
             {/* Header */}
             <div style={{ padding:'12px 16px', borderBottom:'1px solid rgba(255,107,168,0.18)', display:'flex', alignItems:'center', gap:10, background:'rgba(255,107,168,0.04)' }}>
               <AvatarSVG size={36}/>
