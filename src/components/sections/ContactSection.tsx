@@ -230,7 +230,7 @@ export function ContactSection() {
             {col:'#D4AA70', glow:'#D4AA70', label:'10–30 km — příplatek'},
             {col:'rgba(196,105,138,0.5)', glow:'none', label:'30–50 km — dohodou'},
           ].map(l => (
-            <div key={l.label} style={{display:'flex',alignItems:'center',gap:9,marginBottom:7,lastChild:{marginBottom:0}}}>
+            <div key={l.label} style={{display:'flex',alignItems:'center',gap:9,marginBottom:7}}>
               <div style={{width:8,height:8,borderRadius:'50%',background:l.col,boxShadow:l.glow!=='none'?`0 0 6px ${l.glow}`:'none',flexShrink:0}}/>
               <span style={{fontFamily:'Georgia,serif',fontSize:10,fontWeight:300,color:'rgba(245,238,242,0.6)'}}>{l.label}</span>
             </div>
