@@ -64,11 +64,8 @@ export function Footer() {
             </span>
             <div className="h-px w-16" style={{background:'linear-gradient(90deg,rgba(255,107,168,0.3),transparent)'}}/>
           </div>
-          <div className="font-sans font-light tracking-[3px]" style={{fontSize:9,color:'rgba(245,238,242,0.2)'}}>
-            Powered by{' '}
-            <span style={{color:'rgba(212,170,112,0.5)',textShadow:'0 0 8px rgba(212,170,112,0.3)'}}>
-              Hosabut Technologies
-            </span>
+          <div className="font-sans font-light tracking-[3px]" style={{fontSize:9,color:'rgba(245,238,242,0.15)'}}>
+            © 2026 Viktória Lashes · Hosabut s.r.o. · IČO: 23338342
           </div>
         </div>
       </div>
