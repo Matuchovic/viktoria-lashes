@@ -130,7 +130,14 @@ export function Navbar() {
                 </Link>
               </motion.div>
 
-              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.42 }} className="flex flex-col gap-3 w-full pt-4 border-t border-glass-border">
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.38 }} className="flex flex-col gap-2 w-full pt-4 border-t border-glass-border">
+                <div className="flex justify-center gap-6 pb-3 border-b border-glass-border">
+                  <Link href="/obchodni-podminky" className="font-serif text-xs font-light" style={{ color: 'rgba(245,238,242,0.3)', letterSpacing: 1 }} onClick={() => setMobileOpen(false)}>Obchodní podmínky</Link>
+                  <span style={{ color: 'rgba(245,238,242,0.15)' }}>·</span>
+                  <Link href="/gdpr" className="font-serif text-xs font-light" style={{ color: 'rgba(245,238,242,0.3)', letterSpacing: 1 }} onClick={() => setMobileOpen(false)}>GDPR</Link>
+                </div>
+              </motion.div>
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.42 }} className="flex flex-col gap-3 w-full">
                 {session ? (
                   <>
                     {isAdmin && <Link href="/admin" className="text-center py-3 rounded-xl font-serif text-sm font-light" style={{ background: 'rgba(212,170,112,0.1)', border: '1px solid rgba(212,170,112,0.3)', color: '#D4AA70' }} onClick={() => setMobileOpen(false)}>✦ Admin panel</Link>}

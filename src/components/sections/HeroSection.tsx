@@ -4,12 +4,12 @@ import Link from 'next/link'
 import { motion, useScroll, useTransform } from 'framer-motion'
 
 const HEARTS = [
-  {left:'63%',size:24,delay:0,   dur:8},
-  {left:'74%',size:16,delay:2.5, dur:10},
-  {left:'83%',size:30,delay:1.2, dur:9},
-  {left:'91%',size:14,delay:4.0, dur:11},
-  {left:'68%',size:20,delay:3.5, dur:8.5},
-  {left:'79%',size:26,delay:6.0, dur:9.5},
+  {left:'72%',size:22,delay:0,   dur:8},
+  {left:'85%',size:14,delay:2.5, dur:10},
+  {left:'60%',size:18,delay:1.2, dur:9},
+  {left:'90%',size:12,delay:4.0, dur:11},
+  {left:'78%',size:20,delay:3.5, dur:8.5},
+  {left:'65%',size:16,delay:6.0, dur:9.5},
 ]
 
 const SPARKLES = [
@@ -52,7 +52,7 @@ export function HeroSection() {
 
       {/* Floating hearts — balloon style */}
       {mounted && (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden hidden md:block">
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
           {HEARTS.map((h, i) => (
             <div
               key={i}
