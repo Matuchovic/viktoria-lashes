@@ -5,7 +5,7 @@ import { useToast } from '@/components/ui/Toaster'
 
 const INFO = [
   { icon:'📞', label:'Telefon & WhatsApp', value:'+420 720 307 007\nPo–Ne, 8:00 – 20:00' },
-  { icon:'✉',  label:'E-mail',             value:'vitkorialadikova23@gmail.com\nOdpovídám co nejdříve' },
+  { icon:'✉',  label:'E-mail',             value:'viktorialadikova23@gmail.com\nOdpovídám co nejdříve' },
   { icon:'🕐', label:'Pracovní doba',       value:'Pondělí – Pátek: 8:00 – 20:00\nSobota: 9:00 – 18:00\nNeděle: 10:00 – 16:00\n\nNehodí se čas? Zavolej a domluvíme se :)' },
   { icon:'🏠', label:'Kde působím',         value:'Mladá Boleslav a okolí\nPřijedu přímo k Vám domů' },
 ]
@@ -251,7 +251,7 @@ export function ContactSection() {
           ))}
           <div className="flex gap-4 pt-2">
             <a href="https://wa.me/420720307007" className="btn-primary py-3 px-6 text-[10px]">WhatsApp</a>
-            <a href="mailto:vitkorialadikova23@gmail.com" className="btn-ghost py-3 px-6 text-[10px]">E-mail</a>
+            <a href="mailto:viktorialadikova23@gmail.com" className="btn-ghost py-3 px-6 text-[10px]">E-mail</a>
           </div>
         </motion.div>
         <motion.div initial={{opacity:0,x:30}} animate={inView?{opacity:1,x:0}:{}} transition={{duration:0.8,delay:0.3}} className="relative glass-card p-12">
