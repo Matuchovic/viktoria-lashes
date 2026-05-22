@@ -570,8 +570,8 @@ export default function AdminDashboard() {
                       {!gpsTracking ? (
                         <button
                           onClick={() => startGPS(activeCheckin.id, activeCheckin.shareToken || activeCheckin.id)}
-                          style={{ background:'rgba(255,107,168,0.15)', border:'1px solid rgba(255,107,168,0.4)', borderRadius:10, padding:'10px 20px', color:'#FF6BA8', fontFamily:'Georgia,serif', fontSize:12, cursor:'pointer' }}>
-                          📍 Spustit GPS sledování
+                          style={{ background:'linear-gradient(135deg,rgba(255,107,168,0.2),rgba(196,105,138,0.15))', border:'1.5px solid rgba(255,107,168,0.5)', borderRadius:10, padding:'12px 22px', color:'#FF6BA8', fontFamily:'Georgia,serif', fontSize:13, cursor:'pointer', boxShadow:'0 0 20px rgba(255,107,168,0.2)' }}>
+                          📍 Spustit GPS + vygenerovat link pro manžela
                         </button>
                       ) : (
                         <button onClick={stopGPS}
@@ -601,9 +601,13 @@ export default function AdminDashboard() {
                             Kopírovat
                           </button>
                         </div>
-                        <div style={{ fontFamily:'Georgia,serif', fontSize:10, color:'rgba(245,238,242,0.25)', marginTop:6 }}>
-                          Pošlete tento odkaz manželovi — uvidí Vaši polohu v reálném čase
+                        <div style={{ fontFamily:'Georgia,serif', fontSize:11, color:'rgba(255,107,168,0.6)', marginTop:6 }}>
+                          💬 Zkopírujte a pošlete manželovi přes WhatsApp — uvidí Vaši polohu živě
                         </div>
+                        <a href={`https://wa.me/?text=${encodeURIComponent('Sleduj mou polohu živě: ' + shareLink)}`} target="_blank"
+                          style={{ display:'inline-block', marginTop:8, padding:'8px 16px', borderRadius:8, background:'rgba(37,211,102,0.15)', border:'1px solid rgba(37,211,102,0.4)', color:'#25d166', fontFamily:'Georgia,serif', fontSize:11, textDecoration:'none' }}>
+                          📲 Sdílet přes WhatsApp
+                        </a>
                       </div>
                     )}
                   </motion.div>
