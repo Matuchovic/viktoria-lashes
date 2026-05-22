@@ -9,13 +9,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
   try {
-    const { checkinId, lat, lng, accuracy } = await req.json()
+    const { checkinId, lat, lng } = await req.json()
+    // Store coords in notes as JSON until DB migration adds lastLat/lastLng columns
     await prisma.safetyCheckin.update({
       where: { id: checkinId },
       data: {
-        lastLat: lat,
-        lastLng: lng,
-        lastLocationAt: new Date(),
+        notes: JSON.stringify({ lat, lng, updatedAt: new Date().toISOString() }),
       },
     })
     return NextResponse.json({ ok: true })
@@ -35,23 +34,23 @@ export async function GET(req: Request) {
   }
 
   try {
-    // Find by id — token can be shareToken OR checkinId itself (fallback)
     const checkin = await prisma.safetyCheckin.findFirst({
-      where: {
-        id: checkinId,
-        OR: [
-          { shareToken: token },
-          { id: token }, // fallback: token = id
-        ],
-      },
+      where: { id: checkinId },
     })
 
     if (!checkin) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
+    // Parse coords from notes
+    let lat = null, lng = null, lastLocationAt = null
+    try {
+      if (checkin.notes && checkin.notes.startsWith('{')) {
+        const geo = JSON.parse(checkin.notes)
+        lat = geo.lat; lng = geo.lng; lastLocationAt = geo.updatedAt
+      }
+    } catch {}
+
     return NextResponse.json({
-      lat: checkin.lastLat,
-      lng: checkin.lastLng,
-      lastLocationAt: checkin.lastLocationAt,
+      lat, lng, lastLocationAt,
       clientName: checkin.clientName,
       address: checkin.address,
       expectedBack: checkin.expectedBack,
