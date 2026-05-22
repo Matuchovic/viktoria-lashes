@@ -556,16 +556,60 @@ export default function AdminDashboard() {
                 {/* Active checkin alert */}
                 {activeCheckin && (
                   <motion.div initial={{opacity:0,scale:0.98}} animate={{opacity:1,scale:1}}
-                    style={{ marginBottom:20, padding:'20px 24px', borderRadius:16, background:'rgba(248,113,113,0.1)', border:'1px solid rgba(248,113,113,0.4)', position:'relative', overflow:'hidden' }}>
+                    style={{ marginBottom:20, borderRadius:16, border:'1px solid rgba(248,113,113,0.4)', position:'relative', overflow:'hidden' }}>
                     <div style={{ position:'absolute', top:0, left:0, right:0, height:2, background:'linear-gradient(90deg,transparent,#f87171,transparent)' }}/>
-                    <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:3, color:'#f87171', textTransform:'uppercase', marginBottom:8 }}>⚠️ Aktivní výjezd</div>
-                    <div style={{ fontFamily:'Georgia,serif', fontSize:16, color:'rgba(245,238,242,0.9)', marginBottom:4 }}>{activeCheckin.clientName} — {activeCheckin.address}</div>
-                    <div style={{ fontFamily:'Georgia,serif', fontSize:12, color:'rgba(245,238,242,0.5)', marginBottom:16 }}>
-                      Tel: {activeCheckin.clientPhone} · Očekávaný návrat: {new Date(activeCheckin.expectedBack).toLocaleTimeString('cs-CZ', {hour:'2-digit',minute:'2-digit'})}
-                      {new Date(activeCheckin.expectedBack) < new Date() && (
-                        <span style={{ marginLeft:10, color:'#f87171', fontWeight:600 }}>⚠️ PO TERMÍNU!</span>
-                      )}
+
+                    {/* Info header */}
+                    <div style={{ padding:'16px 20px', background:'rgba(248,113,113,0.1)' }}>
+                      <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:3, color:'#f87171', textTransform:'uppercase', marginBottom:6 }}>⚠️ Aktivní výjezd</div>
+                      <div style={{ fontFamily:'Georgia,serif', fontSize:17, color:'rgba(245,238,242,0.9)', marginBottom:3 }}>{activeCheckin.clientName}</div>
+                      <div style={{ fontFamily:'Georgia,serif', fontSize:12, color:'rgba(245,238,242,0.5)' }}>
+                        📍 {activeCheckin.address} · Návrat: {new Date(activeCheckin.expectedBack).toLocaleTimeString('cs-CZ', {hour:'2-digit',minute:'2-digit'})}
+                        {new Date(activeCheckin.expectedBack) < new Date() && (
+                          <span style={{ marginLeft:8, color:'#f87171', fontWeight:700 }}>⚠️ PO TERMÍNU!</span>
+                        )}
+                      </div>
                     </div>
+
+                    {/* 3 action buttons */}
+                    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', borderTop:'1px solid rgba(248,113,113,0.2)' }}>
+                      {/* SOS */}
+                      <a
+                        href={'https://wa.me/420720307007?text=' + encodeURIComponent('🚨 SOS! Potřebuji pomoc!\nAdresa: ' + activeCheckin.address + '\nKlientka: ' + activeCheckin.clientName + ' ' + activeCheckin.clientPhone + (shareLink ? '\nPoloha: ' + shareLink : ''))}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => { try { navigator.vibrate([200,100,200,100,200]) } catch(e){} }}
+                        style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'16px 8px', background:'rgba(239,68,68,0.2)', borderRight:'1px solid rgba(248,113,113,0.2)', textDecoration:'none', gap:5 }}>
+                        <span style={{ fontSize:26 }}>🚨</span>
+                        <span style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:1, color:'#f87171', textTransform:'uppercase', textAlign:'center', lineHeight:1.4 }}>SOS<br/>Alert</span>
+                      </a>
+                      {/* Call */}
+                      <a
+                        href={'tel:' + activeCheckin.clientPhone}
+                        style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'16px 8px', background:'rgba(251,191,36,0.08)', borderRight:'1px solid rgba(248,113,113,0.2)', textDecoration:'none', gap:5 }}>
+                        <span style={{ fontSize:26 }}>📞</span>
+                        <span style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:1, color:'#fbbf24', textTransform:'uppercase', textAlign:'center', lineHeight:1.4 }}>Volat<br/>klientce</span>
+                      </a>
+                      {/* Arrived */}
+                      <button
+                        onClick={() => setActiveCheckin((c: any) => ({...c, arrivedAt: c.arrivedAt ? null : new Date().toISOString()}))}
+                        style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'16px 8px', background: activeCheckin.arrivedAt ? 'rgba(74,222,128,0.15)' : 'rgba(74,222,128,0.05)', border:'none', gap:5, cursor:'pointer' }}>
+                        <span style={{ fontSize:26 }}>{activeCheckin.arrivedAt ? '✅' : '🏠'}</span>
+                        <span style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:1, color: activeCheckin.arrivedAt ? '#4ade80' : 'rgba(74,222,128,0.4)', textTransform:'uppercase', textAlign:'center', lineHeight:1.4 }}>
+                          {activeCheckin.arrivedAt ? 'Dorazila ✓' : 'Příjezd\nv pořádku'}
+                        </span>
+                      </button>
+                    </div>
+
+                    {/* Hint */}
+                    <div style={{ padding:'8px 16px', background:'rgba(0,0,0,0.3)', borderTop:'1px solid rgba(248,113,113,0.1)' }}>
+                      <div style={{ fontFamily:'Georgia,serif', fontSize:10, color:'rgba(245,238,242,0.2)' }}>
+                        🚨 SOS pošle WhatsApp manželovi · 📞 Přímé volání klientce · 🏠 Potvrzení příjezdu
+                      </div>
+                    </div>
+
+                    {/* GPS + return buttons */}
+                    <div style={{ padding:'16px 20px', background:'rgba(248,113,113,0.05)', borderTop:'1px solid rgba(248,113,113,0.15)' }}>
                     <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
                       {!gpsTracking ? (
                         <button
