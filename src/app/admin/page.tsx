@@ -164,6 +164,39 @@ export default function AdminDashboard() {
   const [safetyForm, setSafetyForm] = useState({ address:'', clientName:'', clientPhone:'', expectedMinutes:'90', notes:'' })
   const [safetyLoading, setSafetyLoading] = useState(false)
   const [activeCheckin, setActiveCheckin] = useState<any>(null)
+  const [gpsTracking, setGpsTracking] = useState(false)
+  const [gpsWatchId, setGpsWatchId] = useState<number | null>(null)
+  const [shareLink, setShareLink] = useState('')
+
+  const startGPS = (checkinId: string, shareToken: string) => {
+    if (!navigator.geolocation) { alert('GPS není dostupné v tomto prohlížeči.'); return }
+    // Use shareToken from checkin object, fallback to checkinId
+    const token = shareToken || checkinId
+    const link = `${window.location.origin}/sledovani?id=${checkinId}&token=${token}`
+    setShareLink(link)
+    setGpsTracking(true)
+    const watchId = navigator.geolocation.watchPosition(
+      async (pos) => {
+        try {
+          await fetch('/api/safety/location', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ checkinId, lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy }),
+          })
+        } catch(e) { console.error('GPS send error:', e) }
+      },
+      (err) => console.error('GPS error:', err),
+      { enableHighAccuracy: true, maximumAge: 15000, timeout: 15000 }
+    )
+    setGpsWatchId(watchId as unknown as number)
+  }
+
+  const stopGPS = () => {
+    if (gpsWatchId !== null) navigator.geolocation.clearWatch(gpsWatchId)
+    setGpsTracking(false)
+    setGpsWatchId(null)
+    setShareLink('')
+  }
 
   useEffect(() => {
     if (status === 'unauthenticated') { router.push('/login'); return }
@@ -533,15 +566,46 @@ export default function AdminDashboard() {
                         <span style={{ marginLeft:10, color:'#f87171', fontWeight:600 }}>⚠️ PO TERMÍNU!</span>
                       )}
                     </div>
-                    <button
-                      onClick={async () => {
-                        await fetch('/api/safety/checkin', { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ id: activeCheckin.id }) })
-                        setActiveCheckin(null)
-                        setCheckins(c => c.map(x => x.id===activeCheckin.id ? {...x, returnedAt: new Date()} : x))
-                      }}
-                      style={{ background:'#4ade80', border:'none', borderRadius:10, padding:'10px 24px', color:'#0a1a0a', fontFamily:'Georgia,serif', fontSize:12, fontWeight:600, cursor:'pointer', boxShadow:'0 0 20px rgba(74,222,128,0.3)' }}>
-                      ✓ Jsem bezpečně zpět
-                    </button>
+                    <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
+                      {!gpsTracking ? (
+                        <button
+                          onClick={() => startGPS(activeCheckin.id, activeCheckin.shareToken || activeCheckin.id)}
+                          style={{ background:'rgba(255,107,168,0.15)', border:'1px solid rgba(255,107,168,0.4)', borderRadius:10, padding:'10px 20px', color:'#FF6BA8', fontFamily:'Georgia,serif', fontSize:12, cursor:'pointer' }}>
+                          📍 Spustit GPS sledování
+                        </button>
+                      ) : (
+                        <button onClick={stopGPS}
+                          style={{ background:'rgba(248,113,113,0.15)', border:'1px solid rgba(248,113,113,0.4)', borderRadius:10, padding:'10px 20px', color:'#f87171', fontFamily:'Georgia,serif', fontSize:12, cursor:'pointer' }}>
+                          ⏹ Zastavit GPS
+                        </button>
+                      )}
+                      <button
+                        onClick={async () => {
+                          stopGPS()
+                          await fetch('/api/safety/checkin', { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ id: activeCheckin.id }) })
+                          setActiveCheckin(null)
+                          setCheckins(c => c.map(x => x.id===activeCheckin.id ? {...x, returnedAt: new Date()} : x))
+                        }}
+                        style={{ background:'#4ade80', border:'none', borderRadius:10, padding:'10px 24px', color:'#0a1a0a', fontFamily:'Georgia,serif', fontSize:12, fontWeight:600, cursor:'pointer', boxShadow:'0 0 20px rgba(74,222,128,0.3)' }}>
+                        ✓ Jsem bezpečně zpět
+                      </button>
+                    </div>
+                    {gpsTracking && (
+                      <div style={{ marginTop:12, padding:'12px 16px', borderRadius:10, background:'rgba(255,107,168,0.06)', border:'1px solid rgba(255,107,168,0.2)' }}>
+                        <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:2, color:'#FF6BA8', textTransform:'uppercase', marginBottom:6 }}>📍 GPS aktivní — sdílejte odkaz</div>
+                        <div style={{ display:'flex', gap:8, alignItems:'center' }}>
+                          <input readOnly value={shareLink}
+                            style={{ flex:1, background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:8, padding:'6px 12px', color:'rgba(245,238,242,0.6)', fontFamily:'Georgia,serif', fontSize:11, outline:'none' }}/>
+                          <button onClick={() => { navigator.clipboard.writeText(shareLink) }}
+                            style={{ background:'rgba(255,107,168,0.15)', border:'1px solid rgba(255,107,168,0.3)', borderRadius:8, padding:'6px 14px', color:'#FF6BA8', fontFamily:'Georgia,serif', fontSize:11, cursor:'pointer', whiteSpace:'nowrap' }}>
+                            Kopírovat
+                          </button>
+                        </div>
+                        <div style={{ fontFamily:'Georgia,serif', fontSize:10, color:'rgba(245,238,242,0.25)', marginTop:6 }}>
+                          Pošlete tento odkaz manželovi — uvidí Vaši polohu v reálném čase
+                        </div>
+                      </div>
+                    )}
                   </motion.div>
                 )}
 
