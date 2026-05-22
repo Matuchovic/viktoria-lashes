@@ -23,20 +23,26 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Viktória Lashes — Luxusní Řasové Studio Praha',
+    default: 'Viktória Lashes — Luxusní Řasy | Mladá Boleslav & okolí',
     template: '%s | Viktória Lashes',
   },
-  description: 'Prémiové prodlužování řas v srdci Prahy. Klasické, objemové, mega volume, wet look a hybridní techniky. Rezervujte online — výsledky, které promění váš pohled.',
-  keywords: ['prodlužování řas Praha', 'řasové studio', 'mega volume', 'lash lifting', 'Viktória Lashes', 'luxury beauty'],
+  description: 'Prémiové prodlužování řas přímo u Vás doma. Přijedu za Vámi — Mladá Boleslav a okolí. Klasické, objemové, Mega Volume, Wet Look. Rezervujte online.',
+  keywords: ['prodlužování řas Mladá Boleslav', 'řasy domů', 'řasové studio', 'mega volume řasy', 'Viktória Lashes', 'luxury beauty', 'lash lifting'],
   authors: [{ name: 'Viktória Lashes Official' }],
   creator: 'Viktória Lashes',
+  metadataBase: new URL('https://www.viktoria-lashes.cz'),
   openGraph: {
-    title: 'Viktória Lashes — Luxusní Řasové Studio Praha',
-    description: 'Prémiové prodlužování řas. Rezervujte online.',
-    url: 'https://viktoralashes.cz',
+    title: 'Viktória Lashes — Přijedu k Vám domů 💕',
+    description: 'Prémiové prodlužování řas přímo u Vás doma. Mladá Boleslav & okolí. Rezervujte online.',
+    url: 'https://www.viktoria-lashes.cz',
     siteName: 'Viktória Lashes',
     locale: 'cs_CZ',
     type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Viktória Lashes — Přijedu k Vám domů',
+    description: 'Prémiové prodlužování řas. Mladá Boleslav & okolí.',
   },
   robots: { index: true, follow: true },
   manifest: '/manifest.json',
