@@ -20,6 +20,7 @@ const TABS = [
   { id:'bookings',  label:'Rezervace', icon:'📅' },
   { id:'customers', label:'Klientky',  icon:'💕' },
   { id:'services',  label:'Služby',    icon:'✦' },
+  { id:'safety',    label:'Bezpečnost',icon:'🛡️' },
 ]
 
 const MONTHS = ['ledna','února','března','dubna','května','června','července','srpna','září','října','listopadu','prosince']
@@ -159,6 +160,10 @@ export default function AdminDashboard() {
   const [selectedBooking, setSelectedBooking] = useState<any>(null)
   const [filterStatus, setFilterStatus] = useState('ALL')
   const [search, setSearch] = useState('')
+  const [checkins, setCheckins] = useState<any[]>([])
+  const [safetyForm, setSafetyForm] = useState({ address:'', clientName:'', clientPhone:'', expectedMinutes:'90', notes:'' })
+  const [safetyLoading, setSafetyLoading] = useState(false)
+  const [activeCheckin, setActiveCheckin] = useState<any>(null)
 
   useEffect(() => {
     if (status === 'unauthenticated') { router.push('/login'); return }
@@ -167,10 +172,17 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (status !== 'authenticated') return
-    fetch('/api/bookings')
-      .then(r => r.json())
-      .then(data => { setBookings(Array.isArray(data) ? data : []); setLoading(false) })
-      .catch(() => setLoading(false))
+    Promise.all([
+      fetch('/api/bookings').then(r => r.json()),
+      fetch('/api/safety/checkin').then(r => r.json()).catch(() => []),
+    ]).then(([bData, cData]) => {
+      setBookings(Array.isArray(bData) ? bData : [])
+      const cArr = Array.isArray(cData) ? cData : []
+      setCheckins(cArr)
+      const active = cArr.find((c: any) => !c.returnedAt)
+      setActiveCheckin(active || null)
+      setLoading(false)
+    }).catch(() => setLoading(false))
   }, [status])
 
   const updateStatus = async (id: string, newStatus: string) => {
@@ -283,6 +295,9 @@ export default function AdminDashboard() {
                 {t.label}
                 {t.id==='bookings' && pending>0 && (
                   <span style={{ marginLeft:'auto', background:'#FF6BA8', color:'white', borderRadius:20, padding:'1px 7px', fontSize:9 }}>{pending}</span>
+                )}
+                {t.id==='safety' && activeCheckin && (
+                  <span style={{ marginLeft:'auto', background:'#f87171', color:'white', borderRadius:20, padding:'1px 7px', fontSize:9 }}>!</span>
                 )}
               </button>
             ))}
@@ -497,6 +512,135 @@ export default function AdminDashboard() {
                 </div>
               </motion.div>
             )}
+            {/* SAFETY */}
+            {tab==='safety' && (
+              <motion.div key="sf" initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} exit={{opacity:0}}>
+                <div style={{ marginBottom:24 }}>
+                  <div style={{ fontFamily:'Georgia,serif', fontSize:10, letterSpacing:5, color:'#f87171', textTransform:'uppercase', marginBottom:6 }}>🛡️ Bezpečnostní systém</div>
+                  <h1 style={{ fontFamily:'Georgia,serif', fontWeight:300, fontSize:32, margin:0 }}>Ochrana při výjezdech</h1>
+                </div>
+
+                {/* Active checkin alert */}
+                {activeCheckin && (
+                  <motion.div initial={{opacity:0,scale:0.98}} animate={{opacity:1,scale:1}}
+                    style={{ marginBottom:20, padding:'20px 24px', borderRadius:16, background:'rgba(248,113,113,0.1)', border:'1px solid rgba(248,113,113,0.4)', position:'relative', overflow:'hidden' }}>
+                    <div style={{ position:'absolute', top:0, left:0, right:0, height:2, background:'linear-gradient(90deg,transparent,#f87171,transparent)' }}/>
+                    <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:3, color:'#f87171', textTransform:'uppercase', marginBottom:8 }}>⚠️ Aktivní výjezd</div>
+                    <div style={{ fontFamily:'Georgia,serif', fontSize:16, color:'rgba(245,238,242,0.9)', marginBottom:4 }}>{activeCheckin.clientName} — {activeCheckin.address}</div>
+                    <div style={{ fontFamily:'Georgia,serif', fontSize:12, color:'rgba(245,238,242,0.5)', marginBottom:16 }}>
+                      Tel: {activeCheckin.clientPhone} · Očekávaný návrat: {new Date(activeCheckin.expectedBack).toLocaleTimeString('cs-CZ', {hour:'2-digit',minute:'2-digit'})}
+                      {new Date(activeCheckin.expectedBack) < new Date() && (
+                        <span style={{ marginLeft:10, color:'#f87171', fontWeight:600 }}>⚠️ PO TERMÍNU!</span>
+                      )}
+                    </div>
+                    <button
+                      onClick={async () => {
+                        await fetch('/api/safety/checkin', { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ id: activeCheckin.id }) })
+                        setActiveCheckin(null)
+                        setCheckins(c => c.map(x => x.id===activeCheckin.id ? {...x, returnedAt: new Date()} : x))
+                      }}
+                      style={{ background:'#4ade80', border:'none', borderRadius:10, padding:'10px 24px', color:'#0a1a0a', fontFamily:'Georgia,serif', fontSize:12, fontWeight:600, cursor:'pointer', boxShadow:'0 0 20px rgba(74,222,128,0.3)' }}>
+                      ✓ Jsem bezpečně zpět
+                    </button>
+                  </motion.div>
+                )}
+
+                {/* New checkin form */}
+                {!activeCheckin && (
+                  <div style={{ background:'rgba(255,255,255,0.04)', border:'1px solid rgba(248,113,113,0.2)', borderRadius:16, padding:'24px', marginBottom:20, position:'relative', overflow:'hidden' }}>
+                    <div style={{ position:'absolute', top:0, left:0, right:0, height:1, background:'linear-gradient(90deg,transparent,rgba(248,113,113,0.5),transparent)' }}/>
+                    <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:4, color:'rgba(248,113,113,0.7)', textTransform:'uppercase', marginBottom:16 }}>Nový výjezd — check-in</div>
+                    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12 }}>
+                      {[
+                        { label:'Adresa klientky', key:'address', ph:'Např. Nádražní 12, Mladá Boleslav', full:true },
+                        { label:'Jméno klientky',  key:'clientName', ph:'Jana Nováková' },
+                        { label:'Telefon klientky', key:'clientPhone', ph:'+420 123 456 789' },
+                        { label:'Očekávaná doba (min)', key:'expectedMinutes', ph:'90' },
+                      ].map(f => (
+                        <div key={f.key} style={{ gridColumn: f.full ? '1/-1' : 'auto' }}>
+                          <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:2, color:'rgba(245,238,242,0.3)', textTransform:'uppercase', marginBottom:6 }}>{f.label}</div>
+                          <input value={(safetyForm as any)[f.key]} onChange={e => setSafetyForm(s => ({...s, [f.key]: e.target.value}))}
+                            placeholder={f.ph}
+                            style={{ width:'100%', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(248,113,113,0.2)', borderRadius:10, padding:'10px 14px', color:'rgba(245,238,242,0.85)', fontFamily:'Georgia,serif', fontSize:13, outline:'none' }}/>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ marginBottom:16 }}>
+                      <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:2, color:'rgba(245,238,242,0.3)', textTransform:'uppercase', marginBottom:6 }}>Poznámka (nepovinné)</div>
+                      <input value={safetyForm.notes} onChange={e => setSafetyForm(s => ({...s, notes: e.target.value}))}
+                        placeholder="Např. nová klientka, sdílím polohu s partnerem..."
+                        style={{ width:'100%', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(248,113,113,0.2)', borderRadius:10, padding:'10px 14px', color:'rgba(245,238,242,0.85)', fontFamily:'Georgia,serif', fontSize:13, outline:'none' }}/>
+                    </div>
+                    <button
+                      disabled={safetyLoading || !safetyForm.address || !safetyForm.clientName}
+                      onClick={async () => {
+                        setSafetyLoading(true)
+                        const res = await fetch('/api/safety/checkin', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(safetyForm) })
+                        const data = await res.json()
+                        setActiveCheckin(data)
+                        setCheckins(c => [data, ...c])
+                        setSafetyForm({ address:'', clientName:'', clientPhone:'', expectedMinutes:'90', notes:'' })
+                        setSafetyLoading(false)
+                      }}
+                      style={{ background:'linear-gradient(135deg,#dc2626,#f87171)', border:'none', borderRadius:10, padding:'12px 28px', color:'white', fontFamily:'Georgia,serif', fontSize:12, letterSpacing:2, cursor:'pointer', boxShadow:'0 0 20px rgba(248,113,113,0.3)', opacity: safetyLoading||!safetyForm.address ? 0.6 : 1 }}>
+                      {safetyLoading ? 'Odesílám...' : '🛡️ Odjíždím — spustit check-in'}
+                    </button>
+                  </div>
+                )}
+
+                {/* Checkin history */}
+                <div style={{ background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:16, overflow:'hidden' }}>
+                  <div style={{ padding:'16px 24px', borderBottom:'1px solid rgba(255,255,255,0.06)', fontFamily:'Georgia,serif', fontSize:14, fontWeight:300 }}>Historie výjezdů</div>
+                  <table style={{ width:'100%', borderCollapse:'collapse' }}>
+                    <thead>
+                      <tr style={{ borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
+                        {['Klientka', 'Adresa', 'Odjezd', 'Návrat', 'Stav'].map(h => (
+                          <th key={h} style={{ padding:'12px 16px', textAlign:'left', fontFamily:'Georgia,serif', fontSize:9, letterSpacing:3, color:'rgba(245,238,242,0.25)', textTransform:'uppercase', fontWeight:300 }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {checkins.length===0 && (
+                        <tr><td colSpan={5} style={{ padding:'32px', textAlign:'center', fontFamily:'Georgia,serif', fontSize:13, color:'rgba(245,238,242,0.2)' }}>Žádné záznamy</td></tr>
+                      )}
+                      {checkins.map(c => (
+                        <tr key={c.id} style={{ borderBottom:'1px solid rgba(255,255,255,0.04)' }}>
+                          <td style={{ padding:'12px 16px' }}>
+                            <div style={{ fontFamily:'Georgia,serif', fontSize:13, color:'rgba(245,238,242,0.85)' }}>{c.clientName}</div>
+                            <div style={{ fontFamily:'Georgia,serif', fontSize:11, color:'rgba(245,238,242,0.3)' }}>{c.clientPhone}</div>
+                          </td>
+                          <td style={{ padding:'12px 16px', fontFamily:'Georgia,serif', fontSize:12, color:'rgba(245,238,242,0.55)' }}>{c.address}</td>
+                          <td style={{ padding:'12px 16px', fontFamily:'Georgia,serif', fontSize:12, color:'rgba(245,238,242,0.5)' }}>{new Date(c.departedAt).toLocaleString('cs-CZ', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</td>
+                          <td style={{ padding:'12px 16px', fontFamily:'Georgia,serif', fontSize:12, color:'rgba(245,238,242,0.5)' }}>{c.returnedAt ? new Date(c.returnedAt).toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'}) : '—'}</td>
+                          <td style={{ padding:'12px 16px' }}>
+                            {c.returnedAt
+                              ? <span style={{ padding:'3px 10px', borderRadius:20, fontSize:10, background:'rgba(74,222,128,0.1)', color:'#4ade80', border:'1px solid rgba(74,222,128,0.3)' }}>Bezpečně zpět</span>
+                              : new Date(c.expectedBack) < new Date()
+                                ? <span style={{ padding:'3px 10px', borderRadius:20, fontSize:10, background:'rgba(248,113,113,0.1)', color:'#f87171', border:'1px solid rgba(248,113,113,0.3)' }}>⚠️ Po termínu</span>
+                                : <span style={{ padding:'3px 10px', borderRadius:20, fontSize:10, background:'rgba(251,191,36,0.1)', color:'#fbbf24', border:'1px solid rgba(251,191,36,0.3)' }}>Na cestě</span>
+                            }
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Client verification section */}
+                <div style={{ marginTop:20, background:'rgba(255,255,255,0.04)', border:'1px solid rgba(212,170,112,0.2)', borderRadius:16, padding:'24px', position:'relative', overflow:'hidden' }}>
+                  <div style={{ position:'absolute', top:0, left:0, right:0, height:1, background:'linear-gradient(90deg,transparent,rgba(212,170,112,0.5),transparent)' }}/>
+                  <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:4, color:'#D4AA70', textTransform:'uppercase', marginBottom:8 }}>Ověření klientek</div>
+                  <p style={{ fontFamily:'Georgia,serif', fontSize:13, color:'rgba(245,238,242,0.5)', marginBottom:16, lineHeight:1.7 }}>
+                    V sekci <strong style={{color:'rgba(245,238,242,0.7)'}}>Klientky</strong> můžete každou klientku označit jako ověřenou ✓ nebo přidat rizikovou poznámku. Při rezervaci neověřené klientky se zobrazí upozornění.
+                  </p>
+                  <button onClick={() => setTab('customers')}
+                    style={{ background:'rgba(212,170,112,0.1)', border:'1px solid rgba(212,170,112,0.3)', borderRadius:10, padding:'10px 20px', color:'#D4AA70', fontFamily:'Georgia,serif', fontSize:11, letterSpacing:2, cursor:'pointer' }}>
+                    Správa klientek →
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
           </AnimatePresence>
         </div>
       </div>

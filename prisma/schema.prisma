@@ -19,7 +19,9 @@ model User {
   password      String?
   phone         String?
   role          Role      @default(CUSTOMER)
-  loyaltyPoints Int       @default(0)
+  loyaltyPoints    Int       @default(0)
+  clientVerified   Boolean   @default(false)
+  clientRiskNote   String?
   birthDate     DateTime?
   pointsHistory LashPointsHistory[]
   bookings      Booking[]
@@ -238,4 +240,19 @@ enum BookingStatus {
   CANCELLED
   COMPLETED
   NO_SHOW
+}
+
+model SafetyCheckin {
+  id          String   @id @default(cuid())
+  address     String
+  clientName  String
+  clientPhone String
+  departedAt  DateTime @default(now())
+  expectedBack DateTime
+  returnedAt  DateTime?
+  alertSent   Boolean  @default(false)
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  @@map("safety_checkins")
 }
