@@ -610,7 +610,7 @@ export default function AdminDashboard() {
 
                     {/* GPS + return buttons */}
                     <div style={{ padding:'16px 20px', background:'rgba(248,113,113,0.05)', borderTop:'1px solid rgba(248,113,113,0.15)' }}>
-                    <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
+                    <div style={{ display:'flex', gap:10, flexWrap:'wrap' as const }}>
                       {!gpsTracking ? (
                         <button
                           onClick={() => startGPS(activeCheckin.id, activeCheckin.shareToken || activeCheckin.id)}
@@ -654,6 +654,7 @@ export default function AdminDashboard() {
                         </a>
                       </div>
                     )}
+                    </div>
                   </motion.div>
                 )}
 
