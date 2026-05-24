@@ -37,90 +37,126 @@ const TESTIMONIALS = [
 
 function Stars({ n }: { n: number }) {
   return (
-    <div className="flex gap-0.5 text-gold text-sm mb-5">
+    <div style={{ color:'#D4AA70', fontSize:14, marginBottom:16, letterSpacing:2 }}>
       {'★'.repeat(n)}
-    </div>
-  )
-}
-
-function TestimonialCard({ t, paused }: { t: typeof TESTIMONIALS[0]; paused: boolean }) {
-  return (
-    <div
-      className="glass-card flex-shrink-0 w-80 md:w-96 p-8 relative overflow-hidden"
-      style={{ cursor: 'none' }}
-    >
-      <div className="absolute top-0 left-5 font-serif text-[100px] leading-none text-pink-neon/8 pointer-events-none select-none" aria-hidden>"</div>
-      <Stars n={t.rating} />
-      <p className="text-text-muted font-light leading-relaxed italic mb-6 text-sm relative">{t.textCs}</p>
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-deep to-pink-neon flex items-center justify-center text-white font-medium text-xs flex-shrink-0">
-          {t.initials}
-        </div>
-        <div>
-          <div className="text-sm font-medium text-text-primary">{t.authorName}</div>
-          <div className="text-xs text-text-dim font-light">{t.location} · {t.source} · {t.date}</div>
-        </div>
-      </div>
     </div>
   )
 }
 
 export function TestimonialsSection() {
   const ref = useRef(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true })
-  const [paused, setPaused] = useState(false)
-  const doubled = [...TESTIMONIALS, ...TESTIMONIALS]
+  const [active, setActive] = useState(0)
+
+  const scrollTo = (i: number) => {
+    const el = scrollRef.current
+    if (!el) return
+    const card = el.children[i] as HTMLElement
+    if (!card) return
+    el.scrollTo({ left: card.offsetLeft - 20, behavior: 'smooth' })
+    setActive(i)
+  }
+
+  const handleScroll = () => {
+    const el = scrollRef.current
+    if (!el) return
+    const center = el.scrollLeft + el.clientWidth / 2
+    let closest = 0
+    let minDist = Infinity
+    Array.from(el.children).forEach((child, i) => {
+      const c = child as HTMLElement
+      const dist = Math.abs(c.offsetLeft + c.offsetWidth / 2 - center)
+      if (dist < minDist) { minDist = dist; closest = i }
+    })
+    setActive(closest)
+  }
 
   return (
-    <section id="recenze" className="bg-black-2 py-32 overflow-hidden">
-      <div className="px-5 md:px-16 mb-12">
-        <motion.div
-          ref={ref}
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
-          className="flex items-end justify-between flex-wrap gap-6"
-        >
-          <div>
-            <div className="section-label mb-5">Recenze klientek</div>
-            <h2 className="section-title">Co říkají <em>naše klientky</em></h2>
-          </div>
-          {/* Pause / Play button */}
-          <motion.button
-            initial={{ opacity: 0 }}
-            animate={inView ? { opacity: 1 } : {}}
-            transition={{ delay: 0.5 }}
-            onClick={() => setPaused(p => !p)}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 8,
-              background: paused ? 'rgba(255,107,168,0.12)' : 'rgba(255,255,255,0.04)',
-              border: `1px solid ${paused ? 'rgba(255,107,168,0.4)' : 'rgba(255,255,255,0.1)'}`,
-              borderRadius: 10, padding: '8px 16px',
-              color: paused ? '#FF6BA8' : 'rgba(245,238,242,0.4)',
-              fontFamily: 'Georgia,serif', fontSize: 11, letterSpacing: 2,
-              textTransform: 'uppercase', cursor: 'none',
-              transition: 'all 0.3s',
-            }}
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.96 }}
-          >
-            <span style={{ fontSize: 14 }}>{paused ? '▶' : '⏸'}</span>
-            {paused ? 'Přehrát' : 'Pozastavit'}
-          </motion.button>
+    <section id="recenze" style={{ background:'#080608', paddingTop:80, paddingBottom:80, overflow:'hidden' }}>
+      <div style={{ padding:'0 20px 0', maxWidth:1200, margin:'0 auto' }}>
+        <motion.div ref={ref} initial={{opacity:0,y:30}} animate={inView?{opacity:1,y:0}:{}} transition={{duration:0.8}}
+          style={{ marginBottom:36 }}>
+          <div className="section-label" style={{ marginBottom:16 }}>Recenze klientek</div>
+          <h2 className="section-title">Co říkají <em>naše klientky</em></h2>
         </motion.div>
       </div>
 
+      {/* Scrollable cards */}
       <div
-        className="flex gap-6"
+        ref={scrollRef}
+        onScroll={handleScroll}
         style={{
-          width: 'max-content',
-          animation: paused ? 'none' : 'marquee 40s linear infinite',
+          display:'flex',
+          gap:16,
+          overflowX:'auto',
+          paddingLeft:20,
+          paddingRight:20,
+          paddingBottom:12,
+          scrollSnapType:'x mandatory',
+          WebkitOverflowScrolling:'touch',
+          scrollbarWidth:'none',
+          msOverflowStyle:'none',
+          cursor:'grab',
         }}
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
+        className="no-scrollbar"
       >
-        {doubled.map((t, i) => (
-          <TestimonialCard key={`${t.id}-${i}`} t={t} paused={paused} />
+        {TESTIMONIALS.map((t, i) => (
+          <motion.div
+            key={t.id}
+            initial={{opacity:0, y:20}}
+            animate={inView ? {opacity:1, y:0} : {}}
+            transition={{delay: i * 0.1, duration:0.6}}
+            style={{
+              flexShrink:0,
+              width:'min(340px, 80vw)',
+              scrollSnapAlign:'start',
+              background:'rgba(255,255,255,0.04)',
+              border:'1px solid rgba(255,107,168,0.15)',
+              borderRadius:20,
+              padding:24,
+              position:'relative',
+              overflow:'hidden',
+            }}
+          >
+            <div style={{ position:'absolute', top:0, left:0, right:0, height:1, background:'linear-gradient(90deg,transparent,rgba(255,107,168,0.4),rgba(212,170,112,0.2),transparent)' }}/>
+            {/* Quote mark */}
+            <div style={{ fontFamily:'Georgia,serif', fontSize:80, lineHeight:0.8, color:'rgba(255,107,168,0.08)', position:'absolute', top:16, left:16, pointerEvents:'none', userSelect:'none' }}>"</div>
+
+            <Stars n={t.rating} />
+            <p style={{ fontFamily:'Georgia,serif', fontSize:14, fontWeight:300, lineHeight:1.75, color:'rgba(245,238,242,0.7)', fontStyle:'italic', marginBottom:24, position:'relative' }}>
+              {t.textCs}
+            </p>
+            <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+              <div style={{ width:40, height:40, borderRadius:'50%', background:'linear-gradient(135deg,#C4698A,#FF6BA8)', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'Georgia,serif', fontSize:14, color:'white', flexShrink:0 }}>
+                {t.initials}
+              </div>
+              <div>
+                <div style={{ fontFamily:'Georgia,serif', fontSize:13, color:'rgba(245,238,242,0.85)' }}>{t.authorName}</div>
+                <div style={{ fontFamily:'Georgia,serif', fontSize:10, color:'rgba(245,238,242,0.3)' }}>{t.location} · {t.source} · {t.date}</div>
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Dot navigation */}
+      <div style={{ display:'flex', justifyContent:'center', gap:8, marginTop:20 }}>
+        {TESTIMONIALS.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => scrollTo(i)}
+            style={{
+              width: active===i ? 24 : 8,
+              height:8,
+              borderRadius:20,
+              border:'none',
+              background: active===i ? '#FF6BA8' : 'rgba(255,107,168,0.25)',
+              cursor:'pointer',
+              transition:'all 0.3s ease',
+              padding:0,
+            }}
+          />
         ))}
       </div>
     </section>
