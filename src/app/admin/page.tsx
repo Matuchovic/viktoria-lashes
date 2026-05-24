@@ -309,33 +309,6 @@ export default function AdminDashboard() {
         )}
       </AnimatePresence>
 
-      {/* Mobile top bar */}
-      <div className="md:hidden" style={{ position:'fixed', top:0, left:0, right:0, zIndex:100, background:'rgba(8,6,8,0.97)', borderBottom:'1px solid rgba(255,107,168,0.15)', padding:'12px 16px', display:'flex', alignItems:'center', justifyContent:'space-between', backdropFilter:'blur(20px)' }}>
-        <div>
-          <div style={{ fontFamily:'Georgia,serif', fontSize:12, letterSpacing:3, textTransform:'uppercase' }}>Viktória <span style={{ color:'#FF6BA8' }}>Lashes</span></div>
-          <div style={{ fontFamily:'Georgia,serif', fontSize:8, letterSpacing:2, color:'rgba(255,107,168,0.5)', textTransform:'uppercase' }}>Admin Panel</div>
-        </div>
-        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-          {activeCheckin && <div style={{ width:8, height:8, borderRadius:'50%', background:'#f87171', boxShadow:'0 0 8px #f87171' }}/>}
-          {pending > 0 && <div style={{ background:'#FF6BA8', color:'white', borderRadius:20, padding:'2px 8px', fontFamily:'Georgia,serif', fontSize:10 }}>{pending}</div>}
-          <button onClick={() => signOut({ callbackUrl:'/' })} style={{ background:'none', border:'1px solid rgba(255,255,255,0.08)', borderRadius:8, padding:'5px 10px', color:'rgba(245,238,242,0.3)', fontFamily:'Georgia,serif', fontSize:9, cursor:'pointer' }}>Odhlásit</button>
-        </div>
-      </div>
-
-      {/* Mobile bottom navigation */}
-      <div className="md:hidden" style={{ position:'fixed', bottom:0, left:0, right:0, zIndex:100, background:'rgba(8,6,8,0.97)', borderTop:'1px solid rgba(255,107,168,0.15)', backdropFilter:'blur(20px)', display:'flex' }}>
-        {TABS.map(t => (
-          <button key={t.id} onClick={() => setTab(t.id)}
-            style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'10px 4px 14px', border:'none', background:'transparent', position:'relative', cursor:'pointer' }}>
-            {tab === t.id && <div style={{ position:'absolute', top:0, left:'20%', right:'20%', height:2, background:'#FF6BA8', borderRadius:'0 0 4px 4px' }}/>}
-            <span style={{ fontSize:18 }}>{t.icon}</span>
-            <span style={{ fontFamily:'Georgia,serif', fontSize:8, letterSpacing:1, textTransform:'uppercase', marginTop:3, color: tab===t.id ? '#FF6BA8' : 'rgba(245,238,242,0.3)' }}>{t.label}</span>
-            {t.id==='bookings' && pending>0 && <div style={{ position:'absolute', top:6, right:'18%', width:14, height:14, borderRadius:'50%', background:'#FF6BA8', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'Georgia,serif', fontSize:8, color:'white' }}>{pending}</div>}
-            {t.id==='safety' && activeCheckin && <div style={{ position:'absolute', top:6, right:'18%', width:8, height:8, borderRadius:'50%', background:'#f87171', boxShadow:'0 0 6px #f87171' }}/>}
-          </button>
-        ))}
-      </div>
-
       <div style={{ minHeight:'100vh', background:'#080608', display:'flex' }}>
         {/* Sidebar — hidden on mobile, visible on desktop */}
         <div style={{ width:220, flexShrink:0, borderRight:'1px solid rgba(255,107,168,0.1)', display:'flex', flexDirection:'column', position:'sticky', top:0, height:'100vh', background:'rgba(255,255,255,0.02)' }} className="hidden md:flex">
@@ -373,7 +346,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Main */}
-        <div style={{ flex:1, overflowY:'auto', padding:'80px 14px 90px', position:'relative' }} className="md:!p-8">
+        <div style={{ flex:1, overflowY:'auto', padding:'20px 16px 60px', position:'relative' }} className="md:p-8">
           <div style={{ position:'fixed', inset:0, pointerEvents:'none', background:'radial-gradient(ellipse 50% 40% at 60% 20%,rgba(196,105,138,0.07) 0%,transparent 70%)' }}/>
 
           <AnimatePresence mode="wait">
@@ -382,15 +355,15 @@ export default function AdminDashboard() {
               <motion.div key="ov" initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} exit={{opacity:0}}>
                 <div style={{ marginBottom:28 }}>
                   <div style={{ fontFamily:'Georgia,serif', fontSize:10, letterSpacing:5, color:'#FF6BA8', textTransform:'uppercase', marginBottom:8 }}>✦ Dashboard</div>
-                  <h1 style={{ fontFamily:'Georgia,serif', fontWeight:300, fontSize:'clamp(22px,5vw,36px)', margin:0 }}>Přehled studia</h1>
+                  <h1 style={{ fontFamily:'Georgia,serif', fontWeight:300, fontSize:36, margin:0 }}>Přehled studia</h1>
                 </div>
-                <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:10, marginBottom:16 }} className="md:grid-cols-4">
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12, marginBottom:24 }}>
                   <StatCard label="Tržby tento měsíc" value={formatPrice(revenueThisMonth)} sub={`${revenueGrowth>=0?'+':''}${revenueGrowth}% vs minulý`} color="#FF6BA8" icon="💰" delay={0.05}/>
                   <StatCard label="Nadcházející" value={upcoming.length} sub="rezervací" color="#D4AA70" icon="📅" delay={0.1}/>
                   <StatCard label="Klientek" value={uniqueEmails.length} color="#E8A4BE" icon="💕" delay={0.15}/>
                   <StatCard label="Čeká na potvrzení" value={pending} color="#f87171" icon="⏳" delay={0.2}/>
                 </div>
-                <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:10, marginBottom:16 }} className="md:grid-cols-3">
+                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:12, marginBottom:24 }}>
                   <StatCard label="Potvrzeno" value={confirmed} color="#4ade80" icon="✓" delay={0.25}/>
                   <StatCard label="Tržby min. měsíc" value={formatPrice(revenueLastMonth)} color="#D4AA70" icon="◈" delay={0.3}/>
                   <StatCard label="Celkem rezervací" value={bookings.length} color="#FF6BA8" icon="✦" delay={0.35}/>
@@ -577,7 +550,7 @@ export default function AdminDashboard() {
               <motion.div key="sf" initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} exit={{opacity:0}}>
                 <div style={{ marginBottom:24 }}>
                   <div style={{ fontFamily:'Georgia,serif', fontSize:10, letterSpacing:5, color:'#f87171', textTransform:'uppercase', marginBottom:6 }}>🛡️ Bezpečnostní systém</div>
-                  <h1 style={{ fontFamily:'Georgia,serif', fontWeight:300, fontSize:'clamp(20px,5vw,32px)', margin:0 }}>Ochrana při výjezdech</h1>
+                  <h1 style={{ fontFamily:'Georgia,serif', fontWeight:300, fontSize:32, margin:0 }}>Ochrana při výjezdech</h1>
                 </div>
 
                 {/* Active checkin alert */}
@@ -690,7 +663,7 @@ export default function AdminDashboard() {
                   <div style={{ background:'rgba(255,255,255,0.04)', border:'1px solid rgba(248,113,113,0.2)', borderRadius:16, padding:'24px', marginBottom:20, position:'relative', overflow:'hidden' }}>
                     <div style={{ position:'absolute', top:0, left:0, right:0, height:1, background:'linear-gradient(90deg,transparent,rgba(248,113,113,0.5),transparent)' }}/>
                     <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:4, color:'rgba(248,113,113,0.7)', textTransform:'uppercase', marginBottom:16 }}>Nový výjezd — check-in</div>
-                    <div style={{ display:'grid', gridTemplateColumns:'1fr', gap:10, marginBottom:12 }} className="md:grid-cols-2">
+                    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12 }}>
                       {[
                         { label:'Adresa klientky', key:'address', ph:'Např. Nádražní 12, Mladá Boleslav', full:true },
                         { label:'Jméno klientky',  key:'clientName', ph:'Jana Nováková' },
