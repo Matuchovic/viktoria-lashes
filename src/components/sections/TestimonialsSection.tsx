@@ -110,7 +110,7 @@ export function TestimonialsSection() {
             style={{
               flexShrink:0,
               width:'min(340px, 80vw)',
-              scrollSnapAlign:'start',
+
               background:'rgba(255,255,255,0.04)',
               border:'1px solid rgba(255,107,168,0.15)',
               borderRadius:20,
