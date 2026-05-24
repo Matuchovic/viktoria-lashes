@@ -62,11 +62,6 @@ export const metadata: Metadata = {
     shortcut: '/favicon-32.png',
   },
   robots: { index: true, follow: true },
-  manifest: '/manifest.json',
-  icons: {
-    icon: '/favicon.ico',
-    apple: '/apple-touch-icon.png',
-  },
 }
 
 export const viewport: Viewport = {
