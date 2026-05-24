@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1a0810"/>
+      <stop offset="100%" stop-color="#080608"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="60%" r="40%">
+      <stop offset="0%" stop-color="#FF6BA8" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#FF6BA8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
+  <rect width="64" height="64" rx="14" fill="url(#glow)"/>
+  <!-- Lash lines from base -->
+  <g stroke-linecap="round" fill="none">
+    <line x1="32" y1="46" x2="16" y2="18" stroke="#FF6BA8" stroke-width="2" opacity="0.7"/>
+    <line x1="32" y1="46" x2="21" y2="15" stroke="#E8A4BE" stroke-width="2.2" opacity="0.85"/>
+    <line x1="32" y1="46" x2="27" y2="13" stroke="#FF6BA8" stroke-width="2.5" opacity="1"/>
+    <line x1="32" y1="46" x2="32" y2="12" stroke="#D4AA70" stroke-width="2.8" opacity="1"/>
+    <line x1="32" y1="46" x2="37" y2="13" stroke="#FF6BA8" stroke-width="2.5" opacity="1"/>
+    <line x1="32" y1="46" x2="43" y2="15" stroke="#E8A4BE" stroke-width="2.2" opacity="0.85"/>
+    <line x1="32" y1="46" x2="48" y2="18" stroke="#FF6BA8" stroke-width="2" opacity="0.7"/>
+  </g>
+  <!-- V letter subtle -->
+  <text x="32" y="54" text-anchor="middle" font-family="Georgia,serif" font-size="10" fill="rgba(255,107,168,0.5)" font-style="italic" letter-spacing="1">VL</text>
+  <!-- Glow dot at base -->
+  <circle cx="32" cy="46" r="3" fill="#FF6BA8" opacity="0.9"/>
+  <circle cx="32" cy="46" r="1.5" fill="white" opacity="0.8"/>
+</svg>

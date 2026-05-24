@@ -38,11 +38,28 @@ export const metadata: Metadata = {
     siteName: 'Viktória Lashes',
     locale: 'cs_CZ',
     type: 'website',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Viktória Lashes — Prémiové prodlužování řas',
+      }
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Viktória Lashes — Přijedu k Vám domů',
     description: 'Prémiové prodlužování řas. Mladá Boleslav & okolí.',
+    images: ['/og-image.png'],
+  },
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: '/apple-touch-icon.png',
+    shortcut: '/favicon-32.png',
   },
   robots: { index: true, follow: true },
   manifest: '/manifest.json',
