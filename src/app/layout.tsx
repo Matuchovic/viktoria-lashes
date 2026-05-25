@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from 'next'
 import { Cormorant_Garamond, Outfit } from 'next/font/google'
 import './globals.css'
 import { Providers } from '@/components/layout/Providers'
+import { VisitorTracker } from '@/components/ui/VisitorTracker'
 import { Toaster } from '@/components/ui/Toaster'
 import { ViktoriaChatbot } from '@/components/ui/ViktoriaChatbot'
 
@@ -76,6 +77,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="cs" className={`${cormorant.variable} ${outfit.variable}`}>
       <body className="bg-black text-text-primary antialiased font-sans cursor-none selection:bg-pink-neon/20 selection:text-pink-neon">
         <Providers>
+        <VisitorTracker />
           {children}
           <Toaster />
           <ViktoriaChatbot />

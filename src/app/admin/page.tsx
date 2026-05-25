@@ -134,6 +134,7 @@ export default function AdminDashboard() {
   const [notifLoading, setNotifLoading] = useState(false)
   const [notifResult, setNotifResult] = useState<any>(null)
   const [subCount, setSubCount] = useState<number | null>(null)
+  const [onlineData, setOnlineData] = useState<any>(null)
 
   useEffect(() => {
     if (status === 'unauthenticated') { router.push('/login'); return }
@@ -154,6 +155,11 @@ export default function AdminDashboard() {
       setActiveCheckin(cArr.find((c: any) => !c.returnedAt) || null)
       setLoading(false)
       fetch('/api/push/send').then(r => r.json()).then(d => setSubCount(d.count)).catch(() => {})
+      // Fetch online users
+      const fetchOnline = () => fetch('/api/analytics/online').then(r => r.json()).then(setOnlineData).catch(() => {})
+      fetchOnline()
+      const onlineInterval = setInterval(fetchOnline, 15000)
+      return () => clearInterval(onlineInterval)
     }).catch(() => setLoading(false))
   }, [status])
 
@@ -309,6 +315,51 @@ export default function AdminDashboard() {
                   <StatCard label="Tržby min. měsíc" value={formatPrice(revenueLastMonth)} color="#D4AA70" icon="◈" delay={0.3}/>
                   <StatCard label="Celkem rezervací" value={bookings.length} color="#FF6BA8" icon="✦" delay={0.35}/>
                 </div>
+                {/* Online users widget */}
+                {onlineData && (
+                  <motion.div initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} transition={{delay:0.4}}
+                    style={{ marginBottom:16, background:'rgba(255,255,255,0.04)', border:'1px solid rgba(74,222,128,0.2)', borderRadius:16, padding:'16px 20px', position:'relative', overflow:'hidden' }}>
+                    <div style={{ position:'absolute', top:0, left:0, right:0, height:1, background:'linear-gradient(90deg,transparent,rgba(74,222,128,0.4),transparent)' }}/>
+                    <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom: onlineData.count > 0 ? 14 : 0 }}>
+                      <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                        <motion.div animate={{ scale:[1,1.3,1], opacity:[1,0.5,1] }} transition={{ duration:2, repeat:Infinity }}
+                          style={{ width:8, height:8, borderRadius:'50%', background:'#4ade80', boxShadow:'0 0 8px #4ade80' }}/>
+                        <span style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:3, color:'#4ade80', textTransform:'uppercase' }}>Právě online</span>
+                      </div>
+                      <span style={{ fontFamily:'Georgia,serif', fontSize:24, color:'#4ade80', marginLeft:'auto' }}>{onlineData.count}</span>
+                      <span style={{ fontFamily:'Georgia,serif', fontSize:11, color:'rgba(245,238,242,0.35)' }}>návštěvníků</span>
+                    </div>
+                    {onlineData.count > 0 && (
+                      <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+                        {onlineData.users.slice(0,5).map((u: any) => (
+                          <div key={u.id} style={{ display:'flex', alignItems:'center', gap:8, padding:'6px 10px', borderRadius:8, background:'rgba(74,222,128,0.05)' }}>
+                            <span style={{ fontSize:14 }}>{u.device==='mobile' ? '📱' : '💻'}</span>
+                            <div style={{ flex:1, minWidth:0 }}>
+                              <div style={{ fontFamily:'Georgia,serif', fontSize:12, color:'rgba(245,238,242,0.7)' }}>
+                                {u.userName ? u.userName : 'Návštěvník'}
+                                {u.isLoggedIn && <span style={{ marginLeft:6, fontSize:9, color:'#FF6BA8' }}>přihlášen</span>}
+                              </div>
+                              <div style={{ fontFamily:'Georgia,serif', fontSize:10, color:'rgba(245,238,242,0.3)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{u.page}</div>
+                            </div>
+                            <span style={{ fontFamily:'Georgia,serif', fontSize:10, color:'rgba(74,222,128,0.5)' }}>
+                              {Math.round((Date.now() - u.lastSeen) / 1000)}s
+                            </span>
+                          </div>
+                        ))}
+                        {Object.keys(onlineData.pageStats).length > 0 && (
+                          <div style={{ marginTop:6, paddingTop:8, borderTop:'1px solid rgba(255,255,255,0.05)', display:'flex', gap:6, flexWrap:'wrap' }}>
+                            {Object.entries(onlineData.pageStats).map(([page, count]: [string, any]) => (
+                              <span key={page} style={{ fontFamily:'Georgia,serif', fontSize:9, padding:'2px 8px', borderRadius:20, background:'rgba(74,222,128,0.08)', color:'rgba(74,222,128,0.6)', border:'1px solid rgba(74,222,128,0.15)' }}>
+                                {page} ({count})
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+
                 {/* Upcoming list — mobile friendly cards */}
                 <GCard>
                   <div style={{ padding:'14px 16px', borderBottom:'1px solid rgba(255,255,255,0.05)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
