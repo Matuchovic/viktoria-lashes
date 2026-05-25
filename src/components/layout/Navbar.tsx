@@ -7,11 +7,11 @@ import { useSession, signOut } from 'next-auth/react'
 import { cn } from '@/lib/utils'
 
 const links = [
-  { href: '/#sluzby',       label: 'Služby' },
-  { href: '/#galerie',      label: 'Galerie' },
-  { href: '/#stylistky',    label: 'Studio' },
-  { href: '/#recenze',      label: 'Recenze' },
-  { href: '/#kontakt',      label: 'Kontakt' },
+  { href: '/#sluzby',        label: 'Služby' },
+  { href: '/#galerie',       label: 'Galerie' },
+  { href: '/#stylistky',     label: 'Studio' },
+  { href: '/#recenze',       label: 'Recenze' },
+  { href: '/#kontakt',       label: 'Kontakt' },
   { href: '/jak-rezervovat', label: 'Jak rezervovat?' },
 ]
 
@@ -44,7 +44,7 @@ export function Navbar() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         className={cn(
-          'fixed top-0 left-0 right-0 z-50 flex items-center justify-between transition-all duration-500',
+          'fixed top-0 left-0 right-0 z-50 flex lg:grid lg:grid-cols-[auto_1fr_auto] items-center justify-between transition-all duration-500',
           scrolled
             ? 'px-5 md:px-16 py-3 bg-black/90 backdrop-blur-xl border-b border-glass-border'
             : 'px-5 md:px-16 py-5 md:py-7'
@@ -55,10 +55,12 @@ export function Navbar() {
           Vikt<span style={{display:"inline-block",position:"relative"}}><span style={{display:"inline-block"}}>ó</span><span style={{position:"absolute",bottom:"110%",left:"50%",transform:"translateX(-50%) scaleY(0.7)",fontSize:"0.45em",color:"inherit",lineHeight:1,pointerEvents:"none"}}>´</span></span>ria <span className="text-pink-neon">Lashes</span>
         </Link>
 
-        {/* Desktop links */}
-        <ul className="hidden lg:flex items-center gap-8">
+        {/* Desktop links — horizontal, centered */}
+        <ul className="hidden lg:flex items-center justify-center gap-5 xl:gap-7 flex-nowrap">
           {links.map(l => (
-            <li key={l.href}><Link href={l.href} className="nav-link">{l.label}</Link></li>
+            <li key={l.href} style={{whiteSpace:'nowrap'}}>
+              <Link href={l.href} className="nav-link">{l.label}</Link>
+            </li>
           ))}
         </ul>
 
