@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
   try {
     const bookings = await prisma.booking.findMany({
       where,
-      include: { service: true, artist: true },
+      include: { service: true, artist: true, user: { select: { id:true, loyaltyPoints:true } } },
       orderBy: [{ date: 'desc' }, { time: 'asc' }],
       take: 100,
     })
@@ -152,7 +152,7 @@ export async function POST(req: NextRequest) {
         depositKc,
         status:        'PENDING',
       },
-      include: { service: true, artist: true },
+      include: { service: true, artist: true, user: { select: { id:true, loyaltyPoints:true } } },
     })
 
     sendBookingConfirmation({

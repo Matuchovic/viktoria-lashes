@@ -44,6 +44,14 @@ export async function POST(request: Request) {
       console.error('Points history error:', e)
     }
 
+    // Send welcome email
+    try {
+      const { sendWelcomeEmail } = await import('@/lib/email')
+      await sendWelcomeEmail({ name: user.name, email: user.email })
+    } catch (e) {
+      console.error('Welcome email error:', e)
+    }
+
     return NextResponse.json({ id: user.id, email: user.email }, { status: 201 })
   } catch (err) {
     console.error('Register error:', err)
