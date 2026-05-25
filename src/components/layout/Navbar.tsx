@@ -56,7 +56,7 @@ export function Navbar() {
         </Link>
 
         {/* Desktop links */}
-        <ul className="hidden lg:flex items-center gap-10">
+        <ul className="hidden lg:flex items-center gap-8">
           {links.map(l => (
             <li key={l.href}><Link href={l.href} className="nav-link">{l.label}</Link></li>
           ))}
@@ -64,6 +64,19 @@ export function Navbar() {
 
         {/* Desktop CTA */}
         <div className="hidden lg:flex items-center gap-4">
+          {/* Social icons */}
+          <a href="https://www.facebook.com/share/18imr7C2BC/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer"
+            style={{ display:'flex', alignItems:'center', justifyContent:'center', width:32, height:32, borderRadius:8, background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.08)', color:'rgba(245,238,242,0.5)', transition:'all 0.2s', textDecoration:'none', fontSize:15 }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background='rgba(24,119,242,0.15)'; (e.currentTarget as HTMLElement).style.color='#4267B2'; (e.currentTarget as HTMLElement).style.borderColor='rgba(66,103,178,0.4)' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background='rgba(255,255,255,0.05)'; (e.currentTarget as HTMLElement).style.color='rgba(245,238,242,0.5)'; (e.currentTarget as HTMLElement).style.borderColor='rgba(255,255,255,0.08)' }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          </a>
+          <a href="https://www.tiktok.com/@viktorialashes__?_r=1&_t=ZN-96dr85cM7cs" target="_blank" rel="noopener noreferrer"
+            style={{ display:'flex', alignItems:'center', justifyContent:'center', width:32, height:32, borderRadius:8, background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.08)', color:'rgba(245,238,242,0.5)', transition:'all 0.2s', textDecoration:'none', fontSize:15 }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background='rgba(255,0,80,0.12)'; (e.currentTarget as HTMLElement).style.color='#ff0050'; (e.currentTarget as HTMLElement).style.borderColor='rgba(255,0,80,0.3)' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background='rgba(255,255,255,0.05)'; (e.currentTarget as HTMLElement).style.color='rgba(245,238,242,0.5)'; (e.currentTarget as HTMLElement).style.borderColor='rgba(255,255,255,0.08)' }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>
+          </a>
           <Link href="/vernostni-program" className="nav-link">Lash Body ✦</Link>
           {session ? (
             <div className="flex items-center gap-4">
@@ -135,6 +148,16 @@ export function Navbar() {
                 <Link href="/jak-rezervovat" className="font-serif text-lg font-light" style={{ color: '#FF6BA8' }} onClick={() => setMobileOpen(false)}>
                   📖 Jak rezervovat?
                 </Link>
+              </motion.div>
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="flex justify-center gap-4 pt-2">
+                <a href="https://www.facebook.com/share/18imr7C2BC/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer"
+                  style={{ display:'flex', alignItems:'center', justifyContent:'center', width:44, height:44, borderRadius:12, background:'rgba(24,119,242,0.1)', border:'1px solid rgba(66,103,178,0.3)', color:'#4267B2' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                </a>
+                <a href="https://www.tiktok.com/@viktorialashes__?_r=1&_t=ZN-96dr85cM7cs" target="_blank" rel="noopener noreferrer"
+                  style={{ display:'flex', alignItems:'center', justifyContent:'center', width:44, height:44, borderRadius:12, background:'rgba(255,0,80,0.08)', border:'1px solid rgba(255,0,80,0.25)', color:'#ff0050' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>
+                </a>
               </motion.div>
 
               <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.38 }} className="flex flex-col gap-2 w-full pt-4 border-t border-glass-border">
