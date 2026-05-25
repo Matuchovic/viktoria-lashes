@@ -25,28 +25,28 @@ export default function LoyaltyPage() {
     <>
       <CustomCursor />
       <Navbar />
-      <main className="min-h-screen bg-black pt-28 pb-24 px-8 md:px-16">
+      <main className="min-h-screen bg-black pt-24 pb-24 px-4 md:px-16">
         <div className="max-w-5xl mx-auto">
 
           {/* Hero */}
-          <motion.div initial={{opacity:0,y:30}} animate={{opacity:1,y:0}} transition={{duration:0.8}} className="mb-20 text-center">
+          <motion.div initial={{opacity:0,y:30}} animate={{opacity:1,y:0}} transition={{duration:0.8}} className="mb-12 text-center">
             <div className="section-label mb-4">✦ Věrnostní program</div>
-            <h1 className="font-serif text-6xl md:text-8xl font-light mb-6">
+            <h1 className="font-serif text-5xl md:text-8xl font-light mb-6">
               Lash <em className="not-italic" style={{background:'linear-gradient(135deg,#E8A4BE,#FF6BA8,#D4AA70)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text',filter:'drop-shadow(0 0 25px rgba(255,107,168,0.5))'}}>Body</em>
             </h1>
             <p className="text-text-muted font-light text-lg max-w-xl mx-auto leading-relaxed">
               Za každou návštěvu sbíráte body a odemykáte exkluzivní výhody. Čím více Vás milujeme, tím více Vás odměníme.
             </p>
-            <div className="flex items-center justify-center gap-4 mt-8">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
               <Link href="/register" className="btn-primary border-none">Začít sbírat body →</Link>
               <Link href="/login" className="btn-ghost">Přihlásit se</Link>
             </div>
           </motion.div>
 
           {/* How it works */}
-          <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.2}} className="mb-20">
+          <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.2}} className="mb-12">
             <div className="section-label mb-4">Jak to funguje</div>
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {[
                 {num:'01', icon:'💳', label:'Zaregistrujte se', desc:'Ihned získáte 250 Lash Body uvítací bonus'},
                 {num:'02', icon:'✨', label:'Navštivte studio', desc:'1 Kč = 1 Lash Body za každou návštěvu'},
@@ -68,7 +68,7 @@ export default function LoyaltyPage() {
           {/* Tiers */}
           <div className="section-label mb-4">Úrovně</div>
           <h2 className="section-title mb-10">Lash Tiers</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-20">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-16">
             {TIERS.map((t,i) => {
               const info = TIER_INFO[t.key as keyof typeof TIER_INFO]
               const isElite = t.key === 'ELITE'
@@ -102,7 +102,7 @@ export default function LoyaltyPage() {
           {/* Rewards */}
           <div className="section-label mb-4">Obchod s odměnami</div>
           <h2 className="section-title mb-10">Utraťte Lash Body</h2>
-          <div className="grid grid-cols-5 gap-4 mb-20">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-16">
             {REWARDS.map((r,i) => (
               <motion.div key={r.id} initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:i*0.08}}
                 className="glass-card p-5 text-center group hover:border-pink-deep/50 transition-all duration-300 relative overflow-hidden"
@@ -134,7 +134,7 @@ export default function LoyaltyPage() {
               <div className="px-4 py-2 rounded-full text-[10px] tracking-[2px] uppercase" style={{background:'rgba(212,170,112,0.1)',border:'1px solid rgba(212,170,112,0.3)',color:'#D4AA70'}}>Jaro 2026</div>
             </div>
             <div className="p-8">
-              <div className="grid grid-cols-2 gap-3 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
                 {LASH_PASS_CHALLENGES.map((c,i) => (
                   <div key={c.id} className="flex items-center gap-3 rounded-2xl p-4 transition-all duration-200"
                     style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.07)'}}>
@@ -160,7 +160,7 @@ export default function LoyaltyPage() {
           {/* Bonuses */}
           <div className="section-label mb-4">Bonusové akce</div>
           <h2 className="section-title mb-8">Dvojité body & speciální akce</h2>
-          <div className="grid grid-cols-4 gap-4 mb-20">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-16">
             {BONUSES.map((b,i) => (
               <motion.div key={b.label} initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:i*0.08}}
                 className="glass-card p-6 text-center group hover:border-pink-deep/40 transition-all duration-300 relative overflow-hidden"
@@ -176,12 +176,12 @@ export default function LoyaltyPage() {
 
           {/* CTA */}
           <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.5}}
-            className="glass-card p-12 text-center relative overflow-hidden">
+            className="glass-card p-6 md:p-12 text-center relative overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-px" style={{background:'linear-gradient(90deg,transparent,#FF6BA8,#D4AA70,transparent)'}}/>
             <div className="font-light tracking-[4px] uppercase mb-4 text-[10px]" style={{color:'#D4AA70'}}>✦ Začněte dnes</div>
-            <h3 className="font-serif text-4xl font-light mb-4">Získejte 250 bodů zdarma</h3>
+            <h3 className="font-serif text-3xl md:text-4xl font-light mb-4">Získejte 250 bodů zdarma</h3>
             <p className="text-text-muted font-light mb-8 max-w-md mx-auto">Zaregistrujte se a ihned dostanete uvítací bonus. Každá návštěva Vás posouvá blíže k exkluzivním odměnám.</p>
-            <div className="flex items-center justify-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/register" className="btn-primary border-none">Registrovat se zdarma →</Link>
               <Link href="/rezervace" className="btn-ghost">Rezervovat termín</Link>
             </div>
