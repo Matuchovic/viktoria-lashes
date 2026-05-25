@@ -22,6 +22,7 @@ const TABS = [
   { id:'services',  label:'Služby',     icon:'✦' },
   { id:'safety',    label:'Bezpečnost', icon:'🛡️' },
   { id:'notifs',    label:'Notifikace', icon:'🔔' },
+  { id:'reviews',   label:'Recenze',    icon:'⭐' },
 ]
 
 const MONTHS = ['ledna','února','března','dubna','května','června','července','srpna','září','října','listopadu','prosince']
@@ -126,6 +127,10 @@ export default function AdminDashboard() {
   const [gpsWatchId, setGpsWatchId] = useState<number | null>(null)
   const [shareLink, setShareLink] = useState('')
   const [notifForm, setNotifForm] = useState({ title:'', body:'', url:'/' })
+  const [reviews, setReviews] = useState<any[]>([])
+  const [reviewsLoaded, setReviewsLoaded] = useState(false)
+  const [editingReview, setEditingReview] = useState<any>(null)
+  const [replyText, setReplyText] = useState('')
   const [notifLoading, setNotifLoading] = useState(false)
   const [notifResult, setNotifResult] = useState<any>(null)
   const [subCount, setSubCount] = useState<number | null>(null)
@@ -759,6 +764,138 @@ export default function AdminDashboard() {
                       </button>
                     ))}
                   </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* REVIEWS */}
+            {tab==='reviews' && (
+              <motion.div key="rv" initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} exit={{opacity:0}}
+                ref={el => { if(el && !reviewsLoaded) { setReviewsLoaded(true); fetch('/api/reviews/admin').then(r=>r.json()).then(setReviews) } }}>
+                <div style={{ marginBottom:16 }}>
+                  <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:5, color:'#FF6BA8', textTransform:'uppercase', marginBottom:6 }}>⭐ Správa recenzí</div>
+                  <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:10 }}>
+                    <h1 style={{ fontFamily:'Georgia,serif', fontWeight:300, fontSize:'clamp(20px,5vw,32px)', margin:0 }}>Recenze klientek</h1>
+                    <a href="/napsat-recenzi" target="_blank" style={{ padding:'8px 16px', borderRadius:10, background:'rgba(255,107,168,0.1)', border:'1px solid rgba(255,107,168,0.3)', color:'#FF6BA8', fontFamily:'Georgia,serif', fontSize:11, textDecoration:'none' }}>
+                      + Odkaz na formulář →
+                    </a>
+                  </div>
+                </div>
+
+                {/* Status filter tabs */}
+                <div style={{ display:'flex', gap:8, marginBottom:16, flexWrap:'wrap' }}>
+                  {[
+                    { key:'ALL', label:`Vše (${reviews.length})` },
+                    { key:'PENDING', label:`Čeká (${reviews.filter(r=>r.status==='PENDING').length})`, color:'#D4AA70' },
+                    { key:'APPROVED', label:`Schváleno (${reviews.filter(r=>r.status==='APPROVED').length})`, color:'#4ade80' },
+                    { key:'REJECTED', label:`Zamítnuto (${reviews.filter(r=>r.status==='REJECTED').length})`, color:'#f87171' },
+                  ].map(f => (
+                    <button key={f.key} onClick={() => setSearch(f.key==='ALL' ? '' : f.key)}
+                      style={{ padding:'6px 14px', borderRadius:20, border:`1px solid ${f.color||'rgba(255,255,255,0.15)'}`, background:'transparent', color:f.color||'rgba(245,238,242,0.5)', fontFamily:'Georgia,serif', fontSize:11, cursor:'pointer' }}>
+                      {f.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+                  {reviews.filter(r => !search || r.status===search).map(r => (
+                    <motion.div key={r.id} initial={{opacity:0,y:8}} animate={{opacity:1,y:0}}
+                      style={{ background:'rgba(255,255,255,0.04)', border:`1px solid ${r.status==='APPROVED'?'rgba(74,222,128,0.2)':r.status==='REJECTED'?'rgba(248,113,113,0.2)':'rgba(212,170,112,0.2)'}`, borderRadius:16, padding:18, position:'relative', overflow:'hidden' }}>
+                      <div style={{ position:'absolute', top:0, left:0, right:0, height:1, background:`linear-gradient(90deg,transparent,${r.status==='APPROVED'?'rgba(74,222,128,0.4)':r.status==='REJECTED'?'rgba(248,113,113,0.4)':'rgba(212,170,112,0.4)'},transparent)` }}/>
+
+                      {/* Header */}
+                      <div style={{ display:'flex', alignItems:'flex-start', gap:10, marginBottom:10 }}>
+                        <div style={{ width:38, height:38, borderRadius:'50%', background:'linear-gradient(135deg,#C4698A,#FF6BA8)', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'Georgia,serif', fontSize:15, color:'white', flexShrink:0 }}>
+                          {r.authorName?.[0]?.toUpperCase()}
+                        </div>
+                        <div style={{ flex:1, minWidth:0 }}>
+                          <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap', marginBottom:2 }}>
+                            <span style={{ fontFamily:'Georgia,serif', fontSize:14, color:'rgba(245,238,242,0.9)' }}>{r.authorName}</span>
+                            {r.location && <span style={{ fontFamily:'Georgia,serif', fontSize:11, color:'rgba(245,238,242,0.35)' }}>📍 {r.location}</span>}
+                            {r.service && <span style={{ fontFamily:'Georgia,serif', fontSize:10, padding:'2px 8px', borderRadius:20, background:'rgba(255,107,168,0.1)', color:'rgba(255,107,168,0.7)', border:'1px solid rgba(255,107,168,0.2)' }}>{r.service}</span>}
+                          </div>
+                          <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                            <span style={{ color:'#D4AA70', fontSize:12 }}>{'★'.repeat(r.rating)}{'☆'.repeat(5-r.rating)}</span>
+                            <span style={{ fontFamily:'Georgia,serif', fontSize:10, color:'rgba(245,238,242,0.25)' }}>{new Date(r.createdAt).toLocaleDateString('cs-CZ')}</span>
+                            <span style={{ padding:'2px 8px', borderRadius:20, fontSize:9, fontFamily:'Georgia,serif',
+                              background:r.status==='APPROVED'?'rgba(74,222,128,0.1)':r.status==='REJECTED'?'rgba(248,113,113,0.1)':'rgba(212,170,112,0.1)',
+                              color:r.status==='APPROVED'?'#4ade80':r.status==='REJECTED'?'#f87171':'#D4AA70',
+                              border:`1px solid ${r.status==='APPROVED'?'rgba(74,222,128,0.3)':r.status==='REJECTED'?'rgba(248,113,113,0.3)':'rgba(212,170,112,0.3)'}` }}>
+                              {r.status==='APPROVED'?'✓ Schváleno':r.status==='REJECTED'?'✗ Zamítnuto':'⏳ Čeká'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Text */}
+                      <p style={{ fontFamily:'Georgia,serif', fontSize:13, color:'rgba(245,238,242,0.7)', lineHeight:1.7, marginBottom:10, fontStyle:'italic' }}>"{r.text}"</p>
+
+                      {/* Admin reply */}
+                      {r.adminReply && (
+                        <div style={{ padding:'10px 14px', borderRadius:10, background:'rgba(255,107,168,0.06)', border:'1px solid rgba(255,107,168,0.2)', marginBottom:10 }}>
+                          <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:2, color:'#FF6BA8', textTransform:'uppercase', marginBottom:4 }}>💕 Odpověď Viktórie</div>
+                          <div style={{ fontFamily:'Georgia,serif', fontSize:12, color:'rgba(245,238,242,0.65)' }}>{r.adminReply}</div>
+                        </div>
+                      )}
+
+                      {/* Reply input */}
+                      {editingReview===r.id && (
+                        <div style={{ marginBottom:10 }}>
+                          <textarea value={replyText} onChange={e=>setReplyText(e.target.value)} placeholder="Napište odpověď klientce..." rows={3}
+                            style={{ width:'100%', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,107,168,0.25)', borderRadius:10, padding:'10px 12px', color:'rgba(245,238,242,0.85)', fontFamily:'Georgia,serif', fontSize:13, outline:'none', resize:'none', boxSizing:'border-box' as const }}/>
+                          <div style={{ display:'flex', gap:6, marginTop:6 }}>
+                            <button onClick={async () => {
+                              await fetch('/api/reviews/admin', { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ id:r.id, adminReply:replyText }) })
+                              setReviews(rv => rv.map(x => x.id===r.id ? {...x, adminReply:replyText} : x))
+                              setEditingReview(null); setReplyText('')
+                            }} style={{ padding:'7px 16px', borderRadius:8, background:'rgba(255,107,168,0.15)', border:'1px solid rgba(255,107,168,0.3)', color:'#FF6BA8', fontFamily:'Georgia,serif', fontSize:11, cursor:'pointer' }}>
+                              Uložit odpověď
+                            </button>
+                            <button onClick={() => { setEditingReview(null); setReplyText('') }}
+                              style={{ padding:'7px 14px', borderRadius:8, background:'none', border:'1px solid rgba(255,255,255,0.1)', color:'rgba(245,238,242,0.35)', fontFamily:'Georgia,serif', fontSize:11, cursor:'pointer' }}>
+                              Zrušit
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Action buttons */}
+                      <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+                        {r.status !== 'APPROVED' && (
+                          <button onClick={async () => {
+                            await fetch('/api/reviews/admin', { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ id:r.id, status:'APPROVED' }) })
+                            setReviews(rv => rv.map(x => x.id===r.id ? {...x, status:'APPROVED'} : x))
+                          }} style={{ padding:'6px 14px', borderRadius:8, background:'rgba(74,222,128,0.1)', border:'1px solid rgba(74,222,128,0.3)', color:'#4ade80', fontFamily:'Georgia,serif', fontSize:11, cursor:'pointer' }}>
+                            ✓ Schválit
+                          </button>
+                        )}
+                        {r.status !== 'REJECTED' && (
+                          <button onClick={async () => {
+                            await fetch('/api/reviews/admin', { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ id:r.id, status:'REJECTED' }) })
+                            setReviews(rv => rv.map(x => x.id===r.id ? {...x, status:'REJECTED'} : x))
+                          }} style={{ padding:'6px 14px', borderRadius:8, background:'rgba(248,113,113,0.1)', border:'1px solid rgba(248,113,113,0.3)', color:'#f87171', fontFamily:'Georgia,serif', fontSize:11, cursor:'pointer' }}>
+                            ✗ Zamítnout
+                          </button>
+                        )}
+                        <button onClick={() => { setEditingReview(r.id); setReplyText(r.adminReply || '') }}
+                          style={{ padding:'6px 14px', borderRadius:8, background:'rgba(255,107,168,0.08)', border:'1px solid rgba(255,107,168,0.25)', color:'#FF6BA8', fontFamily:'Georgia,serif', fontSize:11, cursor:'pointer' }}>
+                          💕 {r.adminReply ? 'Upravit odpověď' : 'Odpovědět'}
+                        </button>
+                        <button onClick={async () => {
+                          if (!confirm('Opravdu smazat?')) return
+                          await fetch('/api/reviews/admin', { method:'DELETE', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ id:r.id }) })
+                          setReviews(rv => rv.filter(x => x.id !== r.id))
+                        }} style={{ padding:'6px 14px', borderRadius:8, background:'none', border:'1px solid rgba(255,255,255,0.08)', color:'rgba(245,238,242,0.3)', fontFamily:'Georgia,serif', fontSize:11, cursor:'pointer' }}>
+                          🗑 Smazat
+                        </button>
+                      </div>
+                    </motion.div>
+                  ))}
+                  {reviews.length === 0 && (
+                    <div style={{ padding:48, textAlign:'center', fontFamily:'Georgia,serif', fontSize:13, color:'rgba(245,238,242,0.2)' }}>
+                      Zatím žádné recenze. Sdílejte odkaz na formulář s klientkami!
+                    </div>
+                  )}
                 </div>
               </motion.div>
             )}

@@ -271,3 +271,19 @@ model PushSubscription {
 
   @@map("push_subscriptions")
 }
+
+model Review {
+  id          String   @id @default(cuid())
+  authorName  String
+  authorEmail String?
+  location    String?
+  text        String
+  rating      Int      @default(5)
+  status      String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  adminReply  String?
+  service     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("reviews")
+}
