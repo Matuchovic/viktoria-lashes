@@ -59,11 +59,11 @@ export function AppSection() {
           </p>
         </motion.div>
 
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:24, alignItems:'start' }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-start">
 
           {/* Left — features */}
           <motion.div initial={{ opacity:0, x:-30 }} animate={inView?{opacity:1,x:0}:{}} transition={{ duration:0.7, delay:0.2 }}>
-            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:24 }}>
+            <div className="grid grid-cols-2 gap-3 mb-5">
               {FEATURES.map((f,i) => (
                 <motion.div key={f.title} initial={{ opacity:0, y:20 }} animate={inView?{opacity:1,y:0}:{}} transition={{ delay:0.3+i*0.1 }}
                   style={{ background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,107,168,0.12)', borderRadius:16, padding:'18px 16px', position:'relative', overflow:'hidden' }}>
@@ -87,7 +87,7 @@ export function AppSection() {
                 <div>
                   <div style={{ fontFamily:'Georgia,serif', fontSize:16, color:'rgba(245,238,242,0.95)', marginBottom:3 }}>Viktória Lashes</div>
                   <div style={{ fontFamily:'Georgia,serif', fontSize:11, color:'rgba(245,238,242,0.4)', marginBottom:6 }}>viktoria-lashes.cz</div>
-                  <div style={{ display:'flex', gap:4 }}>
+                  <div style={{ display:'flex', gap:4, flexWrap:'wrap' }}>
                     {['Zdarma','Bez reklam','Offline'].map(t => (
                       <span key={t} style={{ fontFamily:'Georgia,serif', fontSize:8, padding:'2px 8px', borderRadius:20, background:'rgba(255,107,168,0.1)', color:'rgba(255,107,168,0.7)', border:'1px solid rgba(255,107,168,0.2)' }}>{t}</span>
                     ))}
