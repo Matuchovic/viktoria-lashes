@@ -59,8 +59,7 @@ function BookingContent() {
       const res = await fetch('/api/bookings',{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({serviceId:form.serviceId,artistId:form.artistId,date:form.date,time:form.time,
           customerName:form.name,customerEmail:form.email,customerPhone:form.phone,
-          notes: (form.address ? '📍 Adresa: ' + form.address + (form.notes ? '
-' + form.notes : '') : form.notes)})})
+          notes: (form.address ? '📍 Adresa: ' + form.address + (form.notes ? ' | ' + form.notes : '') : form.notes)})})
       const data = await res.json()
       if (res.ok) { setBookingRef(data.bookingRef); setSubmitted(true) }
       else toast(data.error??'Chyba při vytváření rezervace.','error')
