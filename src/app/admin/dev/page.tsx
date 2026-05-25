@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import { CustomCursor } from '@/components/ui/CustomCursor'
 
 type Section = 'stats' | 'users' | 'security' | 'email' | 'system'
 
@@ -140,6 +141,7 @@ export default function DevPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#080608', color: '#f5eef2', padding: '24px 16px', maxWidth: 900, margin: '0 auto' }}>
+      <CustomCursor />
 
       <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
         <div>
