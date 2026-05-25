@@ -5,6 +5,7 @@ import { Footer } from '@/components/layout/Footer'
 import { CustomCursor } from '@/components/ui/CustomCursor'
 import { OnboardingModal } from '@/components/ui/OnboardingModal'
 import { PWAInstaller } from '@/components/ui/PWAInstaller'
+import { AppSection } from '@/components/sections/AppSection'
 import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import { HeroSection } from '@/components/sections/HeroSection'
 import { StatsBanner } from '@/components/sections/StatsBanner'
@@ -37,6 +38,7 @@ export function HomePageClient({ services }: { services: any[] }) {
         <ArtistsSection />
         <ContactSection />
       </main>
+      <AppSection />
       <Footer />
       <ViktoriaChatbot />
     </>
