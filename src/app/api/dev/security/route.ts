@@ -4,14 +4,10 @@ import { authOptions } from '@/lib/auth'
 
 const securityLog: { time: number; ip: string; path: string; type: string; ua: string }[] = []
 
-export function logSecurityEvent(ip: string, path: string, type: string, ua: string) {
-  securityLog.unshift({ time: Date.now(), ip, path, type, ua })
-  if (securityLog.length > 200) securityLog.pop()
-}
-
 export async function POST(req: Request) {
   const { ip, path, type, ua } = await req.json()
-  logSecurityEvent(ip || 'unknown', path || '/', type || 'UNKNOWN', ua || '')
+  securityLog.unshift({ time: Date.now(), ip: ip || 'unknown', path: path || '/', type: type || 'UNKNOWN', ua: ua || '' })
+  if (securityLog.length > 200) securityLog.pop()
   return NextResponse.json({ ok: true })
 }
 
