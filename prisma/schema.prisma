@@ -153,6 +153,9 @@ model Booking {
   totalKc         Int
   depositKc       Int
   depositPaid     Boolean       @default(false)
+  rescheduleDate  DateTime?     @db.Date
+  rescheduleTime  String?
+  rescheduleNote  String?       @db.Text
   stripeSessionId String?
   reminderSent    Boolean       @default(false)
   createdAt       DateTime      @default(now())
@@ -240,6 +243,7 @@ enum BookingStatus {
   CANCELLED
   COMPLETED
   NO_SHOW
+  CHANGE_REQUESTED
 }
 
 model SafetyCheckin {

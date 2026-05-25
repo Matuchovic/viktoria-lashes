@@ -10,11 +10,12 @@ import { formatPrice } from '@/lib/utils'
 import { TIER_INFO, REWARDS, LASH_PASS_CHALLENGES, getTier, TIER_THRESHOLDS } from '@/lib/loyalty'
 
 const STATUS_CFG: Record<string, {label:string;color:string;bg:string;border:string}> = {
-  PENDING:   {label:'Čeká',      color:'#D4AA70',bg:'rgba(212,170,112,0.12)',border:'rgba(212,170,112,0.4)'},
-  CONFIRMED: {label:'Potvrzeno', color:'#4ade80',bg:'rgba(74,222,128,0.12)', border:'rgba(74,222,128,0.4)'},
-  CANCELLED: {label:'Zrušeno',   color:'#f87171',bg:'rgba(248,113,113,0.12)',border:'rgba(248,113,113,0.4)'},
-  COMPLETED: {label:'Dokončeno', color:'#FF6BA8',bg:'rgba(255,107,168,0.12)',border:'rgba(255,107,168,0.4)'},
-  NO_SHOW:   {label:'Nedostavil',color:'#6b7280',bg:'rgba(107,114,128,0.12)',border:'rgba(107,114,128,0.3)'},
+  PENDING:          {label:'Čeká',           color:'#D4AA70',bg:'rgba(212,170,112,0.12)',border:'rgba(212,170,112,0.4)'},
+  CONFIRMED:        {label:'Potvrzeno',       color:'#4ade80',bg:'rgba(74,222,128,0.12)', border:'rgba(74,222,128,0.4)'},
+  CANCELLED:        {label:'Zrušeno',         color:'#f87171',bg:'rgba(248,113,113,0.12)',border:'rgba(248,113,113,0.4)'},
+  COMPLETED:        {label:'Dokončeno',       color:'#FF6BA8',bg:'rgba(255,107,168,0.12)',border:'rgba(255,107,168,0.4)'},
+  NO_SHOW:          {label:'Nedostavil',      color:'#6b7280',bg:'rgba(107,114,128,0.12)',border:'rgba(107,114,128,0.3)'},
+  CHANGE_REQUESTED: {label:'Žádost o změnu', color:'#fbbf24',bg:'rgba(251,191,36,0.12)', border:'rgba(251,191,36,0.4)'},
 }
 
 function BookingCard({booking,index}:{booking:any;index:number}) {
@@ -88,6 +89,49 @@ function BookingCard({booking,index}:{booking:any;index:number}) {
       </div>
 
       <AnimatePresence>
+        {/* Reschedule button */}
+        {(booking.status === 'CONFIRMED' || booking.status === 'PENDING') && isUpcoming && (
+          <div style={{marginTop:8}}>
+            {rescheduling === booking.id ? (
+              <div style={{background:'rgba(251,191,36,0.05)',border:'1px solid rgba(251,191,36,0.2)',borderRadius:12,padding:14}}>
+                <div style={{fontFamily:'Georgia,serif',fontSize:9,letterSpacing:3,color:'rgba(251,191,36,0.6)',textTransform:'uppercase',marginBottom:10}}>Nový termín</div>
+                <div style={{display:'flex',flexDirection:'column',gap:8,marginBottom:10}}>
+                  <input type="date" value={rescheduleForm.date} onChange={e=>setRescheduleForm(f=>({...f,date:e.target.value}))}
+                    style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(251,191,36,0.2)',borderRadius:8,padding:'8px 12px',color:'rgba(245,238,242,0.8)',fontFamily:'Georgia,serif',fontSize:12,outline:'none'}}/>
+                  <input type="time" value={rescheduleForm.time} onChange={e=>setRescheduleForm(f=>({...f,time:e.target.value}))}
+                    style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(251,191,36,0.2)',borderRadius:8,padding:'8px 12px',color:'rgba(245,238,242,0.8)',fontFamily:'Georgia,serif',fontSize:12,outline:'none'}}/>
+                  <input placeholder="Důvod změny (nepovinné)" value={rescheduleForm.note} onChange={e=>setRescheduleForm(f=>({...f,note:e.target.value}))}
+                    style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(251,191,36,0.2)',borderRadius:8,padding:'8px 12px',color:'rgba(245,238,242,0.8)',fontFamily:'Georgia,serif',fontSize:12,outline:'none'}}/>
+                </div>
+                <div style={{display:'flex',gap:8}}>
+                  <button onClick={async()=>{
+                    if(!rescheduleForm.date||!rescheduleForm.time)return
+                    setRescheduleLoading(true)
+                    const res = await fetch('/api/bookings/reschedule',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({bookingId:booking.id,newDate:rescheduleForm.date,newTime:rescheduleForm.time,note:rescheduleForm.note})})
+                    if(res.ok){alert('Žádost o změnu odeslána! Viktória ji potvrdí.');setRescheduling(null)}
+                    else alert('Chyba při odesílání')
+                    setRescheduleLoading(false)
+                  }} style={{flex:1,padding:'8px',borderRadius:8,background:'rgba(251,191,36,0.15)',border:'1px solid rgba(251,191,36,0.3)',color:'#fbbf24',fontFamily:'Georgia,serif',fontSize:11,cursor:'pointer'}}>
+                    {rescheduleLoading?'Odesílám...':'Odeslat žádost'}
+                  </button>
+                  <button onClick={()=>setRescheduling(null)} style={{padding:'8px 12px',borderRadius:8,background:'none',border:'1px solid rgba(255,255,255,0.1)',color:'rgba(245,238,242,0.3)',fontFamily:'Georgia,serif',fontSize:11,cursor:'pointer'}}>✗</button>
+                </div>
+              </div>
+            ) : (
+              <button onClick={()=>{setRescheduling(booking.id);setRescheduleForm({date:'',time:'',note:''})}}
+                style={{width:'100%',padding:'8px',borderRadius:8,background:'rgba(251,191,36,0.06)',border:'1px solid rgba(251,191,36,0.2)',color:'#fbbf24',fontFamily:'Georgia,serif',fontSize:11,cursor:'pointer'}}>
+                📅 Požádat o změnu termínu
+              </button>
+            )}
+          </div>
+        )}
+        {booking.status === 'CHANGE_REQUESTED' && (
+          <div style={{marginTop:8,padding:'10px 14px',borderRadius:10,background:'rgba(251,191,36,0.08)',border:'1px solid rgba(251,191,36,0.25)'}}>
+            <div style={{fontFamily:'Georgia,serif',fontSize:11,color:'#fbbf24'}}>⏳ Žádost o změnu čeká na potvrzení od Viktórie</div>
+            {booking.rescheduleDate && <div style={{fontFamily:'Georgia,serif',fontSize:10,color:'rgba(251,191,36,0.6)',marginTop:4}}>Požadovaný termín: {new Date(booking.rescheduleDate).toLocaleDateString('cs-CZ')} v {booking.rescheduleTime}</div>}
+          </div>
+        )}
+
         {exp && (
           <motion.div initial={{height:0,opacity:0}} animate={{height:'auto',opacity:1}} exit={{height:0,opacity:0}}
             transition={{duration:0.3,ease:[0.16,1,0.3,1]}} style={{overflow:'hidden'}}>
@@ -118,6 +162,9 @@ export default function DashboardPage() {
   const router = useRouter()
   const [bookings,setBookings] = useState<any[]>([])
   const [userData,setUserData] = useState<any>(null)
+  const [rescheduling, setRescheduling] = useState<string | null>(null)
+  const [rescheduleForm, setRescheduleForm] = useState({ date:'', time:'', note:'' })
+  const [rescheduleLoading, setRescheduleLoading] = useState(false)
   const [loading,setLoading] = useState(true)
   const [tab,setTab] = useState<'upcoming'|'history'|'loyalty'>('upcoming')
 

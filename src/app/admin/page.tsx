@@ -8,11 +8,12 @@ import { CustomCursor } from '@/components/ui/CustomCursor'
 import { formatPrice } from '@/lib/utils'
 
 const STATUS_CFG: Record<string, { label:string; color:string; bg:string; border:string }> = {
-  PENDING:   { label:'Čeká',       color:'#D4AA70', bg:'rgba(212,170,112,0.1)', border:'rgba(212,170,112,0.3)' },
-  CONFIRMED: { label:'Potvrzeno',  color:'#4ade80', bg:'rgba(74,222,128,0.1)',  border:'rgba(74,222,128,0.3)'  },
-  COMPLETED: { label:'Dokončeno',  color:'#FF6BA8', bg:'rgba(255,107,168,0.1)', border:'rgba(255,107,168,0.3)' },
-  CANCELLED: { label:'Zrušeno',    color:'#f87171', bg:'rgba(248,113,113,0.1)', border:'rgba(248,113,113,0.3)' },
-  NO_SHOW:   { label:'Nedostavil', color:'#6b7280', bg:'rgba(107,114,128,0.1)', border:'rgba(107,114,128,0.2)' },
+  PENDING:          { label:'Čeká',           color:'#D4AA70', bg:'rgba(212,170,112,0.1)', border:'rgba(212,170,112,0.3)' },
+  CONFIRMED:        { label:'Potvrzeno',       color:'#4ade80', bg:'rgba(74,222,128,0.1)',  border:'rgba(74,222,128,0.3)'  },
+  COMPLETED:        { label:'Dokončeno',       color:'#FF6BA8', bg:'rgba(255,107,168,0.1)', border:'rgba(255,107,168,0.3)' },
+  CANCELLED:        { label:'Zrušeno',         color:'#f87171', bg:'rgba(248,113,113,0.1)', border:'rgba(248,113,113,0.3)' },
+  NO_SHOW:          { label:'Nedostavil',      color:'#6b7280', bg:'rgba(107,114,128,0.1)', border:'rgba(107,114,128,0.2)' },
+  CHANGE_REQUESTED: { label:'Žádost o změnu', color:'#fbbf24', bg:'rgba(251,191,36,0.1)',  border:'rgba(251,191,36,0.3)'  },
 }
 
 const TABS = [
@@ -93,10 +94,37 @@ function BookingModal({ booking, onClose, onStatusChange }: { booking:any; onClo
               </div>
             ))}
           </div>
+          {/* Reschedule approval */}
+          {booking.status === 'CHANGE_REQUESTED' && booking.rescheduleDate && (
+            <div style={{ marginBottom:12, padding:'14px 16px', borderRadius:12, background:'rgba(251,191,36,0.08)', border:'1px solid rgba(251,191,36,0.3)' }}>
+              <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:3, color:'#fbbf24', textTransform:'uppercase', marginBottom:8 }}>📅 Žádost o změnu termínu</div>
+              <div style={{ fontFamily:'Georgia,serif', fontSize:12, color:'rgba(245,238,242,0.6)', marginBottom:4 }}>
+                Původní: {new Date(booking.date).toLocaleDateString('cs-CZ')} v {booking.time}
+              </div>
+              <div style={{ fontFamily:'Georgia,serif', fontSize:13, color:'#fbbf24', marginBottom:booking.rescheduleNote?8:12 }}>
+                Nový: {new Date(booking.rescheduleDate).toLocaleDateString('cs-CZ')} v {booking.rescheduleTime}
+              </div>
+              {booking.rescheduleNote && <div style={{ fontFamily:'Georgia,serif', fontSize:11, color:'rgba(245,238,242,0.4)', marginBottom:12 }}>Důvod: {booking.rescheduleNote}</div>}
+              <div style={{ display:'flex', gap:8 }}>
+                <button onClick={async()=>{
+                  await fetch('/api/bookings/reschedule',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({bookingId:booking.id,action:'approve'})})
+                  onStatusChange(booking.id,'CONFIRMED'); onClose()
+                }} style={{ flex:1, padding:'9px', borderRadius:8, background:'rgba(74,222,128,0.15)', border:'1px solid rgba(74,222,128,0.4)', color:'#4ade80', fontFamily:'Georgia,serif', fontSize:12, cursor:'pointer' }}>
+                  ✓ Schválit změnu
+                </button>
+                <button onClick={async()=>{
+                  await fetch('/api/bookings/reschedule',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({bookingId:booking.id,action:'reject'})})
+                  onStatusChange(booking.id,'CONFIRMED'); onClose()
+                }} style={{ flex:1, padding:'9px', borderRadius:8, background:'rgba(248,113,113,0.1)', border:'1px solid rgba(248,113,113,0.3)', color:'#f87171', fontFamily:'Georgia,serif', fontSize:12, cursor:'pointer' }}>
+                  ✗ Zamítnout
+                </button>
+              </div>
+            </div>
+          )}
           <div style={{ marginBottom:12 }}>
             <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:3, color:'rgba(245,238,242,0.25)', textTransform:'uppercase', marginBottom:8 }}>Změnit status</div>
             <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
-              {Object.entries(STATUS_CFG).map(([key, s]) => (
+              {Object.entries(STATUS_CFG).filter(([key])=>key!=='CHANGE_REQUESTED').map(([key, s]) => (
                 <button key={key} onClick={() => { onStatusChange(booking.id, key); onClose() }}
                   style={{ padding:'7px 14px', borderRadius:20, border:`1px solid ${s.border}`, background:booking.status===key?s.bg:'transparent', color:s.color, fontFamily:'Georgia,serif', fontSize:11, cursor:'pointer' }}>
                   {booking.status===key && '✓ '}{s.label}

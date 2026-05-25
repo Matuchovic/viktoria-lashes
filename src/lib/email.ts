@@ -157,3 +157,66 @@ export async function sendBookingReminder(booking: any) {
 export async function sendContactReply(to: string, name: string) {
   // placeholder
 }
+
+// 4. Admin — žádost o změnu termínu
+export async function sendRescheduleRequestEmail(params: {
+  customerName: string; customerEmail: string; bookingRef: string; serviceName: string
+  oldDate: string; oldTime: string; newDate: string; newTime: string; note: string
+}) {
+  const content = `
+    <p style="font-size:20px;font-weight:300;color:#f5eef2;margin:0 0 8px;">&#381;&#225;dost o zm&#283;nu term&#237;nu &#128197;</p>
+    <p style="font-size:13px;color:rgba(245,238,242,0.5);line-height:1.8;margin:0 0 20px;">
+      <strong style="color:rgba(245,238,242,0.8);">${params.customerName}</strong> &#382;&#225;d&#225; o zm&#283;nu term&#237;nu pro <strong style="color:rgba(245,238,242,0.8);">${params.serviceName}</strong>.
+    </p>
+    <div style="border:1px solid rgba(251,191,36,0.3);padding:20px;margin-bottom:20px;">
+      <div style="font-size:9px;letter-spacing:4px;color:rgba(251,191,36,0.5);text-transform:uppercase;margin-bottom:12px;">Srovn&#225;n&#237; term&#237;n&#367;</div>
+      <table style="width:100%;font-size:12px;border-collapse:collapse;">
+        <tr><td style="color:rgba(245,238,242,0.35);padding:6px 0;border-bottom:0.5px solid rgba(255,255,255,0.05);">P&#367;vodn&#237; datum</td><td style="color:rgba(245,238,242,0.7);text-align:right;padding:6px 0;border-bottom:0.5px solid rgba(255,255,255,0.05);">${params.oldDate} v ${params.oldTime}</td></tr>
+        <tr><td style="color:rgba(245,238,242,0.35);padding:6px 0;">Nov&#253; po&#382;adovan&#253;</td><td style="color:#fbbf24;text-align:right;padding:6px 0;">${params.newDate} v ${params.newTime}</td></tr>
+      </table>
+      ${params.note ? `<div style="margin-top:12px;padding:10px;background:rgba(255,255,255,0.03);font-size:12px;color:rgba(245,238,242,0.5);">Pozn&#225;mka: ${params.note}</div>` : ''}
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:12px;">
+      <a href="${APP_URL}/admin?tab=bookings" style="flex:1;display:block;text-align:center;padding:12px;background:linear-gradient(135deg,#C4698A,#FF6BA8);color:white;text-decoration:none;font-size:11px;letter-spacing:2px;text-transform:uppercase;border-radius:50px;">Spravovat v adminu &#8594;</a>
+    </div>
+  `
+  await transporter.sendMail({
+    from: process.env.EMAIL_FROM,
+    to: 'viktorialadikova23@gmail.com',
+    subject: `Žádost o změnu termínu — ${params.customerName} (#${params.bookingRef?.slice(-6).toUpperCase()})`,
+    html: baseHtml(content, '#fbbf24'),
+  })
+}
+
+// 5. Klientka — odpověď na žádost o změnu
+export async function sendRescheduleResponseEmail(params: {
+  customerName: string; customerEmail: string; bookingRef: string; serviceName: string
+  approved: boolean; newDate: string; newTime: string; oldDate: string; oldTime: string
+}) {
+  const approved = params.approved
+  const content = `
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="display:inline-block;padding:5px 14px;border:1px solid ${approved ? 'rgba(74,222,128,0.3)' : 'rgba(248,113,113,0.3)'};border-radius:20px;font-size:10px;letter-spacing:3px;color:${approved ? '#4ade80' : '#f87171'};text-transform:uppercase;margin-bottom:12px;">${approved ? '&#10003; Zm&#283;na schv&#225;lena' : '&#10007; Zm&#283;na zam&#237;tnuta'}</div>
+      <p style="font-size:20px;font-weight:300;color:#f5eef2;margin:0 0 8px;">${approved ? 'V&#225;&#353; term&#237;n byl zm&#283;n&#283;n! &#128197;' : 'Zm&#283;na term&#237;nu nebyla mo&#382;n&#225;'}</p>
+      <p style="font-size:13px;color:rgba(245,238,242,0.5);line-height:1.8;margin:0;">${approved ? 'Schv&#225;lila jsem va&#353;i &#382;&#225;dost o zm&#283;nu term&#237;nu.' : 'Bohužel nemohu zm&#283;nit term&#237;n. Domluvme se osobn&#283;!'}</p>
+    </div>
+    <div style="border:1px solid ${approved ? 'rgba(74,222,128,0.2)' : 'rgba(248,113,113,0.2)'};padding:20px;margin-bottom:20px;background:${approved ? 'rgba(74,222,128,0.03)' : 'rgba(248,113,113,0.03)'};">
+      <div style="font-size:9px;letter-spacing:4px;color:${approved ? 'rgba(74,222,128,0.5)' : 'rgba(248,113,113,0.5)'};text-transform:uppercase;margin-bottom:12px;">${approved ? 'Nov&#253; term&#237;n' : 'P&#367;vodn&#237; term&#237;n z&#367;st&#225;v&#225;'}</div>
+      <table style="width:100%;font-size:12px;border-collapse:collapse;">
+        <tr><td style="color:rgba(245,238,242,0.35);padding:6px 0;border-bottom:0.5px solid rgba(255,255,255,0.05);">Slu&#382;ba</td><td style="color:rgba(245,238,242,0.7);text-align:right;padding:6px 0;border-bottom:0.5px solid rgba(255,255,255,0.05);">${params.serviceName}</td></tr>
+        <tr><td style="color:rgba(245,238,242,0.35);padding:6px 0;border-bottom:0.5px solid rgba(255,255,255,0.05);">Datum</td><td style="color:${approved ? '#4ade80' : 'rgba(245,238,242,0.7)'};text-align:right;padding:6px 0;border-bottom:0.5px solid rgba(255,255,255,0.05);">${approved ? params.newDate : params.oldDate}</td></tr>
+        <tr><td style="color:rgba(245,238,242,0.35);padding:6px 0;">&#268;as</td><td style="color:${approved ? '#4ade80' : 'rgba(245,238,242,0.7)'};text-align:right;padding:6px 0;">${approved ? params.newTime : params.oldTime}</td></tr>
+      </table>
+    </div>
+    ${!approved ? `<div style="background:rgba(255,107,168,0.06);border:1px solid rgba(255,107,168,0.2);padding:14px 18px;margin-bottom:20px;"><div style="font-size:12px;color:rgba(245,238,242,0.6);line-height:1.8;">Napi&#353;te mi a domluvme jin&#253; term&#237;n! &#128149;</div></div>` : ''}
+    <div style="text-align:center;margin-bottom:12px;">
+      <a href="${APP_URL}/dashboard" style="display:inline-block;padding:13px 32px;background:linear-gradient(135deg,#C4698A,#FF6BA8);color:white;text-decoration:none;font-size:11px;letter-spacing:3px;text-transform:uppercase;border-radius:50px;">Zobrazit rezervaci &#8594;</a>
+    </div>
+  `
+  await transporter.sendMail({
+    from: process.env.EMAIL_FROM,
+    to: params.customerEmail,
+    subject: approved ? 'Váš termín byl změněn ✓' : 'Změna termínu — odpověď od Viktórie',
+    html: baseHtml(content, approved ? '#4ade80' : '#f87171'),
+  })
+}
