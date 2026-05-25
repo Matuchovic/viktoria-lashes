@@ -96,11 +96,11 @@ function BookingCard({booking,index,rescheduling,setRescheduling,rescheduleForm,
               <div style={{background:'rgba(251,191,36,0.05)',border:'1px solid rgba(251,191,36,0.2)',borderRadius:12,padding:14}}>
                 <div style={{fontFamily:'Georgia,serif',fontSize:9,letterSpacing:3,color:'rgba(251,191,36,0.6)',textTransform:'uppercase',marginBottom:10}}>Nový termín</div>
                 <div style={{display:'flex',flexDirection:'column',gap:8,marginBottom:10}}>
-                  <input type="date" value={rescheduleForm.date} onChange={e=>setRescheduleForm(f=>({...f,date:e.target.value}))}
+                  <input type="date" value={rescheduleForm.date} onChange={e=>setRescheduleForm((f:any)=>({...f,date:e.target.value}))}
                     style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(251,191,36,0.2)',borderRadius:8,padding:'8px 12px',color:'rgba(245,238,242,0.8)',fontFamily:'Georgia,serif',fontSize:12,outline:'none'}}/>
-                  <input type="time" value={rescheduleForm.time} onChange={e=>setRescheduleForm(f=>({...f,time:e.target.value}))}
+                  <input type="time" value={rescheduleForm.time} onChange={e=>setRescheduleForm((f:any)=>({...f,time:e.target.value}))}
                     style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(251,191,36,0.2)',borderRadius:8,padding:'8px 12px',color:'rgba(245,238,242,0.8)',fontFamily:'Georgia,serif',fontSize:12,outline:'none'}}/>
-                  <input placeholder="Důvod změny (nepovinné)" value={rescheduleForm.note} onChange={e=>setRescheduleForm(f=>({...f,note:e.target.value}))}
+                  <input placeholder="Důvod změny (nepovinné)" value={rescheduleForm.note} onChange={e=>setRescheduleForm((f:any)=>({...f,note:e.target.value}))}
                     style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(251,191,36,0.2)',borderRadius:8,padding:'8px 12px',color:'rgba(245,238,242,0.8)',fontFamily:'Georgia,serif',fontSize:12,outline:'none'}}/>
                 </div>
                 <div style={{display:'flex',gap:8}}>
