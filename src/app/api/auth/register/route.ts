@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     // Send welcome email
     try {
       const { sendWelcomeEmail } = await import('@/lib/email')
-      await sendWelcomeEmail({ name: user.name, email: user.email })
+      await sendWelcomeEmail({ name: user.name ?? 'Klientko', email: user.email })
     } catch (e) {
       console.error('Welcome email error:', e)
     }
