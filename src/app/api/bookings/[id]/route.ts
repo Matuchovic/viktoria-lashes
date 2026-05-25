@@ -20,6 +20,24 @@ export async function PATCH(
       include: { service: true },
     })
 
+    // Send status change emails
+    if (status === 'CONFIRMED' || status === 'CANCELLED') {
+      try {
+        const { sendBookingConfirmedEmail, sendBookingCancelledEmail } = await import('@/lib/email')
+        const dateStr = booking.date.toLocaleDateString('cs-CZ', { weekday:'long', day:'numeric', month:'long', year:'numeric' })
+        const emailParams = {
+          customerName: booking.customerName,
+          customerEmail: booking.customerEmail,
+          bookingRef: booking.bookingRef,
+          serviceName: booking.service?.nameCs ?? 'Služba',
+          date: dateStr,
+          time: booking.time,
+        }
+        if (status === 'CONFIRMED') await sendBookingConfirmedEmail(emailParams)
+        else await sendBookingCancelledEmail(emailParams)
+      } catch(e) { console.error('Status email error:', e) }
+    }
+
     // Award loyalty points when completed
     if (status === 'COMPLETED') {
       const points = booking.totalKc

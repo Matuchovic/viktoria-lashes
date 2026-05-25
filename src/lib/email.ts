@@ -220,3 +220,132 @@ export async function sendRescheduleResponseEmail(params: {
     html: baseHtml(content, approved ? '#4ade80' : '#f87171'),
   })
 }
+
+// 6. Potvrzení rezervace adminem (CONFIRMED status)
+export async function sendBookingConfirmedEmail(params: {
+  customerName: string; customerEmail: string; bookingRef: string
+  serviceName: string; date: string; time: string
+}) {
+  const content = `
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="display:inline-block;padding:5px 14px;border:1px solid rgba(74,222,128,0.3);border-radius:20px;font-size:10px;letter-spacing:3px;color:#4ade80;text-transform:uppercase;margin-bottom:12px;">&#10003; Potvrzeno</div>
+      <p style="font-size:20px;font-weight:300;color:#f5eef2;margin:0 0 8px;">V&#225;&#353; term&#237;n je potvrzený! &#127800;</p>
+      <p style="font-size:13px;color:rgba(245,238,242,0.5);line-height:1.8;margin:0;">T&#283;&#353;&#237;m se na v&#225;s! P&#345;ijedu ve sjednan&#253; &#269;as.</p>
+    </div>
+    <div style="border:1px solid rgba(74,222,128,0.2);padding:20px;margin-bottom:20px;background:rgba(74,222,128,0.03);">
+      <div style="font-size:9px;letter-spacing:4px;color:rgba(74,222,128,0.5);text-transform:uppercase;margin-bottom:12px;">Detail rezervace</div>
+      <table style="width:100%;font-size:12px;border-collapse:collapse;">
+        <tr><td style="color:rgba(245,238,242,0.35);padding:6px 0;border-bottom:0.5px solid rgba(255,255,255,0.05);">&#268;. rezervace</td><td style="color:rgba(245,238,242,0.7);text-align:right;padding:6px 0;border-bottom:0.5px solid rgba(255,255,255,0.05);">#${params.bookingRef?.slice(-6).toUpperCase()}</td></tr>
+        <tr><td style="color:rgba(245,238,242,0.35);padding:6px 0;border-bottom:0.5px solid rgba(255,255,255,0.05);">Slu&#382;ba</td><td style="color:rgba(245,238,242,0.7);text-align:right;padding:6px 0;border-bottom:0.5px solid rgba(255,255,255,0.05);">${params.serviceName}</td></tr>
+        <tr><td style="color:rgba(245,238,242,0.35);padding:6px 0;border-bottom:0.5px solid rgba(255,255,255,0.05);">Datum</td><td style="color:#4ade80;text-align:right;padding:6px 0;border-bottom:0.5px solid rgba(255,255,255,0.05);">${params.date}</td></tr>
+        <tr><td style="color:rgba(245,238,242,0.35);padding:6px 0;">&#268;as</td><td style="color:#4ade80;text-align:right;padding:6px 0;">${params.time}</td></tr>
+      </table>
+    </div>
+    <div style="background:rgba(212,170,112,0.06);border:1px solid rgba(212,170,112,0.2);padding:14px 18px;margin-bottom:20px;">
+      <div style="font-size:11px;color:rgba(212,170,112,0.7);line-height:1.8;">&#128161; <strong style="color:rgba(212,170,112,0.9);">P&#345;ipravte se:</strong> Odli&#269;te o&#269;n&#237; okol&#237; a vyvarujte se mastn&#253;ch kr&#233;m&#367; kolem o&#269;&#237;.</div>
+    </div>
+    <div style="text-align:center;margin-bottom:12px;">
+      <a href="${APP_URL}/dashboard" style="display:inline-block;padding:13px 32px;background:linear-gradient(135deg,#C4698A,#FF6BA8);color:white;text-decoration:none;font-size:11px;letter-spacing:3px;text-transform:uppercase;border-radius:50px;">Zobrazit v &#250;&#269;tu &#8594;</a>
+    </div>
+    <p style="font-size:11px;color:rgba(245,238,242,0.25);text-align:center;margin:0;line-height:1.8;">Pot&#345;ebujete zm&#283;nit term&#237;n? Napi&#353;te mi nejpozd&#283;ji 48 hodin p&#345;edem.</p>
+  `
+  await transporter.sendMail({
+    from: process.env.EMAIL_FROM,
+    to: params.customerEmail,
+    subject: `Váš termín je potvrzený ✓ — Viktória Lashes`,
+    html: baseHtml(content, '#4ade80'),
+  })
+}
+
+// 7. Zrušení rezervace (CANCELLED status)
+export async function sendBookingCancelledEmail(params: {
+  customerName: string; customerEmail: string; bookingRef: string
+  serviceName: string; date: string; time: string
+}) {
+  const content = `
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="display:inline-block;padding:5px 14px;border:1px solid rgba(248,113,113,0.3);border-radius:20px;font-size:10px;letter-spacing:3px;color:#f87171;text-transform:uppercase;margin-bottom:12px;">Rezervace zru&#353;ena</div>
+      <p style="font-size:20px;font-weight:300;color:#f5eef2;margin:0 0 8px;">Bohu&#382;el mus&#237;m zru&#353;it term&#237;n &#128532;</p>
+      <p style="font-size:13px;color:rgba(245,238,242,0.5);line-height:1.8;margin:0;">Omlouv&#225;m se za komplikace. Domluvme se na n&#225;hradn&#237;m term&#237;nu!</p>
+    </div>
+    <div style="border:1px solid rgba(248,113,113,0.2);padding:20px;margin-bottom:20px;background:rgba(248,113,113,0.03);">
+      <div style="font-size:9px;letter-spacing:4px;color:rgba(248,113,113,0.5);text-transform:uppercase;margin-bottom:12px;">Zru&#353;en&#225; rezervace</div>
+      <table style="width:100%;font-size:12px;border-collapse:collapse;">
+        <tr><td style="color:rgba(245,238,242,0.35);padding:6px 0;border-bottom:0.5px solid rgba(255,255,255,0.05);">Slu&#382;ba</td><td style="color:rgba(245,238,242,0.5);text-align:right;padding:6px 0;border-bottom:0.5px solid rgba(255,255,255,0.05);text-decoration:line-through;">${params.serviceName}</td></tr>
+        <tr><td style="color:rgba(245,238,242,0.35);padding:6px 0;border-bottom:0.5px solid rgba(255,255,255,0.05);">Datum</td><td style="color:rgba(245,238,242,0.5);text-align:right;padding:6px 0;border-bottom:0.5px solid rgba(255,255,255,0.05);text-decoration:line-through;">${params.date}</td></tr>
+        <tr><td style="color:rgba(245,238,242,0.35);padding:6px 0;">&#268;as</td><td style="color:rgba(245,238,242,0.5);text-align:right;padding:6px 0;text-decoration:line-through;">${params.time}</td></tr>
+      </table>
+    </div>
+    <div style="background:rgba(255,107,168,0.06);border:1px solid rgba(255,107,168,0.2);padding:14px 18px;margin-bottom:20px;">
+      <div style="font-size:12px;color:rgba(245,238,242,0.6);line-height:1.8;">&#128140; Napi&#353;te mi a doml&#250;v&#237;me nov&#253; term&#237;n, kter&#253; v&#225;m bude vyhovovat!</div>
+    </div>
+    <div style="text-align:center;margin-bottom:12px;">
+      <a href="${APP_URL}/rezervace" style="display:inline-block;padding:13px 32px;background:linear-gradient(135deg,#C4698A,#FF6BA8);color:white;text-decoration:none;font-size:11px;letter-spacing:3px;text-transform:uppercase;border-radius:50px;">Rezervovat nov&#253; term&#237;n &#8594;</a>
+    </div>
+    <div style="text-align:center;">
+      <a href="mailto:viktorialadikova23@gmail.com" style="font-size:11px;color:rgba(245,238,242,0.3);text-decoration:none;">Napsat Vikt&#243;rii p&#345;&#237;mo</a>
+    </div>
+  `
+  await transporter.sendMail({
+    from: process.env.EMAIL_FROM,
+    to: params.customerEmail,
+    subject: `Rezervace zrušena — Viktória Lashes`,
+    html: baseHtml(content, '#f87171'),
+  })
+}
+
+// 8. Affiliate — přiveďte kamarádku
+export async function sendAffiliateEmail(params: { to: string }) {
+  const content = `
+    <div style="text-align:center;margin-bottom:28px;">
+      <div style="font-size:9px;letter-spacing:6px;color:rgba(255,107,168,0.6);text-transform:uppercase;margin-bottom:14px;">&#10022; Speci&#225;ln&#237; nab&#237;dka &#10022;</div>
+      <div style="font-size:36px;font-weight:300;color:#f5eef2;line-height:1.2;margin-bottom:8px;">P&#345;ive&#271;te kamo&#353;ku<br/>a z&#237;skejte</div>
+      <div style="font-size:64px;font-weight:300;color:#D4AA70;line-height:1;margin-bottom:6px;">500</div>
+      <div style="font-size:13px;letter-spacing:5px;color:#D4AA70;text-transform:uppercase;margin-bottom:20px;">Lash Body bod&#367;</div>
+      <div style="width:60px;height:1px;background:linear-gradient(90deg,transparent,rgba(212,170,112,0.5),transparent);margin:0 auto;"></div>
+    </div>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:24px;">
+      <tr>
+        <td style="vertical-align:top;padding:12px;border:1px solid rgba(255,107,168,0.1);background:rgba(255,107,168,0.04);width:32%;text-align:center;">
+          <div style="font-size:22px;margin-bottom:6px;">&#128242;</div>
+          <div style="font-size:9px;letter-spacing:2px;color:rgba(255,107,168,0.6);text-transform:uppercase;margin-bottom:4px;">1. Sd&#237;lejte</div>
+          <div style="font-size:11px;color:rgba(245,238,242,0.4);line-height:1.6;">Po&#353;lete odkaz kamo&#353;ce</div>
+        </td>
+        <td style="width:2%;"></td>
+        <td style="vertical-align:top;padding:12px;border:1px solid rgba(212,170,112,0.1);background:rgba(212,170,112,0.04);width:32%;text-align:center;">
+          <div style="font-size:22px;margin-bottom:6px;">&#128133;</div>
+          <div style="font-size:9px;letter-spacing:2px;color:rgba(212,170,112,0.6);text-transform:uppercase;margin-bottom:4px;">2. Nav&#353;t&#237;v&#237;</div>
+          <div style="font-size:11px;color:rgba(245,238,242,0.4);line-height:1.6;">Kamo&#353;ka si rezervuje</div>
+        </td>
+        <td style="width:2%;"></td>
+        <td style="vertical-align:top;padding:12px;border:1px solid rgba(74,222,128,0.1);background:rgba(74,222,128,0.04);width:32%;text-align:center;">
+          <div style="font-size:22px;margin-bottom:6px;">&#127873;</div>
+          <div style="font-size:9px;letter-spacing:2px;color:rgba(74,222,128,0.6);text-transform:uppercase;margin-bottom:4px;">3. Odm&#283;na</div>
+          <div style="font-size:11px;color:rgba(245,238,242,0.4);line-height:1.6;">Ob&#283; z&#237;sk&#225;te 500 bod&#367;!</div>
+        </td>
+      </tr>
+    </table>
+    <div style="border:1px solid rgba(212,170,112,0.3);padding:20px;margin-bottom:24px;text-align:center;">
+      <div style="font-size:9px;letter-spacing:4px;color:rgba(212,170,112,0.5);text-transform:uppercase;margin-bottom:12px;">Hodnota odm&#283;ny</div>
+      <div style="display:inline-block;margin:0 16px;">
+        <div style="font-size:28px;font-weight:300;color:#D4AA70;">500</div>
+        <div style="font-size:9px;letter-spacing:2px;color:rgba(212,170,112,0.5);text-transform:uppercase;">bod&#367; pro v&#225;s</div>
+      </div>
+      <span style="color:rgba(245,238,242,0.15);font-size:24px;">+</span>
+      <div style="display:inline-block;margin:0 16px;">
+        <div style="font-size:28px;font-weight:300;color:#FF6BA8;">500</div>
+        <div style="font-size:9px;letter-spacing:2px;color:rgba(255,107,168,0.5);text-transform:uppercase;">bod&#367; kamo&#353;ce</div>
+      </div>
+    </div>
+    <p style="font-size:13px;color:rgba(245,238,242,0.45);line-height:1.9;margin:0 0 24px;text-align:center;">&#268;&#237;m v&#237;ce kamo&#353;ek p&#345;ivedete,<br/>t&#237;m v&#237;ce bod&#367; nasb&#237;r&#225;te! &#128149;</p>
+    <div style="text-align:center;margin-bottom:12px;">
+      <a href="${APP_URL}/rezervace" style="display:inline-block;padding:14px 36px;background:linear-gradient(135deg,#C4698A,#FF6BA8);color:white;text-decoration:none;font-size:11px;letter-spacing:4px;text-transform:uppercase;border-radius:50px;">Sd&#237;let a z&#237;skat body &#8594;</a>
+    </div>
+  `
+  await transporter.sendMail({
+    from: process.env.EMAIL_FROM,
+    to: params.to,
+    subject: 'Přiveďte kamarádku a získejte 500 Lash Body bodů! 💕',
+    html: baseHtml(content, '#D4AA70'),
+  })
+}

@@ -885,6 +885,10 @@ export default function AdminDashboard() {
                       { title:'Volné termíny 💕', body:'Mám volné termíny tento týden! Rezervujte si rychle.', url:'/rezervace' },
                       { title:'Připomínka doplnění ✨', body:'Je čas na doplnění řas? Mám pro vás volné termíny.', url:'/rezervace' },
                       { title:'Akce — sleva 💝', body:'Speciální nabídka jen tento týden. Podívejte se!', url:'/' },
+                      { title:'Přiveďte kamarádku 👯', body:'Přiveďte kamarádku na návštěvu a obě dostanete 500 Lash Body bodů! Sdílejte odkaz a začněte sbírat.', url:'/vernostni-program' },
+                      { title:'Narozeninový bonus 🎂', body:'V narozeninový měsíc sbíráte dvojité body! Nezapomeňte si rezervovat termín.', url:'/rezervace' },
+                      { title:'Nová služba 🌟', body:'Přidala jsem do nabídky Wet Look řasy! Podívejte se na nový styl.', url:'/#sluzby' },
+                      { title:'Sezónní akce 🌸', body:'Jarní akce — rezervujte do konce měsíce a získejte bonus 200 Lash Body bodů!', url:'/rezervace' },
                     ].map(t => (
                       <button key={t.title} onClick={() => setNotifForm(t)}
                         style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 14px', borderRadius:10, background:'rgba(255,107,168,0.05)', border:'1px solid rgba(255,107,168,0.15)', cursor:'pointer', textAlign:'left' as const }}>
