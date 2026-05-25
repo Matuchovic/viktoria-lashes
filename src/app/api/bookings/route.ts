@@ -158,13 +158,12 @@ export async function POST(req: NextRequest) {
     sendBookingConfirmation({
       customerName:  data.customerName,
       customerEmail: data.customerEmail,
-      service:       service.nameCs,
-      artist:        artist.name,
+      service:       { nameCs: service.nameCs },
       date:          formatDate(bookingDate),
       time:          data.time,
       totalKc:       service.priceKc,
-      depositKc,
       bookingRef:    booking.bookingRef,
+      notes:         booking.notes,
     }).catch(console.error)
 
     return NextResponse.json({ bookingRef: booking.bookingRef, id: booking.id }, { status: 201 })
