@@ -62,6 +62,7 @@ export const metadata: Metadata = {
     shortcut: '/favicon-32.png',
   },
   robots: { index: true, follow: true },
+  manifest: '/manifest.json',
 }
 
 export const viewport: Viewport = {
