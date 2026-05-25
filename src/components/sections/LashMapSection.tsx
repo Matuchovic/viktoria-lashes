@@ -65,11 +65,11 @@ export function LashMapSection() {
           </motion.div>
         </motion.div>
 
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:32, alignItems:'center' }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
 
           {/* Map */}
           <motion.div initial={{ opacity:0, x:-30 }} animate={inView?{opacity:1,x:0}:{}} transition={{ duration:0.8, delay:0.2 }}>
-            <div style={{ position:'relative', aspectRatio:'1', background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,107,168,0.12)', borderRadius:24, overflow:'hidden' }}>
+            <div style={{ position:'relative', aspectRatio:'1', maxHeight:340, background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,107,168,0.12)', borderRadius:24, overflow:'hidden' }}>
               <div style={{ position:'absolute', inset:0, background:'radial-gradient(ellipse 80% 80% at 50% 50%,rgba(255,107,168,0.04) 0%,transparent 70%)' }}/>
 
               {/* Grid lines */}
@@ -135,14 +135,14 @@ export function LashMapSection() {
 
           {/* Stats list */}
           <motion.div initial={{ opacity:0, x:30 }} animate={inView?{opacity:1,x:0}:{}} transition={{ duration:0.8, delay:0.3 }}>
-            <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:4, color:'rgba(245,238,242,0.3)', textTransform:'uppercase', marginBottom:16 }}>Klientky podle města</div>
-            <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+            <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:4, color:'rgba(245,238,242,0.3)', textTransform:'uppercase', marginBottom:12 }}>Klientky podle města</div>
+            <div style={{ display:'flex', flexDirection:'column', gap:6, maxHeight:360, overflowY:'auto', paddingRight:4 }} className="no-scrollbar">
               {[...TOWNS].sort((a,b) => b.count - a.count).map((town, i) => (
                 <motion.div key={town.name}
                   initial={{ opacity:0, x:20 }} animate={inView?{opacity:1,x:0}:{}} transition={{ delay:0.4+i*0.05 }}
                   onMouseEnter={() => setHovered(town.name)}
                   onMouseLeave={() => setHovered(null)}
-                  style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 14px', borderRadius:12,
+                  style={{ display:'flex', alignItems:'center', gap:8, padding:'9px 12px', borderRadius:12,
                     background: hovered===town.name ? 'rgba(255,107,168,0.08)' : 'rgba(255,255,255,0.03)',
                     border: `1px solid ${hovered===town.name ? 'rgba(255,107,168,0.3)' : 'rgba(255,255,255,0.06)'}`,
                     cursor:'default', transition:'all 0.2s' }}>
