@@ -218,6 +218,8 @@ export default function AdminDashboard() {
   return (
     <>
       <CustomCursor />
+      {/* Hide chatbot on admin */}
+      <style>{`.viktoria-chatbot { display: none !important; }`}</style>
       <AnimatePresence>
         {selectedBooking && <BookingModal booking={selectedBooking} onClose={() => setSelectedBooking(null)} onStatusChange={updateStatus}/>}
       </AnimatePresence>

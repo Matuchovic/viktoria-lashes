@@ -1,5 +1,5 @@
 'use client'
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { motion, useInView } from 'framer-motion'
 
 const TESTIMONIALS = [
@@ -48,6 +48,30 @@ export function TestimonialsSection() {
   const scrollRef = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true })
   const [active, setActive] = useState(0)
+  const [dbReviews, setDbReviews] = useState<any[]>([])
+
+  useEffect(() => {
+    fetch('/api/reviews')
+      .then(r => r.json())
+      .then(data => { if (Array.isArray(data)) setDbReviews(data) })
+      .catch(() => {})
+  }, [])
+
+  // Merge DB reviews with static ones
+  const allReviews = [
+    ...dbReviews.map(r => ({
+      id: r.id,
+      authorName: r.authorName,
+      initials: r.authorName.split(' ').map((n: string) => n[0]).join('').slice(0,2).toUpperCase(),
+      location: r.location || 'Okolí MB',
+      textCs: r.text,
+      rating: r.rating,
+      source: 'Recenze',
+      date: new Date(r.createdAt).toLocaleDateString('cs-CZ', {day:'numeric', month:'long'}),
+      adminReply: r.adminReply,
+    })),
+    ...TESTIMONIALS,
+  ]
 
   const scrollTo = (i: number) => {
     const el = scrollRef.current
@@ -101,7 +125,7 @@ export function TestimonialsSection() {
         }}
         className="no-scrollbar"
       >
-        {TESTIMONIALS.map((t, i) => (
+        {allReviews.map((t: any, i) => (
           <motion.div
             key={t.id}
             initial={{opacity:0, y:20}}
@@ -127,6 +151,12 @@ export function TestimonialsSection() {
             <p style={{ fontFamily:'Georgia,serif', fontSize:14, fontWeight:300, lineHeight:1.75, color:'rgba(245,238,242,0.7)', fontStyle:'italic', marginBottom:24, position:'relative' }}>
               {t.textCs}
             </p>
+            {t.adminReply && (
+              <div style={{ marginBottom:12, padding:'10px 14px', borderRadius:10, background:'rgba(255,107,168,0.06)', border:'1px solid rgba(255,107,168,0.2)' }}>
+                <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:2, color:'#FF6BA8', textTransform:'uppercase', marginBottom:3 }}>💕 Odpověď Viktórie</div>
+                <div style={{ fontFamily:'Georgia,serif', fontSize:12, color:'rgba(245,238,242,0.6)', fontStyle:'italic' }}>{t.adminReply}</div>
+              </div>
+            )}
             <div style={{ display:'flex', alignItems:'center', gap:12 }}>
               <div style={{ width:40, height:40, borderRadius:'50%', background:'linear-gradient(135deg,#C4698A,#FF6BA8)', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'Georgia,serif', fontSize:14, color:'white', flexShrink:0 }}>
                 {t.initials}
@@ -142,7 +172,7 @@ export function TestimonialsSection() {
 
       {/* Dot navigation */}
       <div style={{ display:'flex', justifyContent:'center', gap:8, marginTop:20 }}>
-        {TESTIMONIALS.map((_, i) => (
+        {allReviews.map((_: any, i) => (
           <button
             key={i}
             onClick={() => scrollTo(i)}
