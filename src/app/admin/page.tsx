@@ -21,6 +21,7 @@ const TABS = [
   { id:'customers', label:'Klientky',   icon:'💕' },
   { id:'services',  label:'Služby',     icon:'✦' },
   { id:'safety',    label:'Bezpečnost', icon:'🛡️' },
+  { id:'notifs',    label:'Notifikace', icon:'🔔' },
 ]
 
 const MONTHS = ['ledna','února','března','dubna','května','června','července','srpna','září','října','listopadu','prosince']
@@ -124,6 +125,10 @@ export default function AdminDashboard() {
   const [gpsTracking, setGpsTracking] = useState(false)
   const [gpsWatchId, setGpsWatchId] = useState<number | null>(null)
   const [shareLink, setShareLink] = useState('')
+  const [notifForm, setNotifForm] = useState({ title:'', body:'', url:'/' })
+  const [notifLoading, setNotifLoading] = useState(false)
+  const [notifResult, setNotifResult] = useState<any>(null)
+  const [subCount, setSubCount] = useState<number | null>(null)
 
   useEffect(() => {
     if (status === 'unauthenticated') { router.push('/login'); return }
@@ -141,6 +146,7 @@ export default function AdminDashboard() {
       setCheckins(cArr)
       setActiveCheckin(cArr.find((c: any) => !c.returnedAt) || null)
       setLoading(false)
+      fetch('/api/push/send').then(r => r.json()).then(d => setSubCount(d.count)).catch(() => {})
     }).catch(() => setLoading(false))
   }, [status])
 
@@ -649,6 +655,111 @@ export default function AdminDashboard() {
                     ))}
                   </div>
                 </GCard>
+              </motion.div>
+            )}
+
+            {/* NOTIFICATIONS */}
+            {tab==='notifs' && (
+              <motion.div key="nf" initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} exit={{opacity:0}}>
+                <div style={{ marginBottom:16 }}>
+                  <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:5, color:'#FF6BA8', textTransform:'uppercase', marginBottom:6 }}>🔔 Push notifikace</div>
+                  <h1 style={{ fontFamily:'Georgia,serif', fontWeight:300, fontSize:'clamp(20px,5vw,32px)', margin:0 }}>Odeslat oznámení</h1>
+                </div>
+
+                {/* Subscriber count */}
+                <div style={{ marginBottom:16, padding:'16px 20px', borderRadius:14, background:'rgba(255,107,168,0.06)', border:'1px solid rgba(255,107,168,0.2)', display:'flex', alignItems:'center', gap:12 }}>
+                  <span style={{ fontSize:24 }}>📱</span>
+                  <div>
+                    <div style={{ fontFamily:'Georgia,serif', fontSize:22, color:'#FF6BA8' }}>{subCount ?? '...'}</div>
+                    <div style={{ fontFamily:'Georgia,serif', fontSize:11, color:'rgba(245,238,242,0.4)' }}>klientek má zapnutá oznámení</div>
+                  </div>
+                </div>
+
+                {/* Notification form */}
+                <div style={{ background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,107,168,0.15)', borderRadius:16, padding:20, marginBottom:16, position:'relative', overflow:'hidden' }}>
+                  <div style={{ position:'absolute', top:0, left:0, right:0, height:1, background:'linear-gradient(90deg,transparent,rgba(255,107,168,0.4),transparent)' }}/>
+                  <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:4, color:'rgba(255,107,168,0.6)', textTransform:'uppercase', marginBottom:16 }}>Nové oznámení</div>
+                  <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+                    {[
+                      { key:'title', label:'Nadpis oznámení', ph:'Nový termín k dispozici! 💕' },
+                      { key:'body',  label:'Text oznámení',   ph:'Viktória má volné termíny tento týden. Rezervujte hned!' },
+                      { key:'url',   label:'Odkaz (kam kliknout)', ph:'/rezervace' },
+                    ].map(f => (
+                      <div key={f.key}>
+                        <div style={{ fontFamily:'Georgia,serif', fontSize:8, letterSpacing:2, color:'rgba(245,238,242,0.3)', textTransform:'uppercase', marginBottom:5 }}>{f.label}</div>
+                        {f.key === 'body' ? (
+                          <textarea value={(notifForm as any)[f.key]} onChange={e => setNotifForm(s => ({...s,[f.key]:e.target.value}))}
+                            placeholder={f.ph} rows={3}
+                            style={{ width:'100%', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,107,168,0.2)', borderRadius:10, padding:'10px 12px', color:'rgba(245,238,242,0.85)', fontFamily:'Georgia,serif', fontSize:13, outline:'none', resize:'none', boxSizing:'border-box' as const }}/>
+                        ) : (
+                          <input value={(notifForm as any)[f.key]} onChange={e => setNotifForm(s => ({...s,[f.key]:e.target.value}))}
+                            placeholder={f.ph}
+                            style={{ width:'100%', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,107,168,0.2)', borderRadius:10, padding:'10px 12px', color:'rgba(245,238,242,0.85)', fontFamily:'Georgia,serif', fontSize:13, outline:'none', boxSizing:'border-box' as const }}/>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Preview */}
+                  {(notifForm.title || notifForm.body) && (
+                    <div style={{ marginTop:16, padding:'12px 14px', borderRadius:12, background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.1)' }}>
+                      <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:2, color:'rgba(245,238,242,0.25)', textTransform:'uppercase', marginBottom:6 }}>Náhled notifikace</div>
+                      <div style={{ display:'flex', gap:10, alignItems:'flex-start' }}>
+                        <img src="/apple-touch-icon.png" style={{ width:32, height:32, borderRadius:8, flexShrink:0 }}/>
+                        <div>
+                          <div style={{ fontFamily:'Georgia,serif', fontSize:13, color:'rgba(245,238,242,0.85)', marginBottom:2 }}>{notifForm.title || 'Nadpis'}</div>
+                          <div style={{ fontFamily:'Georgia,serif', fontSize:11, color:'rgba(245,238,242,0.5)' }}>{notifForm.body || 'Text zprávy'}</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <button
+                    disabled={notifLoading || !notifForm.title || !notifForm.body}
+                    onClick={async () => {
+                      setNotifLoading(true)
+                      setNotifResult(null)
+                      const res = await fetch('/api/push/send', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(notifForm) })
+                      const data = await res.json()
+                      setNotifResult(data)
+                      setNotifLoading(false)
+                      if (data.sent > 0) setNotifForm({ title:'', body:'', url:'/' })
+                    }}
+                    style={{ marginTop:16, width:'100%', padding:'14px', borderRadius:12, background: notifLoading||!notifForm.title ? 'rgba(255,107,168,0.3)' : 'linear-gradient(135deg,#C4698A,#FF6BA8)', border:'none', color:'white', fontFamily:'Georgia,serif', fontSize:13, cursor: notifLoading ? 'wait' : 'pointer', boxShadow: notifForm.title ? '0 0 20px rgba(255,107,168,0.3)' : 'none' }}>
+                    {notifLoading ? '⏳ Odesílám...' : '🔔 Odeslat všem klientkám'}
+                  </button>
+
+                  {notifResult && (
+                    <motion.div initial={{opacity:0,y:8}} animate={{opacity:1,y:0}}
+                      style={{ marginTop:12, padding:'12px 14px', borderRadius:12, background: notifResult.sent > 0 ? 'rgba(74,222,128,0.1)' : 'rgba(248,113,113,0.1)', border: `1px solid ${notifResult.sent > 0 ? 'rgba(74,222,128,0.3)' : 'rgba(248,113,113,0.3)'}` }}>
+                      <div style={{ fontFamily:'Georgia,serif', fontSize:13, color: notifResult.sent > 0 ? '#4ade80' : '#f87171' }}>
+                        {notifResult.sent > 0 ? `✓ Odesláno ${notifResult.sent} klientkám` : '⚠️ ' + (notifResult.message || 'Nepodařilo se odeslat')}
+                      </div>
+                      {notifResult.failed > 0 && <div style={{ fontFamily:'Georgia,serif', fontSize:11, color:'rgba(245,238,242,0.3)', marginTop:4 }}>{notifResult.failed} neúspěšných (expirované odběry odstraněny)</div>}
+                    </motion.div>
+                  )}
+                </div>
+
+                {/* Quick templates */}
+                <div style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:14, padding:16 }}>
+                  <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:3, color:'rgba(245,238,242,0.25)', textTransform:'uppercase', marginBottom:12 }}>Rychlé šablony</div>
+                  <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                    {[
+                      { title:'Volné termíny 💕', body:'Mám volné termíny tento týden! Rezervujte si rychle.', url:'/rezervace' },
+                      { title:'Připomínka doplnění ✨', body:'Je čas na doplnění řas? Mám pro vás volné termíny.', url:'/rezervace' },
+                      { title:'Akce — sleva 💝', body:'Speciální nabídka jen tento týden. Podívejte se!', url:'/' },
+                    ].map(t => (
+                      <button key={t.title} onClick={() => setNotifForm(t)}
+                        style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 14px', borderRadius:10, background:'rgba(255,107,168,0.05)', border:'1px solid rgba(255,107,168,0.15)', cursor:'pointer', textAlign:'left' as const }}>
+                        <div style={{ flex:1 }}>
+                          <div style={{ fontFamily:'Georgia,serif', fontSize:12, color:'rgba(245,238,242,0.8)', marginBottom:2 }}>{t.title}</div>
+                          <div style={{ fontFamily:'Georgia,serif', fontSize:10, color:'rgba(245,238,242,0.35)' }}>{t.body}</div>
+                        </div>
+                        <span style={{ color:'rgba(255,107,168,0.5)', fontSize:12 }}>→</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </motion.div>
             )}
 

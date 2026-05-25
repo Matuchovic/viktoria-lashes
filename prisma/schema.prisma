@@ -243,16 +243,31 @@ enum BookingStatus {
 }
 
 model SafetyCheckin {
-  id          String   @id @default(cuid())
-  address     String
-  clientName  String
-  clientPhone String
-  departedAt  DateTime @default(now())
-  expectedBack DateTime
-  returnedAt  DateTime?
-  alertSent   Boolean  @default(false)
-  notes       String?
-  createdAt   DateTime @default(now())
+  id              String    @id @default(cuid())
+  address         String
+  clientName      String
+  clientPhone     String
+  departedAt      DateTime  @default(now())
+  expectedBack    DateTime
+  returnedAt      DateTime?
+  alertSent       Boolean   @default(false)
+  notes           String?
+  shareToken      String?   @unique
+  lastLat         Float?
+  lastLng         Float?
+  lastLocationAt  DateTime?
+  createdAt       DateTime  @default(now())
 
   @@map("safety_checkins")
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userId    String?
+  createdAt DateTime @default(now())
+
+  @@map("push_subscriptions")
 }
