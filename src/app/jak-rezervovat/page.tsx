@@ -72,13 +72,12 @@ function VideoModal({ onClose }: { onClose: () => void }) {
         style={{ background:'#0d0508', border:'1px solid rgba(255,107,168,0.3)', borderRadius:24, padding:32, maxWidth:500, width:'100%', textAlign:'center' }}>
         <div style={{ fontFamily:'Georgia,serif', fontSize:10, letterSpacing:4, color:'#FF6BA8', textTransform:'uppercase', marginBottom:16 }}>📹 Video návod</div>
         <div style={{ fontFamily:'Georgia,serif', fontSize:22, fontWeight:300, marginBottom:12 }}>Jak udělat rezervaci</div>
-        <div style={{ background:'rgba(255,107,168,0.06)', border:'1px solid rgba(255,107,168,0.2)', borderRadius:16, padding:40, marginBottom:20 }}>
-          <div style={{ fontSize:48, marginBottom:12 }}>🎬</div>
-          <div style={{ fontFamily:'Georgia,serif', fontSize:14, color:'rgba(245,238,242,0.5)', lineHeight:1.7 }}>
-            Video návod bude brzy k dispozici.<br/>
-            Mezitím vám pomůže Viktória osobně!
-          </div>
-        </div>
+        <video
+          src="/viktoria_lashes_2.mov"
+          controls
+          playsInline
+          style={{ width:'100%', borderRadius:16, marginBottom:20, border:'1px solid rgba(255,107,168,0.25)', background:'#000', maxHeight:400 }}
+        />
         <a href="tel:+420720307007"
           style={{ display:'block', padding:'16px', borderRadius:14, background:'linear-gradient(135deg,#C4698A,#FF6BA8)', color:'white', textDecoration:'none', fontFamily:'Georgia,serif', fontSize:16, marginBottom:10, boxShadow:'0 0 30px rgba(255,107,168,0.4)' }}>
           📞 Zavolat Viktorii: +420 720 307 007

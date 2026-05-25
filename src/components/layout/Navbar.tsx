@@ -7,11 +7,12 @@ import { useSession, signOut } from 'next-auth/react'
 import { cn } from '@/lib/utils'
 
 const links = [
-  { href: '/#sluzby',    label: 'Služby' },
-  { href: '/#galerie',   label: 'Galerie' },
-  { href: '/#stylistky', label: 'Studio' },
-  { href: '/#recenze',   label: 'Recenze' },
-  { href: '/#kontakt',   label: 'Kontakt' },
+  { href: '/#sluzby',       label: 'Služby' },
+  { href: '/#galerie',      label: 'Galerie' },
+  { href: '/#stylistky',    label: 'Studio' },
+  { href: '/#recenze',      label: 'Recenze' },
+  { href: '/#kontakt',      label: 'Kontakt' },
+  { href: '/jak-rezervovat', label: 'Jak rezervovat?' },
 ]
 
 export function Navbar() {
@@ -51,7 +52,7 @@ export function Navbar() {
       >
         {/* Logo */}
         <Link href="/" className="font-serif font-light text-base md:text-xl tracking-[4px] md:tracking-[6px] uppercase text-text-primary hover:text-text-primary transition-colors">
-          Viktória <span className="text-pink-neon">Lashes</span>
+          Vikt<span style={{display:"inline-block",position:"relative"}}><span style={{display:"inline-block"}}>ó</span><span style={{position:"absolute",bottom:"110%",left:"50%",transform:"translateX(-50%) scaleY(0.7)",fontSize:"0.45em",color:"inherit",lineHeight:1,pointerEvents:"none"}}>´</span></span>ria <span className="text-pink-neon">Lashes</span>
         </Link>
 
         {/* Desktop links */}
@@ -112,7 +113,7 @@ export function Navbar() {
             style={{ paddingTop: 80 }}
           >
             <div className="font-serif text-3xl font-light tracking-[5px] uppercase mb-10">
-              Viktória <span className="text-pink-neon">Lashes</span>
+              Vikt<span style={{display:"inline-block",position:"relative"}}><span style={{display:"inline-block"}}>ó</span><span style={{position:"absolute",bottom:"110%",left:"50%",transform:"translateX(-50%) scaleY(0.7)",fontSize:"0.45em",color:"inherit",lineHeight:1,pointerEvents:"none"}}>´</span></span>ria <span className="text-pink-neon">Lashes</span>
             </div>
 
             <div className="flex flex-col items-center gap-6 w-full px-8">
@@ -127,6 +128,11 @@ export function Navbar() {
               <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="w-full text-center">
                 <Link href="/vernostni-program" className="font-serif text-xl font-light" style={{ color: '#D4AA70' }} onClick={() => setMobileOpen(false)}>
                   Lash Body ✦
+                </Link>
+              </motion.div>
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.38 }} className="w-full text-center">
+                <Link href="/jak-rezervovat" className="font-serif text-lg font-light" style={{ color: '#FF6BA8' }} onClick={() => setMobileOpen(false)}>
+                  📖 Jak rezervovat?
                 </Link>
               </motion.div>
 
