@@ -76,6 +76,7 @@ export function Navbar() {
           ) : (
             <>
               <Link href="/login" className="nav-link">Přihlásit</Link>
+              <Link href="/register" className="nav-link">Registrace</Link>
               <Link href="/rezervace" className="btn-primary py-3 px-7 text-[10px]">Rezervovat</Link>
             </>
           )}
@@ -156,6 +157,7 @@ export function Navbar() {
                       Rezervovat termín →
                     </Link>
                     <Link href="/login" className="text-center py-3 rounded-xl font-serif text-sm font-light text-text-muted" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }} onClick={() => setMobileOpen(false)}>Přihlásit se</Link>
+                    <Link href="/register" className="text-center py-3 rounded-xl font-serif text-sm font-light" style={{ background: 'rgba(255,107,168,0.06)', border: '1px solid rgba(255,107,168,0.2)', color: '#FF6BA8' }} onClick={() => setMobileOpen(false)}>Registrace</Link>
                   </>
                 )}
               </motion.div>

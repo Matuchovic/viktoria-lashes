@@ -34,7 +34,7 @@ function BookingContent() {
     artistId:'', date:'', time:'',
     name: session?.user?.name ?? '',
     email: session?.user?.email ?? '',
-    phone:'', notes:'',
+    phone:'', address:'', notes:'',
   })
 
   const service = SERVICES.find(s=>s.id===form.serviceId)
@@ -49,7 +49,7 @@ function BookingContent() {
     if (step===0) return !!form.serviceId
     if (step===1) return !!form.artistId
     if (step===2) return !!form.date && !!form.time
-    if (step===3) return !!form.name && !!form.email && !!form.phone
+    if (step===3) return !!form.name && !!form.email && !!form.phone && !!form.address
     return true
   }
 
@@ -58,7 +58,9 @@ function BookingContent() {
     try {
       const res = await fetch('/api/bookings',{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({serviceId:form.serviceId,artistId:form.artistId,date:form.date,time:form.time,
-          customerName:form.name,customerEmail:form.email,customerPhone:form.phone,notes:form.notes})})
+          customerName:form.name,customerEmail:form.email,customerPhone:form.phone,
+          notes: (form.address ? '📍 Adresa: ' + form.address + (form.notes ? '
+' + form.notes : '') : form.notes)})})
       const data = await res.json()
       if (res.ok) { setBookingRef(data.bookingRef); setSubmitted(true) }
       else toast(data.error??'Chyba při vytváření rezervace.','error')
@@ -198,10 +200,11 @@ function BookingContent() {
               <h2 className="font-serif text-2xl md:text-3xl font-light mb-6">Vaše kontaktní údaje</h2>
               <div className="space-y-4">
                 {[
-                  {k:'name', l:'Jméno a příjmení', t:'text', p:'Jana Nováková', req:true},
-                  {k:'email',l:'E-mail',            t:'email',p:'jana@email.cz', req:true},
-                  {k:'phone',l:'Telefon',           t:'tel',  p:'+420 123 456 789',req:true},
-                  {k:'notes',l:'Poznámka (nepovinné)',t:'text',p:'Alergie, přání...', req:false},
+                  {k:'name',    l:'Jméno a příjmení',        t:'text',  p:'Jana Nováková',              req:true},
+                  {k:'email',   l:'E-mail',                   t:'email', p:'jana@email.cz',              req:true},
+                  {k:'phone',   l:'Telefon',                  t:'tel',   p:'+420 123 456 789',           req:true},
+                  {k:'address', l:'Adresa kam přijet 📍',     t:'text',  p:'Ul. Příklad 12, Mladá Boleslav', req:true},
+                  {k:'notes',   l:'Poznámka (nepovinné)',     t:'text',  p:'Alergie, přání, jak zazvonit...', req:false},
                 ].map(f=>(
                   <div key={f.k}>
                     <label className="block font-light tracking-[3px] uppercase text-text-muted mb-2" style={{fontSize:10}}>{f.l}</label>
@@ -235,6 +238,7 @@ function BookingContent() {
                   ['Jméno',form.name],
                   ['E-mail',form.email],
                   ['Telefon',form.phone],
+                  ['Adresa',form.address],
                 ].map(([l,v])=>(
                   <div key={l} className="flex justify-between gap-4 px-5 py-3.5" style={{borderBottom:'1px solid rgba(255,255,255,0.05)'}}>
                     <span className="font-light text-xs tracking-wider uppercase" style={{color:'rgba(245,238,242,0.3)',minWidth:70}}>{l}</span>
