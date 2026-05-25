@@ -283,6 +283,17 @@ export default function AdminDashboard() {
     )
   }
 
+  if (status === 'loading' || loading) {
+    return (
+      <div style={{ minHeight:'100vh', background:'#080608', display:'flex', alignItems:'center', justifyContent:'center' }}>
+        <motion.div animate={{opacity:[0.3,1,0.3]}} transition={{duration:2,repeat:Infinity}}
+          style={{ fontFamily:'Georgia,serif', fontSize:11, letterSpacing:4, color:'#FF6BA8', textTransform:'uppercase' }}>
+          Načítám admin panel...
+        </motion.div>
+      </div>
+    )
+  }
+
   return (
     <>
       <CustomCursor />
