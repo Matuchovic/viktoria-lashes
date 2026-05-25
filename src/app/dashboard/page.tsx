@@ -18,7 +18,7 @@ const STATUS_CFG: Record<string, {label:string;color:string;bg:string;border:str
   CHANGE_REQUESTED: {label:'Žádost o změnu', color:'#fbbf24',bg:'rgba(251,191,36,0.12)', border:'rgba(251,191,36,0.4)'},
 }
 
-function BookingCard({booking,index}:{booking:any;index:number}) {
+function BookingCard({booking,index,rescheduling,setRescheduling,rescheduleForm,setRescheduleForm,rescheduleLoading,setRescheduleLoading}:{booking:any;index:number;rescheduling:string|null;setRescheduling:any;rescheduleForm:any;setRescheduleForm:any;rescheduleLoading:boolean;setRescheduleLoading:any}) {
   const [exp,setExp] = useState(false)
   const [hov,setHov] = useState(false)
   const cfg = STATUS_CFG[booking.status] ?? STATUS_CFG.PENDING
@@ -300,7 +300,7 @@ export default function DashboardPage() {
                   </motion.div>
                 ):(
                   <div style={{display:'flex',flexDirection:'column',gap:10}}>
-                    {upcoming.map((b,i)=><BookingCard key={b.id} booking={b} index={i}/>)}
+                    {upcoming.map((b,i)=><BookingCard key={b.id} booking={b} index={i} rescheduling={rescheduling} setRescheduling={setRescheduling} rescheduleForm={rescheduleForm} setRescheduleForm={setRescheduleForm} rescheduleLoading={rescheduleLoading} setRescheduleLoading={setRescheduleLoading}/>)}
                   </div>
                 )}
               </motion.div>
@@ -315,7 +315,7 @@ export default function DashboardPage() {
                   </div>
                 ):(
                   <div style={{display:'flex',flexDirection:'column',gap:10,opacity:0.8}}>
-                    {history.map((b,i)=><BookingCard key={b.id} booking={b} index={i}/>)}
+                    {history.map((b,i)=><BookingCard key={b.id} booking={b} index={i} rescheduling={rescheduling} setRescheduling={setRescheduling} rescheduleForm={rescheduleForm} setRescheduleForm={setRescheduleForm} rescheduleLoading={rescheduleLoading} setRescheduleLoading={setRescheduleLoading}/>)}
                   </div>
                 )}
               </motion.div>
