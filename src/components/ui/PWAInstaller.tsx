@@ -46,7 +46,7 @@ export function PWAInstaller() {
           setTimeout(async () => {
             const perm = await Notification.requestPermission()
             if (perm === 'granted') await subscribeToPush()
-          }, 8000)
+          }, 2000)
         } else if (Notification.permission === 'granted') {
           await subscribeToPush()
         }
