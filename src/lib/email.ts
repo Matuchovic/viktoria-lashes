@@ -49,8 +49,13 @@ export async function sendBookingConfirmation(booking: {
   notes?: string | null
 }) {
   const rawDate = booking.date
-  const date = rawDate instanceof Date ? rawDate : new Date(String(rawDate).includes('T') ? rawDate : String(rawDate) + 'T00:00:00')
-  const dateStr = isNaN(date.getTime()) ? String(booking.date) : date.toLocaleDateString('cs-CZ', { weekday:'long', day:'numeric', month:'long', year:'numeric' })
+  let dateStr: string
+  if (typeof rawDate === 'string' && rawDate.includes('.')) {
+    dateStr = rawDate // already formatted e.g. "27. května 2026"
+  } else {
+    const date = new Date(rawDate)
+    dateStr = isNaN(date.getTime()) ? String(rawDate) : date.toLocaleDateString('cs-CZ', { weekday:'long', day:'numeric', month:'long', year:'numeric' })
+  }
 
   const content = `
     <div style="text-align:center;margin-bottom:24px;">
