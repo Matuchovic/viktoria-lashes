@@ -24,6 +24,7 @@ const TABS = [
   { id:'safety',    label:'Bezpečnost', icon:'🛡️' },
   { id:'notifs',    label:'Notifikace', icon:'🔔' },
   { id:'reviews',   label:'Recenze',    icon:'⭐' },
+  { id:'logs',      label:'Logy',       icon:'📋' },
 ]
 
 const MONTHS = ['ledna','února','března','dubna','května','června','července','srpna','září','října','listopadu','prosince']
@@ -166,6 +167,12 @@ export default function AdminDashboard() {
   const [addingPoints, setAddingPoints] = useState<string | null>(null)
   const [pointsAmount, setPointsAmount] = useState('')
   const [onlineData, setOnlineData] = useState<any>(null)
+  const [logs, setLogs] = useState<{time:string;type:string;msg:string;color:string}[]>([])
+
+  const addLog = (type: string, msg: string, color = '#FF6BA8') => {
+    const time = new Date().toLocaleTimeString('cs-CZ', {hour:'2-digit',minute:'2-digit',second:'2-digit'})
+    setLogs(l => [{time, type, msg, color}, ...l].slice(0, 50))
+  }
 
   useEffect(() => {
     if (status === 'unauthenticated') { router.push('/login'); return }
@@ -199,6 +206,9 @@ export default function AdminDashboard() {
     try {
       await fetch(`/api/bookings/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ status:newStatus }) })
       setBookings(b => b.map(x => x.id===id ? {...x, status:newStatus} : x))
+      const booking = bookings.find(b => b.id === id)
+      const statusLabels: Record<string,string> = { CONFIRMED:'Potvrzeno', CANCELLED:'Zrušeno', COMPLETED:'Dokončeno', PENDING:'Čeká', NO_SHOW:'Nedostavil' }
+      addLog('REZERVACE', `${booking?.customerName ?? 'Klientka'} → ${statusLabels[newStatus] ?? newStatus}`, newStatus==='CONFIRMED'?'#4ade80':newStatus==='CANCELLED'?'#f87171':'#FF6BA8')
     } catch {}
   }
 
@@ -447,8 +457,11 @@ export default function AdminDashboard() {
                     return (
                       <motion.div key={b.id} initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{delay:i*0.03}}
                         onClick={() => setSelectedBooking(b)}
-                        style={{ background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,107,168,0.1)', borderRadius:14, padding:'14px', position:'relative', overflow:'hidden', cursor:'pointer' }}>
-                        <div style={{ position:'absolute', top:0, left:0, right:0, height:1, background:'linear-gradient(90deg,transparent,rgba(255,107,168,0.3),transparent)' }}/>
+                        style={{ background: b.status==='CHANGE_REQUESTED' ? 'rgba(251,191,36,0.06)' : 'rgba(255,255,255,0.04)', border: b.status==='CHANGE_REQUESTED' ? '1px solid rgba(251,191,36,0.4)' : '1px solid rgba(255,107,168,0.1)', borderRadius:14, padding:'14px', position:'relative', overflow:'hidden', cursor:'pointer' }}>
+                        <div style={{ position:'absolute', top:0, left:0, right:0, height:1, background: b.status==='CHANGE_REQUESTED' ? 'linear-gradient(90deg,transparent,rgba(251,191,36,0.5),transparent)' : 'linear-gradient(90deg,transparent,rgba(255,107,168,0.3),transparent)' }}/>
+                        {b.status==='CHANGE_REQUESTED' && (
+                          <div style={{ position:'absolute', top:10, right:10, background:'#fbbf24', color:'#080608', borderRadius:20, padding:'2px 8px', fontSize:9, fontFamily:'Georgia,serif', fontWeight:600 }}>! Žádost o změnu</div>
+                        )}
                         <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8 }}>
                           <div style={{ width:38, height:38, borderRadius:'50%', background:'linear-gradient(135deg,#C4698A,#FF6BA8)', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'Georgia,serif', fontSize:16, color:'white', flexShrink:0 }}>
                             {b.customerName?.[0]?.toUpperCase()}
@@ -465,6 +478,12 @@ export default function AdminDashboard() {
                           <div style={{ fontFamily:'Georgia,serif', fontSize:13, color:'#FF6BA8' }}>{formatPrice(b.totalKc)}</div>
                           <div style={{ fontFamily:'Georgia,serif', fontSize:11, color:'rgba(245,238,242,0.35)' }}>{b.customerPhone}</div>
                         </div>
+                        {b.status==='CHANGE_REQUESTED' && b.rescheduleDate && (
+                          <div style={{ marginTop:8, padding:'8px 10px', borderRadius:8, background:'rgba(251,191,36,0.08)', border:'1px solid rgba(251,191,36,0.2)', fontFamily:'Georgia,serif', fontSize:11, color:'#fbbf24' }}>
+                            Požadovaný termín: {new Date(b.rescheduleDate).toLocaleDateString('cs-CZ',{day:'numeric',month:'short'})} v {b.rescheduleTime}
+                          </div>
+                        )}
+                        <div style={{ marginTop:8, textAlign:'right', fontFamily:'Georgia,serif', fontSize:10, color:'rgba(255,107,168,0.5)' }}>Klepnutím otevřít detail →</div>
                       </motion.div>
                     )
                   })}
@@ -1032,6 +1051,54 @@ export default function AdminDashboard() {
                       Zatím žádné recenze. Sdílejte odkaz na formulář s klientkami!
                     </div>
                   )}
+                </div>
+              </motion.div>
+            )}
+
+            {/* LOGS */}
+            {tab==='logs' && (
+              <motion.div key="lg" initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} exit={{opacity:0}}>
+                <div style={{ marginBottom:16, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                  <div>
+                    <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:5, color:'#FF6BA8', textTransform:'uppercase', marginBottom:6 }}>📋 Activity Log</div>
+                    <h1 style={{ fontFamily:'Georgia,serif', fontWeight:300, fontSize:'clamp(20px,5vw,32px)', margin:0 }}>Záznamy aktivit</h1>
+                  </div>
+                  <button onClick={() => setLogs([])}
+                    style={{ background:'none', border:'1px solid rgba(255,255,255,0.1)', borderRadius:8, padding:'6px 14px', color:'rgba(245,238,242,0.3)', fontFamily:'Georgia,serif', fontSize:11, cursor:'pointer' }}>
+                    Vymazat
+                  </button>
+                </div>
+
+                {/* Live indicator */}
+                <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:16, padding:'10px 16px', borderRadius:12, background:'rgba(74,222,128,0.06)', border:'1px solid rgba(74,222,128,0.2)' }}>
+                  <motion.div animate={{ opacity:[1,0.3,1] }} transition={{ duration:1.5, repeat:Infinity }}
+                    style={{ width:8, height:8, borderRadius:'50%', background:'#4ade80', boxShadow:'0 0 8px #4ade80', flexShrink:0 }}/>
+                  <span style={{ fontFamily:'Georgia,serif', fontSize:11, color:'rgba(74,222,128,0.8)' }}>Live — záznamy se zobrazují v reálném čase</span>
+                </div>
+
+                {/* Log entries */}
+                <div style={{ background:'rgba(0,0,0,0.4)', borderRadius:16, border:'1px solid rgba(255,255,255,0.06)', overflow:'hidden', fontFamily:'monospace' }}>
+                  <div style={{ padding:'10px 16px', borderBottom:'1px solid rgba(255,255,255,0.06)', display:'flex', gap:16 }}>
+                    <span style={{ fontSize:10, color:'rgba(245,238,242,0.2)', letterSpacing:2 }}>ČAS</span>
+                    <span style={{ fontSize:10, color:'rgba(245,238,242,0.2)', letterSpacing:2 }}>TYP</span>
+                    <span style={{ fontSize:10, color:'rgba(245,238,242,0.2)', letterSpacing:2 }}>ZPRÁVA</span>
+                  </div>
+                  <div style={{ maxHeight:500, overflowY:'auto' }}>
+                    {logs.length === 0 ? (
+                      <div style={{ padding:'48px', textAlign:'center', fontFamily:'Georgia,serif', fontSize:13, color:'rgba(245,238,242,0.2)' }}>
+                        Žádné záznamy — aktivity se zobrazí zde v reálném čase
+                      </div>
+                    ) : (
+                      logs.map((log, i) => (
+                        <motion.div key={i} initial={{ opacity:0, x:-10 }} animate={{ opacity:1, x:0 }}
+                          style={{ display:'flex', gap:16, padding:'8px 16px', borderBottom:'1px solid rgba(255,255,255,0.03)', alignItems:'flex-start' }}>
+                          <span style={{ fontSize:11, color:'rgba(245,238,242,0.25)', flexShrink:0, minWidth:70 }}>{log.time}</span>
+                          <span style={{ fontSize:10, padding:'2px 8px', borderRadius:20, background:`${log.color}15`, color:log.color, flexShrink:0, letterSpacing:1 }}>{log.type}</span>
+                          <span style={{ fontSize:12, color:'rgba(245,238,242,0.7)', lineHeight:1.5 }}>{log.msg}</span>
+                        </motion.div>
+                      ))
+                    )}
+                  </div>
                 </div>
               </motion.div>
             )}
