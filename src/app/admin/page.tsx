@@ -206,8 +206,7 @@ export default function AdminDashboard() {
       // Fetch online users
       const fetchOnline = () => fetch('/api/analytics/online').then(r => r.json()).then(setOnlineData).catch(() => {})
       fetchOnline()
-      const onlineInterval = setInterval(fetchOnline, 15000)
-      return () => clearInterval(onlineInterval)
+      setInterval(fetchOnline, 15000)
     }).catch(() => setLoading(false))
   }, [status])
 
