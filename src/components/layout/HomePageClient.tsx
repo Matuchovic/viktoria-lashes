@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { CustomCursor } from '@/components/ui/CustomCursor'
+import { OnboardingModal } from '@/components/ui/OnboardingModal'
 import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import { HeroSection } from '@/components/sections/HeroSection'
 import { StatsBanner } from '@/components/sections/StatsBanner'
@@ -24,6 +25,7 @@ export function HomePageClient({ services }: { services: any[] }) {
     <>
       <LoadingScreen show={showLoader} />
       <CustomCursor />
+      <OnboardingModal />
       <Navbar />
       <main className="page-enter">
         <HeroSection />

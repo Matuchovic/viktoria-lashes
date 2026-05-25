@@ -38,6 +38,7 @@ export function Footer() {
             <div className="mt-6 space-y-2">
               <h4 className="font-sans font-light tracking-[3px] uppercase text-text-dim mb-3" style={{fontSize:'10px'}}>Právní</h4>
               <div><Link href="/obchodni-podminky" className="text-text-dim text-xs font-light hover:text-pink-soft transition-colors">Obchodní podmínky</Link></div>
+              <div><Link href="/jak-rezervovat" className="text-text-dim text-xs font-light hover:text-pink-soft transition-colors">Jak rezervovat (návod)</Link></div>
               <div><Link href="/gdpr" className="text-text-dim text-xs font-light hover:text-pink-soft transition-colors">Ochrana osobních údajů (GDPR)</Link></div>
             </div>
           </div>
