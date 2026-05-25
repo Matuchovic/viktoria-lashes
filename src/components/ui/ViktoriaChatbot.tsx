@@ -236,7 +236,7 @@ export function ViktoriaChatbot() {
   const [chatCursor, setChatCursor] = useState({x:0, y:0, visible:false})
 
   return (
-    <div style={{ position:'fixed', bottom:20, right:20, zIndex:99999, display:'flex', flexDirection:'column', alignItems:'flex-end', gap:10, pointerEvents:'none' }}>
+    <div style={{ position:'fixed', bottom:'calc(70px + env(safe-area-inset-bottom, 0px))', right:16, zIndex:99990, display:'flex', flexDirection:'column', alignItems:'flex-end', gap:10, pointerEvents:'none' }} className="admin-hide">
 
       {/* Hidden file input */}
       <input ref={fileRef} type="file" accept="image/*" style={{ display:'none' }} onChange={handleFile}/>

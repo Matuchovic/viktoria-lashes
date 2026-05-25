@@ -265,3 +265,6 @@
   80%  { transform: translateY(-90vh) translateX(-10px) scale(0.9); opacity: 0.4; }
   100% { transform: translateY(-110vh) translateX(5px) scale(0.7); opacity: 0; }
 }
+
+/* Hide chatbot on admin page */
+.admin-page .admin-hide { display: none !important; }
