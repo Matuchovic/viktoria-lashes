@@ -134,6 +134,9 @@ export default function AdminDashboard() {
   const [notifLoading, setNotifLoading] = useState(false)
   const [notifResult, setNotifResult] = useState<any>(null)
   const [subCount, setSubCount] = useState<number | null>(null)
+  const [customers, setCustomers] = useState<any[]>([])
+  const [addingPoints, setAddingPoints] = useState<string | null>(null)
+  const [pointsAmount, setPointsAmount] = useState('')
   const [onlineData, setOnlineData] = useState<any>(null)
 
   useEffect(() => {
@@ -155,6 +158,7 @@ export default function AdminDashboard() {
       setActiveCheckin(cArr.find((c: any) => !c.returnedAt) || null)
       setLoading(false)
       fetch('/api/push/send').then(r => r.json()).then(d => setSubCount(d.count)).catch(() => {})
+      fetch('/api/customers').then(r => r.json()).then(d => { if(Array.isArray(d)) setCustomers(d) }).catch(() => {})
       // Fetch online users
       const fetchOnline = () => fetch('/api/analytics/online').then(r => r.json()).then(setOnlineData).catch(() => {})
       fetchOnline()
@@ -498,6 +502,7 @@ export default function AdminDashboard() {
                 </div>
                 <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(100%,280px),1fr))', gap:12 }}>
                   {uniqueEmails.map((email,i) => {
+                    // Get customer DB data for points
                     const cb = bookings.filter(b=>b.customerEmail===email)
                     const total = cb.reduce((s,b)=>s+(b.totalKc||0),0)
                     const last = [...cb].sort((a,b)=>new Date(b.date).getTime()-new Date(a.date).getTime())[0]
@@ -523,12 +528,56 @@ export default function AdminDashboard() {
                             <div style={{ fontFamily:'Georgia,serif', fontSize:8, letterSpacing:2, color:'rgba(245,238,242,0.25)', textTransform:'uppercase', marginBottom:3 }}>Celkem</div>
                             <div style={{ fontFamily:'Georgia,serif', fontSize:16, color:'#D4AA70' }}>{formatPrice(total)}</div>
                           </div>
+                          <div style={{ background:'rgba(212,170,112,0.06)', border:'1px solid rgba(212,170,112,0.2)', borderRadius:10, padding:'10px 12px', gridColumn:'1/-1' }}>
+                            <div style={{ fontFamily:'Georgia,serif', fontSize:8, letterSpacing:2, color:'rgba(212,170,112,0.5)', textTransform:'uppercase', marginBottom:3 }}>✦ Lash Body body</div>
+                            <div style={{ fontFamily:'Georgia,serif', fontSize:20, color:'#D4AA70' }}>
+                              {(last as any)?.user?.loyaltyPoints ?? cb[0]?.user?.loyaltyPoints ?? '—'} bodů
+                            </div>
+                          </div>
                         </div>
                         {last && <div style={{ fontFamily:'Georgia,serif', fontSize:10, color:'rgba(245,238,242,0.3)' }}>Poslední: {new Date(last.date).toLocaleDateString('cs-CZ',{day:'numeric',month:'long'})}</div>}
                         <button onClick={()=>setSelectedBooking(last)}
                           style={{ marginTop:10, width:'100%', background:'rgba(255,107,168,0.08)', border:'1px solid rgba(255,107,168,0.25)', borderRadius:8, padding:'7px', color:'#FF6BA8', fontFamily:'Georgia,serif', fontSize:10, cursor:'pointer' }}>
                           Poslední rezervace →
                         </button>
+
+                        {/* Add points manually */}
+                        {addingPoints === (email as string) ? (
+                          <div style={{ marginTop:8, display:'flex', gap:6 }}>
+                            <input
+                              type="number"
+                              placeholder="Počet bodů"
+                              value={pointsAmount}
+                              onChange={e => setPointsAmount(e.target.value)}
+                              style={{ flex:1, background:'rgba(212,170,112,0.08)', border:'1px solid rgba(212,170,112,0.3)', borderRadius:8, padding:'7px 10px', color:'rgba(245,238,242,0.85)', fontFamily:'Georgia,serif', fontSize:12, outline:'none' }}
+                            />
+                            <button onClick={async () => {
+                              if (!pointsAmount || !last?.customerEmail) return
+                              const res = await fetch('/api/loyalty/add-points', {
+                                method: 'POST',
+                                headers: {'Content-Type':'application/json'},
+                                body: JSON.stringify({ email: last.customerEmail, points: Number(pointsAmount), reason: 'Body přidány Viktórií 💕' })
+                              })
+                              if (res.ok) {
+                                alert(`✓ Přidáno ${pointsAmount} bodů`)
+                                setAddingPoints(null)
+                                setPointsAmount('')
+                              } else alert('Chyba — klientka nemá registraci')
+                            }}
+                              style={{ background:'rgba(212,170,112,0.15)', border:'1px solid rgba(212,170,112,0.4)', borderRadius:8, padding:'7px 12px', color:'#D4AA70', fontFamily:'Georgia,serif', fontSize:11, cursor:'pointer' }}>
+                              ✓
+                            </button>
+                            <button onClick={() => { setAddingPoints(null); setPointsAmount('') }}
+                              style={{ background:'none', border:'1px solid rgba(255,255,255,0.1)', borderRadius:8, padding:'7px 10px', color:'rgba(245,238,242,0.3)', fontFamily:'Georgia,serif', fontSize:11, cursor:'pointer' }}>
+                              ✗
+                            </button>
+                          </div>
+                        ) : (
+                          <button onClick={() => { setAddingPoints(email as string); setPointsAmount('') }}
+                            style={{ marginTop:6, width:'100%', background:'rgba(212,170,112,0.06)', border:'1px solid rgba(212,170,112,0.2)', borderRadius:8, padding:'7px', color:'#D4AA70', fontFamily:'Georgia,serif', fontSize:10, cursor:'pointer' }}>
+                            ✦ Přidat Lash Body body
+                          </button>
+                        )}
                       </motion.div>
                     )
                   })}
