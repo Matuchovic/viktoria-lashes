@@ -130,15 +130,22 @@ export function AppSection() {
                   </motion.button>
 
                   {/* Platform instructions */}
-                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
-                    <div style={{ padding:'12px', borderRadius:12, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)', textAlign:'center' }}>
-                      <div style={{ fontSize:20, marginBottom:4 }}>🍎</div>
-                      <div style={{ fontFamily:'Georgia,serif', fontSize:10, color:'rgba(245,238,242,0.5)', lineHeight:1.5 }}>iPhone / iPad<br/>Safari → Sdílet → Přidat na plochu</div>
-                    </div>
-                    <div style={{ padding:'12px', borderRadius:12, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)', textAlign:'center' }}>
-                      <div style={{ fontSize:20, marginBottom:4 }}>🤖</div>
-                      <div style={{ fontFamily:'Georgia,serif', fontSize:10, color:'rgba(245,238,242,0.5)', lineHeight:1.5 }}>Android / PC<br/>Klikněte tlačítko výše</div>
-                    </div>
+                  <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                    {[
+                      { icon:'📱', label:'iPhone / iPad', desc:'Safari → tlačítko Sdílet → "Přidat na plochu"', ok:true },
+                      { icon:'🤖', label:'Android', desc:'Chrome → menu → "Přidat na plochu"', ok:true },
+                      { icon:'💻', label:'PC / Mac — Chrome nebo Edge', desc:'Klikněte na ⊕ v adresním řádku prohlížeče', ok:true },
+                      { icon:'🚫', label:'Mac Safari', desc:'Bohužel Safari na Macu instalaci nepodporuje', ok:false },
+                    ].map(p => (
+                      <div key={p.label} style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 12px', borderRadius:12, background: p.ok ? 'rgba(255,255,255,0.03)' : 'rgba(248,113,113,0.05)', border: `1px solid ${p.ok ? 'rgba(255,255,255,0.07)' : 'rgba(248,113,113,0.15)'}` }}>
+                        <span style={{ fontSize:16, flexShrink:0 }}>{p.icon}</span>
+                        <div>
+                          <div style={{ fontFamily:'Georgia,serif', fontSize:11, color: p.ok ? 'rgba(245,238,242,0.7)' : 'rgba(248,113,113,0.6)', marginBottom:2 }}>{p.label}</div>
+                          <div style={{ fontFamily:'Georgia,serif', fontSize:10, color:'rgba(245,238,242,0.35)', lineHeight:1.4 }}>{p.desc}</div>
+                        </div>
+                        <span style={{ marginLeft:'auto', fontSize:12 }}>{p.ok ? '✓' : '✗'}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
