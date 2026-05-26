@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { CustomCursor } from '@/components/ui/CustomCursor'
 import { formatPrice } from '@/lib/utils'
-import BlockedSlotsManager from '@/components/admin/BlockedSlotsManager'
 
 const STATUS_CFG: Record<string, { label:string; color:string; bg:string; border:string }> = {
   PENDING:          { label:'Čeká',           color:'#D4AA70', bg:'rgba(212,170,112,0.1)', border:'rgba(212,170,112,0.3)' },
@@ -26,7 +25,6 @@ const TABS = [
   { id:'notifs',    label:'Notifikace', icon:'🔔' },
   { id:'reviews',   label:'Recenze',    icon:'⭐' },
   { id:'logs',      label:'Logy',       icon:'📋' },
-  { id:'dostupnost', label:'Dostupnost', icon:'🔒' },
   { id:'dev',       label:'DEV',        icon:'⚡' },
 ]
 
@@ -1517,18 +1515,6 @@ export default function AdminDashboard() {
                 </>)}
 
                 </>)}
-              </motion.div>
-            )}
-
-            {/* DOSTUPNOST */}
-            {tab==='dostupnost' && (
-              <motion.div key="ds" initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} exit={{opacity:0}}>
-                <div style={{ marginBottom:16 }}>
-                  <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:5, color:'#FF6BA8', textTransform:'uppercase', marginBottom:6 }}>Sprava dostupnosti</div>
-                  <h1 style={{ fontFamily:'Georgia,serif', fontWeight:300, fontSize:'clamp(20px,5vw,32px)', margin:0, marginBottom:4 }}>Blokace rezervaci</h1>
-                  <div style={{ fontFamily:'Georgia,serif', fontSize:12, color:'rgba(245,238,242,0.4)' }}>Vypnete rezervace globalne nebo blokujte konkretni dny a casy</div>
-                </div>
-                <BlockedSlotsManager />
               </motion.div>
             )}
 
