@@ -29,9 +29,7 @@ function BookingContent() {
   const [submitted, setSubmitted] = useState(false)
   const [bookingRef, setBookingRef] = useState('')
   const [loading, setLoading] = useState(false)
-  const [blockedSlots, setBlockedSlots] = useState<string[]>([])
-  const [slotsLoading, setSlotsLoading] = useState(false)
-  const [form, setForm] = useState({
+    const [form, setForm] = useState({
     serviceId: searchParams.get('service') ?? '',
     artistId:'', date:'', time:'',
     name: session?.user?.name ?? '',
@@ -44,9 +42,7 @@ function BookingContent() {
   const minDate = new Date(); minDate.setDate(minDate.getDate()+1)
   const minDateStr = minDate.toISOString().split('T')[0]
   const allSlots = generateTimeSlots('08:00','20:00',30)
-  const [blockedSlots, setBlockedSlots] = useState<string[]>([])
-  const [slotsLoading, setSlotsLoading] = useState(false)
-  useEffect(() => {
+    useEffect(() => {
     if (!form.date || !form.artistId || !service) { setBlockedSlots([]); return }
     setSlotsLoading(true)
     const params = new URLSearchParams({ date: form.date, artistId: form.artistId, serviceDuration: String(service.durationMin) })
