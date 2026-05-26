@@ -12,9 +12,11 @@ export async function PATCH(req: NextRequest) {
   const id = searchParams.get('id')
   if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
   const { address } = await req.json()
-  await (prisma.booking.update as any)({
-    where: { id },
-    data: { address: address || null },
-  })
-  return NextResponse.json({ ok: true })
+  try {
+    await prisma.$executeRaw`UPDATE bookings SET address = ${address || null} WHERE id = ${id}`
+    return NextResponse.json({ ok: true })
+  } catch(e: any) {
+    console.error('Address update error:', e)
+    return NextResponse.json({ error: e.message }, { status: 500 })
+  }
 }
