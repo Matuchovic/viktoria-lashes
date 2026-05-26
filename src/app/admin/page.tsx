@@ -53,6 +53,24 @@ function StatCard({ label, value, sub, color, icon, delay=0 }: any) {
 }
 
 function BookingModal({ booking, onClose, onStatusChange }: { booking:any; onClose:()=>void; onStatusChange:(id:string,s:string)=>void }) {
+  const [editingAddr, setEditingAddr] = React.useState(false)
+  const [addrVal, setAddrVal] = React.useState('')
+  const [addrSaving, setAddrSaving] = React.useState(false)
+
+  const saveAddress = async () => {
+    setAddrSaving(true)
+    try {
+      await fetch('/api/bookings/address?id=' + booking.id, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ address: addrVal }),
+      })
+      booking.address = addrVal
+      setEditingAddr(false)
+    } catch(e) { console.error(e) }
+    setAddrSaving(false)
+  }
+
   const cfg = STATUS_CFG[booking.status] ?? STATUS_CFG.PENDING
   const date = new Date(booking.date)
   return (
@@ -103,9 +121,59 @@ function BookingModal({ booking, onClose, onStatusChange }: { booking:any; onClo
             return (
               <div style={{ marginBottom:12, padding:'14px 16px', borderRadius:12, background:'rgba(255,107,168,0.07)', border:'1px solid rgba(255,107,168,0.3)' }}>
                 <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:3, color:'#FF6BA8', textTransform:'uppercase', marginBottom:8 }}>Adresa kam prijet</div>
-                <div style={{ fontFamily:'Georgia,serif', fontSize:15, color:'rgba(245,238,242,0.95)', marginBottom:addr ? 12 : 4, lineHeight:1.4 }}>
-                  {addr || <span style={{color:'rgba(245,238,242,0.3)',fontStyle:'italic'}}>Adresa nevyplnena</span>}
-                </div>
+                {editingAddr ? (
+                  <div style={{ marginBottom:12 }}>
+                    <input autoFocus value={addrVal} onChange={e => setAddrVal(e.target.value)}
+                      style={{ width:'100%', background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,107,168,0.4)', borderRadius:8, padding:'10px 12px', color:'rgba(245,238,242,0.9)', fontFamily:'Georgia,serif', fontSize:14, outline:'none', marginBottom:8 }}
+                      placeholder="Ul. Příklad 12, Mladá Boleslav"/>
+                    <div style={{ display:'flex', gap:8 }}>
+                      <button onClick={saveAddress} disabled={addrSaving}
+                        style={{ flex:1, padding:'8px', borderRadius:8, background:'rgba(255,107,168,0.2)', border:'1px solid rgba(255,107,168,0.5)', color:'#FF6BA8', fontFamily:'Georgia,serif', fontSize:11, cursor:'pointer' }}>
+                        {addrSaving ? 'Ukládám...' : 'Uložit'}
+                      </button>
+                      <button onClick={() => setEditingAddr(false)}
+                        style={{ padding:'8px 14px', borderRadius:8, background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', color:'rgba(245,238,242,0.4)', fontFamily:'Georgia,serif', fontSize:11, cursor:'pointer' }}>
+                        Zrušit
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:addr ? 12 : 4 }}>
+                    <div style={{ flex:1, fontFamily:'Georgia,serif', fontSize:15, color:'rgba(245,238,242,0.95)', lineHeight:1.4 }}>
+                {editingAddr ? (
+                  <div style={{ marginBottom:12 }}>
+                    <input autoFocus value={addrVal} onChange={e => setAddrVal(e.target.value)}
+                      style={{ width:'100%', background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,107,168,0.4)', borderRadius:8, padding:'10px 12px', color:'rgba(245,238,242,0.9)', fontFamily:'Georgia,serif', fontSize:14, outline:'none', marginBottom:8 }}
+                      placeholder="Ul. Priklad 12, Mlada Boleslav"/>
+                    <div style={{ display:'flex', gap:8 }}>
+                      <button onClick={saveAddress} disabled={addrSaving}
+                        style={{ flex:1, padding:'8px', borderRadius:8, background:'rgba(255,107,168,0.2)', border:'1px solid rgba(255,107,168,0.5)', color:'#FF6BA8', fontFamily:'Georgia,serif', fontSize:11, cursor:'pointer' }}>
+                        {addrSaving ? 'Ukladam...' : 'Ulozit'}
+                      </button>
+                      <button onClick={() => setEditingAddr(false)}
+                        style={{ padding:'8px 14px', borderRadius:8, background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', color:'rgba(245,238,242,0.4)', fontFamily:'Georgia,serif', fontSize:11, cursor:'pointer' }}>
+                        Zrusit
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:addr ? 12 : 4 }}>
+                    <div style={{ flex:1, fontFamily:'Georgia,serif', fontSize:15, color:'rgba(245,238,242,0.95)', lineHeight:1.4 }}>
+                      {addr || <span style={{color:'rgba(245,238,242,0.3)',fontStyle:'italic'}}>Adresa nevyplnena</span>}
+                    </div>
+                    <button onClick={() => { setAddrVal(addr); setEditingAddr(true) }}
+                      style={{ flexShrink:0, padding:'5px 10px', borderRadius:6, background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', color:'rgba(245,238,242,0.4)', fontFamily:'Georgia,serif', fontSize:10, cursor:'pointer' }}>
+                      Upravit
+                    </button>
+                  </div>
+                )}
+                    </div>
+                    <button onClick={() => { setAddrVal(addr); setEditingAddr(true) }}
+                      style={{ flexShrink:0, padding:'5px 10px', borderRadius:6, background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', color:'rgba(245,238,242,0.4)', fontFamily:'Georgia,serif', fontSize:10, cursor:'pointer' }}>
+                      ✏️ Upravit
+                    </button>
+                  </div>
+                )}
                 {addr && (
                   <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
                     <a href={'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(addr)} target='_blank' rel='noopener noreferrer'
