@@ -29,7 +29,7 @@ function BookingContent() {
   const [submitted, setSubmitted] = useState(false)
   const [bookingRef, setBookingRef] = useState('')
   const [loading, setLoading] = useState(false)
-  const [blockedSlots, setBlockedSlots] = useState([])
+  const [blockedSlots, setBlockedSlots] = useState<string[]>([])
   const [slotsLoading, setSlotsLoading] = useState(false)
   const [form, setForm] = useState({
     serviceId: searchParams.get('service') ?? '',
