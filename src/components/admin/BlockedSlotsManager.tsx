@@ -62,7 +62,8 @@ export default function BlockedSlotsManager() {
   const load = async () => {
     const res = await fetch('/api/blocked-slots').then(r => r.json())
     setSlots(res)
-    setGlobalOn(res.some((s: BlockedSlot) => s.isGlobal && s.isActive))
+    const activeGlobal = Array.isArray(res) ? res.find((s: BlockedSlot) => s.isGlobal && s.isActive) : null
+    setGlobalOn(!!activeGlobal)
     setLoading(false)
   }
 
@@ -72,9 +73,26 @@ export default function BlockedSlotsManager() {
     setSaving(true)
     const existing = slots.find(s => s.isGlobal)
     if (existing) {
-      await fetch('/api/blocked-slots', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: existing.id, isActive: !existing.isActive }) })
+      // Toggle existing global block
+      await fetch('/api/blocked-slots', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: existing.id, isActive: !existing.isActive })
+      })
     } else {
-      await fetch('/api/blocked-slots', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'GLOBAL', label: 'Globální vypnutí', isGlobal: true, mode: 'blocked', clientMessage: 'Rezervace jsou momentálně pozastaveny. Brzy se vrátíme.' }) })
+      // Create new global block
+      await fetch('/api/blocked-slots', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'GLOBAL',
+          label: 'Globální vypnutí',
+          isGlobal: true,
+          mode: 'blocked',
+          isActive: true,
+          clientMessage: 'Rezervace jsou momentálně pozastaveny. Brzy se vrátíme! 🌸'
+        })
+      })
     }
     await load()
     setSaving(false)
@@ -143,8 +161,8 @@ export default function BlockedSlotsManager() {
             </div>
           </div>
           <button onClick={toggleGlobal} disabled={saving}
-            style={{ padding: '12px 24px', borderRadius: 12, background: globalOn ? 'rgba(74,222,128,0.1)' : 'rgba(248,113,113,0.1)', border: `1px solid ${globalOn ? 'rgba(74,222,128,0.3)' : 'rgba(248,113,113,0.3)'}`, color: globalOn ? '#4ade80' : '#f87171', fontFamily: 'Georgia,serif', fontSize: 14, cursor: 'pointer', minWidth: 120 }}>
-            {saving ? '...' : globalOn ? 'Zapnout' : 'Vypnout vše'}
+            style={{ padding: '12px 24px', borderRadius: 12, background: globalOn ? 'rgba(74,222,128,0.1)' : 'rgba(248,113,113,0.1)', border: `1px solid ${globalOn ? 'rgba(74,222,128,0.3)' : 'rgba(248,113,113,0.3)'}`, color: globalOn ? '#4ade80' : '#f87171', fontFamily: 'Georgia,serif', fontSize: 14, cursor: 'pointer', minWidth: 140, fontWeight: 500 }}>
+            {saving ? 'Čekejte...' : globalOn ? '✓ Zapnout rezervace' : '✕ Vypnout rezervace'}
           </button>
         </div>
       </div>

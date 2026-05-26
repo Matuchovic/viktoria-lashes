@@ -1,5 +1,5 @@
 'use client'
-import { useState, Suspense } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSession } from 'next-auth/react'
@@ -40,12 +40,12 @@ function BookingContent() {
   })
 
   // Check global block on mount
-  useState(() => {
+  useEffect(() => {
     fetch('/api/blocked-slots/check', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ date: new Date().toISOString().split('T')[0], time: null }) })
       .then(r => r.json())
       .then(d => { setBlockStatus(d); setBlockChecked(true) })
       .catch(() => setBlockChecked(true))
-  })
+  }, [])
 
   const service = SERVICES.find(s=>s.id===form.serviceId)
   const artist  = ARTISTS.find(a=>a.id===form.artistId)
