@@ -146,6 +146,7 @@ export default function AdminDashboard() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const [tab, setTab] = useState('overview')
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [bookings, setBookings] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedBooking, setSelectedBooking] = useState<any>(null)
@@ -291,23 +292,45 @@ export default function AdminDashboard() {
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
           {activeCheckin && <div style={{ width:8, height:8, borderRadius:'50%', background:'#f87171', boxShadow:'0 0 8px #f87171' }}/>}
           {pending > 0 && <div style={{ background:'#FF6BA8', color:'white', borderRadius:20, padding:'2px 8px', fontFamily:'Georgia,serif', fontSize:10 }}>{pending}</div>}
-          <button onClick={() => signOut({callbackUrl:'/'})} style={{ background:'none', border:'1px solid rgba(255,255,255,0.08)', borderRadius:8, padding:'5px 10px', color:'rgba(245,238,242,0.3)', fontFamily:'Georgia,serif', fontSize:9, cursor:'pointer' }}>Odhlásit</button>
+          <button onClick={() => setMobileMenuOpen(o => !o)}
+            style={{ background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,107,168,0.2)', borderRadius:10, padding:'8px 12px', cursor:'pointer', display:'flex', flexDirection:'column', gap:4, alignItems:'center', justifyContent:'center' }}
+            aria-label="Menu">
+            <motion.span animate={mobileMenuOpen ? {rotate:45,y:5} : {rotate:0,y:0}} style={{ display:'block', width:18, height:1.5, background: mobileMenuOpen ? '#FF6BA8' : 'rgba(245,238,242,0.7)', transformOrigin:'center' }}/>
+            <motion.span animate={mobileMenuOpen ? {opacity:0,scaleX:0} : {opacity:1,scaleX:1}} style={{ display:'block', width:18, height:1.5, background:'rgba(245,238,242,0.7)' }}/>
+            <motion.span animate={mobileMenuOpen ? {rotate:-45,y:-5} : {rotate:0,y:0}} style={{ display:'block', width:18, height:1.5, background: mobileMenuOpen ? '#FF6BA8' : 'rgba(245,238,242,0.7)', transformOrigin:'center' }}/>
+          </button>
         </div>
       </div>
 
-      {/* MOBILE BOTTOM NAV */}
-      <div className="md:hidden" style={{ position:'fixed', bottom:0, left:0, right:0, zIndex:200, background:'rgba(8,6,8,0.97)', borderTop:'1px solid rgba(255,107,168,0.15)', display:'flex', backdropFilter:'blur(20px)' }}>
-        {TABS.map(t => (
-          <button key={t.id} onClick={() => setTab(t.id)}
-            style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'8px 2px 12px', border:'none', background:'transparent', position:'relative', cursor:'pointer' }}>
-            {tab===t.id && <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:2, background:'#FF6BA8', borderRadius:'0 0 3px 3px' }}/>}
-            <span style={{ fontSize:16 }}>{t.icon}</span>
-            <span style={{ fontFamily:'Georgia,serif', fontSize:7, letterSpacing:1, textTransform:'uppercase', marginTop:2, color:tab===t.id?'#FF6BA8':'rgba(245,238,242,0.3)' }}>{t.label}</span>
-            {t.id==='bookings' && pending>0 && <div style={{ position:'absolute', top:4, right:'10%', width:14, height:14, borderRadius:'50%', background:'#FF6BA8', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'Georgia,serif', fontSize:8, color:'white' }}>{pending}</div>}
-            {t.id==='safety' && activeCheckin && <div style={{ position:'absolute', top:4, right:'10%', width:8, height:8, borderRadius:'50%', background:'#f87171', boxShadow:'0 0 6px #f87171' }}/>}
-          </button>
-        ))}
-      </div>
+      {/* MOBILE HAMBURGER MENU */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} transition={{duration:0.2}}
+            style={{ position:'fixed', inset:0, zIndex:190, background:'rgba(8,6,8,0.98)', backdropFilter:'blur(20px)', overflowY:'auto', paddingTop:70, paddingBottom:24 }}>
+            <div style={{ padding:'0 20px', display:'flex', flexDirection:'column', gap:6 }}>
+              <div style={{ fontFamily:'Georgia,serif', fontSize:8, letterSpacing:4, color:'rgba(255,107,168,0.4)', textTransform:'uppercase', marginBottom:10, marginTop:8 }}>Navigace</div>
+              {TABS.map((t, i) => (
+                <motion.button key={t.id} initial={{opacity:0,x:-12}} animate={{opacity:1,x:0}} transition={{delay:i*0.04}}
+                  onClick={() => { setTab(t.id); setMobileMenuOpen(false) }}
+                  style={{ display:'flex', alignItems:'center', gap:14, padding:'14px 18px', borderRadius:12, border:'none', background: tab===t.id ? 'rgba(255,107,168,0.1)' : 'rgba(255,255,255,0.03)', borderLeft: tab===t.id ? '2px solid #FF6BA8' : '2px solid transparent', fontFamily:'Georgia,serif', fontSize:14, color: tab===t.id ? '#FF6BA8' : 'rgba(245,238,242,0.6)', cursor:'pointer', textAlign:'left', position:'relative' }}>
+                  <span style={{fontSize:18}}>{t.icon}</span>
+                  {t.label}
+                  {t.id==='bookings' && pending>0 && <span style={{ marginLeft:'auto', background:'#FF6BA8', color:'white', borderRadius:20, padding:'2px 9px', fontSize:10 }}>{pending}</span>}
+                  {t.id==='safety' && activeCheckin && <span style={{ marginLeft:'auto', background:'#f87171', color:'white', borderRadius:20, padding:'2px 8px', fontSize:10 }}>!</span>}
+                </motion.button>
+              ))}
+              <div style={{ marginTop:16, paddingTop:16, borderTop:'1px solid rgba(255,107,168,0.1)' }}>
+                <div style={{ fontFamily:'Georgia,serif', fontSize:11, color:'rgba(245,238,242,0.4)', marginBottom:4 }}>{session?.user?.name}</div>
+                <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:2, color:'#FF6BA8', textTransform:'uppercase', marginBottom:14 }}>Admin</div>
+                <button onClick={() => signOut({callbackUrl:'/'})}
+                  style={{ background:'none', border:'1px solid rgba(255,255,255,0.08)', borderRadius:10, padding:'10px 20px', color:'rgba(245,238,242,0.4)', fontFamily:'Georgia,serif', fontSize:11, width:'100%', cursor:'pointer' }}>
+                  Odhlásit
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* LAYOUT */}
       <div style={{ minHeight:'100vh', background:'#080608', display:'flex' }}>
@@ -344,7 +367,7 @@ export default function AdminDashboard() {
 
         {/* MAIN CONTENT */}
         <div style={{ flex:1, overflowY:'auto', minWidth:0 }}
-          className="px-3 pt-16 pb-24 md:px-8 md:pt-8 md:pb-12">
+          className="px-3 pt-16 pb-6 md:px-8 md:pt-8 md:pb-12">
           <div style={{ position:'fixed', inset:0, pointerEvents:'none', background:'radial-gradient(ellipse 50% 40% at 60% 20%,rgba(196,105,138,0.07) 0%,transparent 70%)' }}/>
 
           <AnimatePresence mode="wait">
