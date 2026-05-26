@@ -1,5 +1,5 @@
 'use client'
-import { useState, Suspense } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSession } from 'next-auth/react'
@@ -29,6 +29,8 @@ function BookingContent() {
   const [submitted, setSubmitted] = useState(false)
   const [bookingRef, setBookingRef] = useState('')
   const [loading, setLoading] = useState(false)
+  const [blockedSlots, setBlockedSlots] = useState<string[]>([])
+  const [slotsLoading, setSlotsLoading] = useState(false)
   const [form, setForm] = useState({
     serviceId: searchParams.get('service') ?? '',
     artistId:'', date:'', time:'',
@@ -42,8 +44,17 @@ function BookingContent() {
   const minDate = new Date(); minDate.setDate(minDate.getDate()+1)
   const minDateStr = minDate.toISOString().split('T')[0]
   const allSlots = generateTimeSlots('08:00','20:00',30)
-  const takenSlots = ['10:00','14:00','16:00']
-  const getSlotStatus = (t:string) => takenSlots.includes(t)?'taken':form.time===t?'selected':'available'
+  const [blockedSlots, setBlockedSlots] = useState<string[]>([])
+  const [slotsLoading, setSlotsLoading] = useState(false)
+  useEffect(() => {
+    if (!form.date || !form.artistId || !service) { setBlockedSlots([]); return }
+    setSlotsLoading(true)
+    const params = new URLSearchParams({ date: form.date, artistId: form.artistId, serviceDuration: String(service.durationMin) })
+    fetch(`/api/bookings/availability?${params}`)
+      .then(r => r.json()).then(d => setBlockedSlots(Array.isArray(d.blocked) ? d.blocked : []))
+      .catch(() => setBlockedSlots([])).finally(() => setSlotsLoading(false))
+  }, [form.date, form.artistId, service?.durationMin])
+  const getSlotStatus = (t:string) => blockedSlots.includes(t)?'taken':form.time===t?'selected':'available'
 
   const canGoNext = () => {
     if (step===0) return !!form.serviceId
