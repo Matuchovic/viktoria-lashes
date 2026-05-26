@@ -29,12 +29,22 @@ function BookingContent() {
   const [submitted, setSubmitted] = useState(false)
   const [bookingRef, setBookingRef] = useState('')
   const [loading, setLoading] = useState(false)
+  const [blockStatus, setBlockStatus] = useState<{blocked:boolean,message?:string,mode?:string}|null>(null)
+  const [blockChecked, setBlockChecked] = useState(false)
   const [form, setForm] = useState({
     serviceId: searchParams.get('service') ?? '',
     artistId:'', date:'', time:'',
     name: session?.user?.name ?? '',
     email: session?.user?.email ?? '',
     phone:'', address:'', notes:'',
+  })
+
+  // Check global block on mount
+  useState(() => {
+    fetch('/api/blocked-slots/check', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ date: new Date().toISOString().split('T')[0], time: null }) })
+      .then(r => r.json())
+      .then(d => { setBlockStatus(d); setBlockChecked(true) })
+      .catch(() => setBlockChecked(true))
   })
 
   const service = SERVICES.find(s=>s.id===form.serviceId)
@@ -45,7 +55,18 @@ function BookingContent() {
   const takenSlots = ['10:00','14:00','16:00']
   const getSlotStatus = (t:string) => takenSlots.includes(t)?'taken':form.time===t?'selected':'available'
 
+  // Check specific date/time when selected
+  const checkDateBlock = async (date:string, time?:string) => {
+    try {
+      const res = await fetch('/api/blocked-slots/check', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ date, time: time||null }) })
+      const d = await res.json()
+      setBlockStatus(d)
+      return d.blocked
+    } catch { return false }
+  }
+
   const canGoNext = () => {
+    if (blockStatus?.blocked && blockStatus?.mode === 'blocked') return false
     if (step===0) return !!form.serviceId
     if (step===1) return !!form.artistId
     if (step===2) return !!form.date && !!form.time
@@ -54,6 +75,14 @@ function BookingContent() {
   }
 
   const handleSubmit = async () => {
+    // Final block check before submit
+    if (form.date) {
+      const isBlocked = await checkDateBlock(form.date, form.time)
+      if (isBlocked && blockStatus?.mode === 'blocked') {
+        toast(blockStatus?.message || 'Rezervace jsou momentálně pozastaveny.', 'error')
+        return
+      }
+    }
     setLoading(true)
     try {
       const res = await fetch('/api/bookings',{method:'POST',headers:{'Content-Type':'application/json'},
@@ -87,6 +116,31 @@ function BookingContent() {
   return (
     <div className="min-h-screen bg-black px-5 md:px-8 pt-24 pb-20">
       <div className="max-w-xl mx-auto">
+
+        {/* BLOCK BANNER */}
+        {blockChecked && blockStatus?.blocked && (
+          <div style={{ marginBottom:24, padding:'20px 24px', borderRadius:16, background: blockStatus.mode==='phone_only' ? 'rgba(212,170,112,0.08)' : 'rgba(248,113,113,0.08)', border:`1px solid ${blockStatus.mode==='phone_only' ? 'rgba(212,170,112,0.3)' : 'rgba(248,113,113,0.3)'}`, backdropFilter:'blur(20px)' }}>
+            <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:10 }}>
+              <div style={{ width:8, height:8, borderRadius:'50%', background: blockStatus.mode==='phone_only' ? '#D4AA70' : '#f87171', boxShadow:`0 0 8px ${blockStatus.mode==='phone_only' ? '#D4AA70' : '#f87171'}`, flexShrink:0 }}/>
+              <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:3, color: blockStatus.mode==='phone_only' ? '#D4AA70' : '#f87171', textTransform:'uppercase' }}>
+                {blockStatus.mode==='phone_only' ? 'Pouze telefonická rezervace' : blockStatus.mode==='waitlist' ? 'Čekací listina' : 'Rezervace pozastaveny'}
+              </div>
+            </div>
+            <div style={{ fontFamily:'Georgia,serif', fontSize:16, fontWeight:300, color:'rgba(245,238,242,0.9)', lineHeight:1.6, marginBottom:12 }}>
+              {blockStatus.message || 'Rezervace jsou momentálně pozastaveny. Brzy se vrátíme!'}
+            </div>
+            {blockStatus.mode==='phone_only' && (
+              <a href="tel:+420123456789" style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'10px 20px', borderRadius:10, background:'rgba(212,170,112,0.12)', border:'1px solid rgba(212,170,112,0.3)', color:'#D4AA70', fontFamily:'Georgia,serif', fontSize:13, textDecoration:'none' }}>
+                📞 Zavolat a rezervovat
+              </a>
+            )}
+            {blockStatus.mode==='blocked' && (
+              <div style={{ fontFamily:'Georgia,serif', fontSize:12, color:'rgba(245,238,242,0.35)', marginTop:4 }}>
+                Sledujte nás na Instagramu pro aktuální informace o otevření.
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Steps — horizontal scroll on mobile */}
         <div className="flex items-center gap-1 mb-8 md:mb-12 overflow-x-auto pb-1 no-scrollbar">
