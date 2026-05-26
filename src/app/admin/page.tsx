@@ -53,9 +53,9 @@ function StatCard({ label, value, sub, color, icon, delay=0 }: any) {
 }
 
 function BookingModal({ booking, onClose, onStatusChange }: { booking:any; onClose:()=>void; onStatusChange:(id:string,s:string)=>void }) {
-  const [editingAddr, setEditingAddr] = React.useState(false)
-  const [addrVal, setAddrVal] = React.useState('')
-  const [addrSaving, setAddrSaving] = React.useState(false)
+  const [editingAddr, setEditingAddr] = useState(false)
+  const [addrVal, setAddrVal] = useState('')
+  const [addrSaving, setAddrSaving] = useState(false)
 
   const saveAddress = async () => {
     setAddrSaving(true)
