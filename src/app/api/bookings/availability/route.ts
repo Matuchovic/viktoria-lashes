@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
       date: new Date(date),
       status: { in: ['PENDING', 'CONFIRMED'] },
     }
-    # single artist - ignore artistId
+    // single artist - ignore artistId
 
     const bookings = await prisma.booking.findMany({
       where,
