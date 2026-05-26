@@ -291,24 +291,3 @@ model Review {
 
   @@map("reviews")
 }
-
-model BlockedSlot {
-  id             String    @id @default(cuid())
-  type           String
-  label          String
-  reason         String?
-  isGlobal       Boolean   @default(false)
-  dateFrom       DateTime? @db.Date
-  dateTo         DateTime? @db.Date
-  startTime      String?
-  endTime        String?
-  dayOfWeek      Int?
-  mode           String    @default("blocked")
-  autoEnableAt   DateTime?
-  clientMessage  String?
-  isActive       Boolean   @default(true)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-
-  @@map("blocked_slots")
-}
