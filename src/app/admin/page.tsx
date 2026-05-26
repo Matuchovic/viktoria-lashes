@@ -190,22 +190,6 @@ function BookingModal({ booking, onClose, onStatusChange }: { booking:any; onClo
             )
           })()}
 
-          {(booking.address || (booking.notes && booking.notes.includes('Adresa'))) && (
-            <div style={{ marginBottom:12, padding:'14px 16px', borderRadius:12, background:'rgba(255,107,168,0.07)', border:'1px solid rgba(255,107,168,0.3)' }}>
-              <div style={{ fontFamily:'Georgia,serif', fontSize:9, letterSpacing:3, color:'#FF6BA8', textTransform:'uppercase', marginBottom:8 }}>Adresa kam prijet</div>
-              <div style={{ fontFamily:'Georgia,serif', fontSize:15, color:'rgba(245,238,242,0.95)', marginBottom:12, lineHeight:1.4 }}>{booking.address || (booking.notes && booking.notes.match(/Adresa:\s*([^|\n]+)/) || [])[1] || ''}</div>
-              <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-                <a href={'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(booking.address)} target='_blank' rel='noopener noreferrer'
-                  style={{ flex:'1 1 auto', textAlign:'center', padding:'8px 14px', borderRadius:8, background:'rgba(74,222,128,0.12)', border:'1px solid rgba(74,222,128,0.35)', color:'#4ade80', fontFamily:'Georgia,serif', fontSize:11, textTransform:'uppercase', textDecoration:'none' }}>
-                  Google Maps
-                </a>
-                <a href={'https://waze.com/ul?q=' + encodeURIComponent(booking.address)} target='_blank' rel='noopener noreferrer'
-                  style={{ flex:'1 1 auto', textAlign:'center', padding:'8px 14px', borderRadius:8, background:'rgba(99,179,255,0.12)', border:'1px solid rgba(99,179,255,0.35)', color:'#63b3ff', fontFamily:'Georgia,serif', fontSize:11, textTransform:'uppercase', textDecoration:'none' }}>
-                  Waze
-                </a>
-              </div>
-            </div>
-          )}
 
           {/* Reschedule approval */}
           {booking.status === 'CHANGE_REQUESTED' && booking.rescheduleDate && (
