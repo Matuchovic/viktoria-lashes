@@ -240,8 +240,8 @@ function BookingContent() {
                   <div key={f.k}>
                     <label className="block font-light tracking-[3px] uppercase text-text-muted mb-2" style={{fontSize:10}}>{f.l}</label>
                     {f.k==='notes'
-                      ? <textarea style={{...inp,resize:'none'}} rows={3} placeholder={f.p} value={form[f.k]} onChange={e => setForm(prev => ({...prev, [f.k]:e.target.value}))}/>
-                      : <input type={f.t} style={inp} placeholder={f.p} value={form[f.k]} onChange={e => setForm(prev => ({...prev, [f.k]:e.target.value}))} required={f.req}/>
+                      ? <textarea style={{...inp,resize:'none'}} rows={3} placeholder={f.p} value={(form as Record<string, string>)[f.k]} onChange={e => setForm(prev => ({...prev, [f.k]:e.target.value}))}/>
+                      : <input type={f.t} style={inp} placeholder={f.p} value={(form as Record<string, string>)[f.k]} onChange={e => setForm(prev => ({...prev, [f.k]:e.target.value}))} required={f.req}/>
                     }
                   </div>
                 ))}
