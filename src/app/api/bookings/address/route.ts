@@ -12,9 +12,9 @@ export async function PATCH(req: NextRequest) {
   const id = searchParams.get('id')
   if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
   const { address } = await req.json()
-  const booking = await prisma.booking.update({
+  await (prisma.booking.update as any)({
     where: { id },
     data: { address: address || null },
   })
-  return NextResponse.json({ ok: true, address: booking.address })
+  return NextResponse.json({ ok: true })
 }
