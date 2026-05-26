@@ -60,14 +60,21 @@ function BookingModal({ booking, onClose, onStatusChange }: { booking:any; onClo
   const saveAddress = async () => {
     setAddrSaving(true)
     try {
-      await fetch('/api/bookings/address?id=' + booking.id, {
+      const res = await fetch('/api/bookings/address?id=' + booking.id, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ address: addrVal }),
       })
-      booking.address = addrVal
-      setEditingAddr(false)
-    } catch(e) { console.error(e) }
+      const data = await res.json()
+      console.log('save result:', res.status, data)
+      if (res.ok) {
+        booking.address = addrVal
+        setEditingAddr(false)
+        onStatusChange(booking.id, booking.status)
+      } else {
+        alert('Chyba: ' + (data.error || res.status))
+      }
+    } catch(e) { console.error(e); alert('Sit. chyba') }
     setAddrSaving(false)
   }
 
