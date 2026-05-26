@@ -64,7 +64,7 @@ function BookingContent() {
       .finally(() => setSlotsLoading(false))
   }, [form.date, form.artistId, service && service.durationMin])
 
-  const getSlotStatus = (t) => blockedSlots.includes(t) ? 'taken' : form.time === t ? 'selected' : 'available'
+  const getSlotStatus = (t: string) => blockedSlots.includes(t) ? 'taken' : form.time === t ? 'selected' : 'available'
 
   const canGoNext = () => {
     if (step===0) return !!form.serviceId
